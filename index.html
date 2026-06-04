@@ -671,7 +671,11 @@ function renderMesi(){
     <div style="display:flex;gap:4px;width:100%">
       ${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}
     </div>`;
-  const classMese=[...STATE.soci].map(s=>({...s,punti:s.m[mi]??0})).filter(s=>s.punti!==null).sort((a,b)=>b.punti-a.punti);
+  const classMese=[...STATE.soci]
+    .filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined)
+    .filter(s=>!(s.uscito&&mi>=3))
+    .map(s=>({...s,punti:s.m[mi]??0}))
+    .sort((a,b)=>b.punti-a.punti);
   const max=Math.max(...classMese.map(s=>s.punti),1);
   // Per ciclo 1 (mesi 0-2) usa totali storici fissi, altrimenti calcola live
   const scMese=SCUDERIE.map(sc=>{

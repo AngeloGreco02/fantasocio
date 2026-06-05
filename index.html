@@ -201,6 +201,7 @@ select option{background:#12121e;color:#fff}
     <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.7;opacity:.8">
       🎮 Benvenuto nel FantaSocio!<br>
       Guadagna punti partecipando alle attività CFP.<br>
+      Ogni socio gioca per sé — vinca il migliore! 🏆<br>
       <span style="color:#fbbf24;font-weight:800">Mese attivo: Giugno 2026</span>
     </div>
     <button onclick="chiudiWelcome()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:14px;color:#fff;padding:14px 32px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;width:100%;letter-spacing:1px">INIZIA 🚀</button>
@@ -246,7 +247,7 @@ select option{background:#12121e;color:#fff}
       <div style="margin-left:auto;text-align:right">
         <div style="font-size:10px;opacity:.5;letter-spacing:1px">MESE ATTIVO</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#10b981;letter-spacing:1px">GIUGNO 2026</div>
-        <div style="font-size:10px;opacity:.4">Ciclo 2 · Giu-Ago</div>
+        <div style="font-size:10px;opacity:.4">Classifica individuale</div>
       </div>
     </div>
     <div class="kpi-grid" id="kpiGrid"></div>
@@ -459,7 +460,7 @@ function logout(){
 //  TABS
 // ═══════════════════════════════════════════════════════════
 function getTabs(){
-  const t=["🏆 Classifica","⚔️ Scuderie","📅 Mesi","📊 Grafici","🎯 Missioni","🏅 Bacheca","📜 Regolamento","📋 Log","🔍 Cerca"];
+  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🎯 Missioni","🏅 Bacheca","📜 Regolamento","📋 Log","🔍 Cerca"];
   if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
   return t;
 }
@@ -474,12 +475,13 @@ function render(){
 function renderKPI(){
   const cl=sortedSoci();
   const sc=scuderiePunti();
+  const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
   document.getElementById("kpiGrid").innerHTML=[
     {icon:"👥",val:STATE.soci.filter(s=>!s.uscito).length, label:"SOCI"},
-    {icon:"⚔️",val:SCUDERIE.length,         label:"SCUDERIE"},
-    {icon:"⭐",val:cl[0]?.punti??0,         label:"TOP PT"},
-    {icon:"🏆",val:sc[0]?.nome?.slice(0,6)||"-",label:"LEADER"},
-  ].map(k=>`<div class="kpi"><div style="font-size:18px">${k.icon}</div><div class="kpi-val">${k.val}</div><div class="kpi-lbl">${k.label}</div></div>`).join("");
+    {icon:"🥇",val:cl[0]?.nome?.split(" ")[0]||"-",        label:"LEADER"},
+    {icon:"⭐",val:cl[0]?.punti??0,                        label:"TOP PT"},
+    {icon:"📊",val:media,                                   label:"MEDIA PT"},
+  ].map(k=>`<div class="kpi"><div style="font-size:18px">${k.icon}</div><div class="kpi-val" style="font-size:${k.label==="LEADER"?"18px":"26px"}">${k.val}</div><div class="kpi-lbl">${k.label}</div></div>`).join("");
 }
 
 function renderTabs(){
@@ -499,7 +501,6 @@ function renderTab(){
   Object.values(chartInstances).forEach(c=>{try{c.destroy();}catch(e){}});
   chartInstances={};
   if(label.includes("Classifica"))el.innerHTML=renderClassifica();
-  else if(label.includes("Scuderie"))el.innerHTML=renderScuderie();
   else if(label.includes("Mesi"))el.innerHTML=renderMesi();
   else if(label.includes("Grafici")){el.innerHTML=renderGrafici();initGrafici();}
   else if(label.includes("Missioni"))el.innerHTML=renderMissioni();
@@ -520,21 +521,19 @@ function renderClassifica(){
     const bars=s.m.map((mv,mi)=>{
       if(mv===null)return`<div class="mini-bar-col"><div class="mini-bar" style="height:3px;background:rgba(255,255,255,.1)"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)||"M"+(mi+1)}</div></div>`;
       const h=Math.max(3,Math.abs(mv)/maxM*26);
-      const c=mv>=0?sc.colore+"99":"rgba(239,68,68,.6)";
+      const c=mv>=0?"#818cf899":"rgba(239,68,68,.6)";
       return`<div class="mini-bar-col"><div class="mini-bar" style="height:${h}px;background:${c}"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)||"M"+(mi+1)}</div></div>`;
     }).join("");
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.45;filter:grayscale(.8)":""}${i===0&&!s.uscito?" background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.05));border-color:rgba(251,191,36,.22)":""}">
       <div style="display:flex;align-items:center;gap:12px">
         <div style="font-size:22px;min-width:28px;text-align:center">${s.uscito?"🚪":i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
-        <div class="ava" style="width:44px;height:44px;font-size:13px;background:${sc.colore||"#555"}33;border:2px solid ${sc.colore||"#555"}55">${s.avatar}</div>
+        <div class="ava" style="width:44px;height:44px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
         <div style="flex:1;min-width:0">
           <div style="font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
             ${s.nome}
             ${s.uscito?`<span class="badge" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">🚪 Uscito</span>`:""}
-            ${s.cap&&!s.uscito?`<span class="badge" style="background:rgba(251,191,36,.18);color:#fbbf24;border-color:rgba(251,191,36,.3)">⚔️ Cap.</span>`:""}
             <span class="badge" style="background:${t.color}18;color:${t.color};border-color:${t.color}35">${t.emoji} ${t.label}</span>
           </div>
-          <div style="font-size:11px;opacity:.45;margin-top:2px">${sc.emoji||""} ${sc.nome||""}</div>
           <div class="mini-bars">${bars}</div>
         </div>
         <div style="text-align:right;flex-shrink:0">
@@ -565,13 +564,12 @@ function apriProfilo(id){
   <div class="profilo-wrap">
     <button onclick="chiudiProfilo()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;padding:10px 18px;font-weight:800;cursor:pointer;margin-bottom:16px;font-size:13px;font-family:inherit">← Torna alla classifica</button>
 
-    <div class="profilo-header" style="background:${sc.bg||"rgba(255,255,255,.05)"}">
-      <div class="profilo-ava" style="background:${sc.colore}44;border:3px solid ${sc.colore}">${s.avatar}</div>
+    <div class="profilo-header" style="background:linear-gradient(135deg,rgba(129,140,248,.12),rgba(139,92,246,.06));border:1px solid rgba(129,140,248,.2)">
+      <div class="profilo-ava" style="background:rgba(129,140,248,.25);border:3px solid #818cf8">${s.avatar}</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px">${s.nome}</div>
       <div style="margin-top:6px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
-        ${s.cap?`<span class="badge" style="background:rgba(251,191,36,.2);color:#fbbf24;border-color:rgba(251,191,36,.4)">⚔️ Capitano</span>`:""}
         <span class="badge" style="background:${t.color}22;color:${t.color};border-color:${t.color}44">${t.emoji} ${t.label}</span>
-        <span class="badge" style="background:${sc.colore}22;color:${sc.colore};border-color:${sc.colore}44">${sc.emoji} ${sc.nome}</span>
+        ${s.uscito?`<span class="badge" style="background:rgba(239,68,68,.18);color:#ef4444;border-color:rgba(239,68,68,.3)">🚪 Ha lasciato</span>`:""}
       </div>
     </div>
 
@@ -665,10 +663,6 @@ function renderScuderie(){
 function renderMesi(){
   const mi=STATE.meseView;
   const segBtns=`
-    <div style="width:100%;font-size:9px;opacity:.4;letter-spacing:2px;margin-bottom:4px;padding:0 2px;display:flex;gap:4px">
-      <span style="flex:3;text-align:center">📅 CICLO 1 · MAR-MAG</span>
-      <span style="flex:3;text-align:center">📅 CICLO 2 · GIU-AGO</span>
-    </div>
     <div style="display:flex;gap:4px;width:100%">
       ${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}
     </div>`;
@@ -679,26 +673,16 @@ function renderMesi(){
     .sort((a,b)=>b.punti-a.punti);
   const max=Math.max(...classMese.map(s=>s.punti),1);
   // Per ciclo 1 (mesi 0-2) usa totali storici fissi, altrimenti calcola live
-  const scMese=SCUDERIE.map(sc=>{
-    const storico=STORICO_SCUDERIE[mi];
-    const p=storico ? storico[sc.id-1] : STATE.soci.filter(s=>s.sc===sc.id).reduce((a,s)=>a+(s.m[mi]||0),0);
-    return{...sc,p};
-  }).sort((a,b)=>b.p-a.p);
-  const scBars=scMese.map(sc=>`
-    <div style="flex:1;background:${sc.colore}18;border:1px solid ${sc.colore}33;border-radius:12px;padding:10px 8px;text-align:center">
-      <div style="font-size:16px">${sc.emoji}</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${sc.colore}">${sc.p}</div>
-      <div style="font-size:9px;opacity:.5">${sc.nome.slice(0,8)}</div>
-    </div>`).join("");
+  const scBars="";
   const rows=classMese.map((s,i)=>{
     const sc=getSC(s.sc);
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:11px">
         <div style="font-size:20px;min-width:28px;text-align:center">${i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
-        <div class="ava" style="width:38px;height:38px;font-size:12px;background:${sc.colore||"#555"}33;border:2px solid ${sc.colore||"#555"}55">${s.avatar}</div>
+        <div class="ava" style="width:38px;height:38px;font-size:12px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
         <div style="flex:1;min-width:0">
           <div style="font-weight:800;font-size:13px">${s.nome}</div>
-          <div class="bar-wrap"><div class="bar" style="width:${s.punti>0?(s.punti/max*100):0}%;background:linear-gradient(90deg,${sc.colore||"#818cf8"},#818cf8)"></div></div>
+          <div class="bar-wrap"><div class="bar" style="width:${s.punti>0?(s.punti/max*100):0}%;background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
         </div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${s.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px;flex-shrink:0">${s.punti>0?"+":""}${s.punti}</div>
       </div>
@@ -716,7 +700,6 @@ function renderMesi(){
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${SOCIO_MESE[mi]||"⏳ In corso…"}</div>
       </div>
     </div>
-    <div style="display:flex;gap:8px;margin-bottom:14px">${scBars}</div>
     ${rows}`;
 }
 function setMese(i){STATE.meseView=i;render();}
@@ -730,7 +713,7 @@ function renderGrafici(){
     <canvas id="chartLinee" height="220"></canvas>
   </div>
   <div class="chart-container">
-    <div class="chart-title">🏆 PUNTI TOTALI PER SCUDERIA</div>
+    <div class="chart-title">🏅 TOP 10 CLASSIFICA</div>
     <canvas id="chartScuderie" height="180"></canvas>
   </div>
   <div class="chart-container">
@@ -763,17 +746,25 @@ function initGrafici(){
       });
     }
 
-    // Grafico scuderie
-    const sc=scuderiePunti();
+    // Top 10 bar chart
+    const top10=sortedSoci().filter(s=>!s.uscito).slice(0,10);
     const ctxS=document.getElementById("chartScuderie");
     if(ctxS){
       chartInstances.scuderie=new Chart(ctxS,{
-        type:"doughnut",
+        type:"bar",
         data:{
-          labels:sc.map(s=>s.nome),
-          datasets:[{data:sc.map(s=>s.punteggio),backgroundColor:sc.map(s=>s.colore+"cc"),borderColor:sc.map(s=>s.colore),borderWidth:2}]
+          labels:top10.map(s=>s.nome.split(" ")[0]),
+          datasets:[{
+            label:"Punti totali",
+            data:top10.map(s=>s.punti),
+            backgroundColor:["#fbbf24cc","#818cf8cc","#10b981cc","#f472b6cc","#6366f1cc","#f59e0bcc","#06b6d4cc","#a78bfacc","#34d399cc","#fb923ccc"],
+            borderColor:["#fbbf24","#818cf8","#10b981","#f472b6","#6366f1","#f59e0b","#06b6d4","#a78bfa","#34d399","#fb923c"],
+            borderWidth:1,borderRadius:8,
+          }]
         },
-        options:{responsive:true,plugins:{legend:{labels:{color:"#fff",font:{size:12}}}}}
+        options:{responsive:true,plugins:{legend:{display:false}},
+          scales:{x:{ticks:{color:"rgba(255,255,255,.5)",font:{size:10}},grid:{color:"rgba(255,255,255,.04)"}},
+                  y:{ticks:{color:"rgba(255,255,255,.4)"},grid:{color:"rgba(255,255,255,.05)"}}}}
       });
     }
 
@@ -940,7 +931,7 @@ function renderBacheca(){
 
   // Titoli speciali
   const speciali=[
-    {emoji:"👑",titolo:"Leader Assoluto",    desc:"Più punti in classifica generale",    socio:cl[0]?.nome||"—",     pts:cl[0]?.punti+"pt"},
+    {emoji:"👑",titolo:"Leader Assoluto",    desc:"Più punti in classifica generale",    socio:cl[0]?.nome||"—",     pts:(cl[0]?.punti||0)+"pt"},
     {emoji:"📈",titolo:"Miglior Trend",      desc:"Maggior crescita recente",            socio:topTrend?.nome||"—",  pts:topTrend?(topTrend.trend>0?"+":"")+topTrend.trend+"pt":""},
     {emoji:"🌟",titolo:"Top Recruiter",      desc:"Ha portato più nuovi iscritti",       socio:topRec?topRec[0]:"—", pts:topRec?topRec[1]+"x":""},
     {emoji:"🏠",titolo:"Presenza Costante",  desc:"Più presenze registrate",             socio:topPres?topPres[0]:"—",pts:topPres?topPres[1]+"x":""},
@@ -1050,7 +1041,7 @@ function renderAssegna(){
       <div style="font-size:20px">📅</div>
       <div>
         <div style="font-size:10px;opacity:.6;letter-spacing:2px">MESE ATTIVO</div>
-        <div style="font-weight:900;font-size:15px;color:#10b981">GIUGNO 2026 — Ciclo 2</div>
+        <div style="font-weight:900;font-size:15px;color:#10b981">GIUGNO 2026</div>
       </div>
       <div style="margin-left:auto;font-size:11px;opacity:.5">I punti vanno a Giugno</div>
     </div>
@@ -1164,10 +1155,10 @@ function renderSoci(){
   const lista=[...STATE.soci].map(s=>{
     const sc=getSC(s.sc);const t=titolo(ptTotali(s));
     return`<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 15px">
-      <div class="ava" style="width:40px;height:40px;font-size:13px;background:${sc.colore||"#555"}33;border:2px solid ${sc.colore||"#555"}55">${s.avatar}</div>
+      <div class="ava" style="width:40px;height:40px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.35)">${s.avatar}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-weight:800;font-size:14px">${s.nome} ${s.cap?"⚔️":""}</div>
-        <div style="font-size:11px;opacity:.5">${sc.emoji||""} ${sc.nome||""} · ${t.emoji} ${t.label}</div>
+        <div style="font-weight:800;font-size:14px">${s.nome}</div>
+        <div style="font-size:11px;opacity:.5">${t.emoji} ${t.label}</div>
       </div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${t.color};margin-right:8px">${ptTotali(s)}pt</div>
       ${!s.cap?`<button onclick="eliminaSocio(${s.id})" style="background:linear-gradient(135deg,#dc2626,#ef4444);border:none;border-radius:9px;color:#fff;padding:6px 11px;font-size:12px;font-weight:800;cursor:pointer">🗑️</button>`:""}
@@ -1239,9 +1230,9 @@ function renderLog(){
 
 // ── REGOLAMENTO ──────────────────────────────────────────────
 const REGOLE_DEFAULT = [
-  {cat:"⚡ Scuderie",       testo:"Siete divisi in 3 scuderie: Inarrestabili (Denise), Irraggiungibili (Angelo), Invincibili (Gabriel). Le scuderie cambiano ogni 3 mesi tramite rotazione casuale."},
-  {cat:"⚡ Scuderie",       testo:"Ogni scuderia può avere max 10 componenti (capitano incluso). Se si supera, si forma una nuova scuderia."},
-  {cat:"⚡ Scuderie",       testo:"Il capitano della nuova scuderia è il socio con più punti che non guida già nessuna scuderia."},
+  {cat:"📚 Storico",        testo:"Il FantaSocio ha avuto 2 cicli di scuderie (Mar-Mag 2026 e Giu-Ago 2026). Da Settembre 2026 si gioca individualmente — ogni socio per sé!"},
+
+
   {cat:"📅 Classifiche",   testo:"Classifiche settimanali per l'andamento; mensili per il Socio del Mese e la Scuderia del Mese; annuale per il Socio dell'Anno."},
   {cat:"📅 Classifiche",   testo:"La classifica mensile si apre ogni primo lunedì del mese e si chiude a fine mese."},
   {cat:"📅 Classifiche",   testo:"I progressi annuali sono archiviati su file Excel gestito da Angelo Greco, presidente CFP."},
@@ -1250,8 +1241,8 @@ const REGOLE_DEFAULT = [
   {cat:"🆕 Nuovi soci",    testo:"Un nuovo socio inizia a giocare dal mese successivo e viene inserito nella squadra con meno membri."},
   {cat:"🏆 Premi",         testo:"Gloria personale: Socio del Mese, Scuderia del Mese, Socio dell'Anno."},
   {cat:"🏆 Premi",         testo:"La scuderia vincitrice del mese sceglie un'attività ludica per il mese successivo (film, ristorante, ecc.)."},
-  {cat:"⚔️ Capitano",      testo:"Il capitano deve dare l'esempio, monitorare i progressi dei membri e confrontarsi con gli altri capitani."},
-  {cat:"⚔️ Capitano",      testo:"Se un capitano è inattivo, si può votare per sostituirlo. Se la maggioranza è d'accordo, si procede al cambio."},
+
+
   {cat:"✅ Bonus",          testo:"Presenza evento +50pt · Delegato +30pt · Post social +10pt · Condivisione esperienza +10pt · Evento/link +5pt"},
   {cat:"✅ Bonus",          testo:"Nuovo iscritto associazione +100pt · Porti qualcuno a una singola attività +25pt · Compleanno/complimento +10pt · Passaggio +20pt · Soluzione problema +30pt"},
   {cat:"✅ Bonus",          testo:"Pulizia sede +50pt · In orario +10pt · Blog +50pt · Podcast +50pt · Donazione 1€=1pt · 5x1000 +50pt"},
@@ -1366,10 +1357,10 @@ function renderCerca(){
       return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.4;filter:grayscale(.7)":""}">
         <div style="display:flex;align-items:center;gap:12px">
           <div style="font-size:20px;min-width:28px;text-align:center">${s.uscito?"🚪":pos<4?["🥇","🥈","🥉"][pos-1]:"#"+pos}</div>
-          <div class="ava" style="width:42px;height:42px;font-size:13px;background:${sc.colore||"#555"}33;border:2px solid ${sc.colore||"#555"}55">${s.avatar}</div>
+          <div class="ava" style="width:42px;height:42px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
           <div style="flex:1">
             <div style="font-weight:800;font-size:14px">${s.nome} ${s.uscito?"🚪":""}</div>
-            <div style="font-size:11px;opacity:.5">${sc.emoji||""} ${sc.nome||""} · ${t.emoji} ${t.label}</div>
+            <div style="font-size:11px;opacity:.5">${t.emoji} ${t.label}</div>
           </div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${t.color}">${ptTotali(s)}</div>
         </div>

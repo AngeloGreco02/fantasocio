@@ -159,8 +159,6 @@ select option{background:#12121e;color:#fff}
 .countdown-box{background:linear-gradient(135deg,rgba(129,140,248,.15),rgba(139,92,246,.08));border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .countdown-num{font-family:"Bebas Neue",sans-serif;font-size:32px;color:var(--purple);letter-spacing:2px;min-width:36px;text-align:center}
 .countdown-lbl{font-size:9px;opacity:.5;letter-spacing:2px;text-align:center;margin-top:2px}
-/* STORICO SCUDERIE */
-.storico-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px}
 /* WELCOME */
 .welcome-overlay{position:fixed;inset:0;background:rgba(7,7,14,.98);z-index:800;display:flex;align-items:center;justify-content:center;animation:fadeUp .4s ease}
 /* LIVELLO NOTIFICA */
@@ -965,27 +963,6 @@ function renderBacheca(){
       }).join("")}
     </div>`;
 
-  // Storico cicli scuderie
-  const storicoHTML=`
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin:20px 0 10px">📚 STORICO SCUDERIE</div>
-    ${STORICO_SQUADRE_CICLO.map(ciclo=>`
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#fbbf24">CICLO ${ciclo.ciclo}</div>
-          <div style="font-size:11px;opacity:.5;letter-spacing:1px">${ciclo.mesi}</div>
-        </div>
-        ${ciclo.squadre.map(sq=>`
-          <div style="background:${sq.colore}11;border:1px solid ${sq.colore}33;border-radius:12px;padding:10px 13px;margin-bottom:7px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-              <span style="font-size:18px">${sq.emoji}</span>
-              <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${sq.colore};letter-spacing:1px">${sq.nome}</span>
-              <span style="font-size:11px;opacity:.5">⚔️ ${sq.cap}</span>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px">
-              ${sq.membri.map(m=>`<span style="background:rgba(255,255,255,.06);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700">${m}</span>`).join("")}
-            </div>
-          </div>`).join("")}
-      </div>`).join("")}`;
 
   return`
     ${alboHTML}
@@ -1365,20 +1342,6 @@ function renderCerca(){
       </div>`;
     }).join("")}`;
 }
-
-// ── STORICO SCUDERIE (per Bacheca) ───────────────────────────
-const STORICO_SQUADRE_CICLO = [
-  {ciclo:1, mesi:"Mar-Mag 2026", squadre:[
-    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Antonella","Giovanni","Giorgia","Rosa","Danilo","Frizzo","Marco L."]},
-    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Valentina","Luigi","Jessica","Lorenzo","F. Giardina","Martina"]},
-    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Mirella","F. Pio","Annarosa","Monica","Ivan","Arianna","Greta"]},
-  ]},
-  {ciclo:2, mesi:"Giu-Ago 2026", squadre:[
-    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Lorenzo","Antonella","Martina","F. Giardina","Ivan","Monica"]},
-    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Luigi","Valentina","F. Pio","Frizzo","Jessica","Greta","Annarosa"]},
-    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Arianna","Rosa","Mirella","Danilo","Maria","Giorgia","Giovanni"]},
-  ]},
-];
 
 // ═══════════════════════════════════════════════════════════
 //  INIT FIREBASE

@@ -159,6 +159,8 @@ select option{background:#12121e;color:#fff}
 .countdown-box{background:linear-gradient(135deg,rgba(129,140,248,.15),rgba(139,92,246,.08));border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .countdown-num{font-family:"Bebas Neue",sans-serif;font-size:32px;color:var(--purple);letter-spacing:2px;min-width:36px;text-align:center}
 .countdown-lbl{font-size:9px;opacity:.5;letter-spacing:2px;text-align:center;margin-top:2px}
+/* STORICO SCUDERIE */
+.storico-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px}
 /* WELCOME */
 .welcome-overlay{position:fixed;inset:0;background:rgba(7,7,14,.98);z-index:800;display:flex;align-items:center;justify-content:center;animation:fadeUp .4s ease}
 /* LIVELLO NOTIFICA */
@@ -199,6 +201,7 @@ select option{background:#12121e;color:#fff}
     <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.7;opacity:.8">
       🎮 Benvenuto nel FantaSocio!<br>
       Guadagna punti partecipando alle attività CFP.<br>
+      Ogni socio gioca per sé — vinca il migliore! 🏆<br>
       <span style="color:#fbbf24;font-weight:800">Mese attivo: Giugno 2026</span>
     </div>
     <button onclick="chiudiWelcome()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:14px;color:#fff;padding:14px 32px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;width:100%;letter-spacing:1px">INIZIA 🚀</button>
@@ -457,7 +460,7 @@ function logout(){
 //  TABS
 // ═══════════════════════════════════════════════════════════
 function getTabs(){
-  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🎯 Missioni","🏅 Bacheca","📜 Regolamento","📋 Log","🔍 Cerca"];
+  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🎯 Missioni","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
   if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
   return t;
 }
@@ -503,6 +506,7 @@ function renderTab(){
   else if(label.includes("Missioni"))el.innerHTML=renderMissioni();
   else if(label.includes("Bacheca"))el.innerHTML=renderBacheca();
   else if(label.includes("Regolamento")){el.innerHTML=renderRegolamento();initRegolamento();}
+  else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();
   else if(label.includes("Assegna"))el.innerHTML=renderAssegna();
   else if(label.includes("Soci"))el.innerHTML=renderSoci();
   else if(label.includes("Log"))el.innerHTML=renderLog();
@@ -963,6 +967,27 @@ function renderBacheca(){
       }).join("")}
     </div>`;
 
+  // Storico cicli scuderie
+  const storicoHTML=`
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin:20px 0 10px">📚 STORICO SCUDERIE</div>
+    ${STORICO_SQUADRE_CICLO.map(ciclo=>`
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#fbbf24">CICLO ${ciclo.ciclo}</div>
+          <div style="font-size:11px;opacity:.5;letter-spacing:1px">${ciclo.mesi}</div>
+        </div>
+        ${ciclo.squadre.map(sq=>`
+          <div style="background:${sq.colore}11;border:1px solid ${sq.colore}33;border-radius:12px;padding:10px 13px;margin-bottom:7px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
+              <span style="font-size:18px">${sq.emoji}</span>
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${sq.colore};letter-spacing:1px">${sq.nome}</span>
+              <span style="font-size:11px;opacity:.5">⚔️ ${sq.cap}</span>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px">
+              ${sq.membri.map(m=>`<span style="background:rgba(255,255,255,.06);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700">${m}</span>`).join("")}
+            </div>
+          </div>`).join("")}
+      </div>`).join("")}`;
 
   return`
     ${alboHTML}
@@ -983,12 +1008,11 @@ function alboGo(i){
 
 // ── ASSEGNA ──────────────────────────────────────────────────
 function renderAssegna(){
-  const opts=SCUDERIE.map(sc=>{
-    const members=STATE.soci.filter(s=>s.sc===sc.id&&!s.uscito).map(s=>
-      `<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`
-    ).join("");
-    return`<optgroup label="${sc.emoji} ${sc.nome}">${members}</optgroup>`;
-  }).join("");
+  const opts=[...STATE.soci]
+    .filter(s=>!s.uscito)
+    .sort((a,b)=>a.nome.localeCompare(b.nome))
+    .map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`)
+    .join("");
   const aBtn=(a,tipo)=>{
     const isSel=STATE.selAzione===a.id;
     const cls=isSel?(tipo==="bonus"?"azione-btn sel-bonus":"azione-btn sel-malus"):"azione-btn";
@@ -1206,24 +1230,46 @@ function renderLog(){
 
 // ── REGOLAMENTO ──────────────────────────────────────────────
 const REGOLE_DEFAULT = [
-
-
-  {cat:"📅 Classifiche",   testo:"Classifiche settimanali per l'andamento; mensili per il Socio del Mese e la Scuderia del Mese; annuale per il Socio dell'Anno."},
-  {cat:"📅 Classifiche",   testo:"La classifica mensile si apre ogni primo lunedì del mese e si chiude a fine mese."},
-  {cat:"📅 Classifiche",   testo:"I progressi annuali sono archiviati su file Excel gestito da Angelo Greco, presidente CFP."},
-  {cat:"📋 Resoconto",     testo:"Ogni domenica ogni socio manda il resoconto settimanale delle sue azioni al capitano entro le 20:00."},
-  {cat:"📋 Resoconto",     testo:"Ogni domenica entro le 20:00, il capitano comunica i risultati settimanali della squadra sul gruppo apposito."},
-  {cat:"🆕 Nuovi soci",    testo:"Un nuovo socio inizia a giocare dal mese successivo e viene inserito nella squadra con meno membri."},
-  {cat:"🏆 Premi",         testo:"Gloria personale: Socio del Mese, Scuderia del Mese, Socio dell'Anno."},
-  {cat:"🏆 Premi",         testo:"La scuderia vincitrice del mese sceglie un'attività ludica per il mese successivo (film, ristorante, ecc.)."},
-
-
-  {cat:"✅ Bonus",          testo:"Presenza evento +50pt · Delegato +30pt · Post social +10pt · Condivisione esperienza +10pt · Evento/link +5pt"},
-  {cat:"✅ Bonus",          testo:"Nuovo iscritto associazione +100pt · Porti qualcuno a una singola attività +25pt · Compleanno/complimento +10pt · Passaggio +20pt · Soluzione problema +30pt"},
-  {cat:"✅ Bonus",          testo:"Pulizia sede +50pt · In orario +10pt · Blog +50pt · Podcast +50pt · Donazione 1€=1pt · 5x1000 +50pt"},
-  {cat:"❌ Malus",          testo:"Sparisci senza avvisare -30pt · Non rispondi ai messaggi -20pt · Ritardo -1pt/minuto"},
-  {cat:"❌ Malus",          testo:"Domanda inutile -10pt · Citi il FantaSocio -10pt · Lamentarsi -15pt · Al telefono -20pt"},
-  {cat:"❌ Malus",          testo:"Messaggi privati in chat gruppo -5pt/msg · Parolacce -15pt · Bestemmie -25pt · Barare -100pt"},
+  // COME FUNZIONA
+  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi!"},
+  {cat:"🎮 Come funziona", testo:"Classifiche settimanali per l'andamento, mensili per il Socio del Mese, annuali per il Socio dell'Anno."},
+  {cat:"🎮 Come funziona", testo:"La classifica del Socio del Mese si apre ogni primo lunedì del mese."},
+  {cat:"🎮 Come funziona", testo:"Un nuovo socio che si aggiunge durante il mese inizierà a giocare dal mese successivo."},
+  {cat:"🎮 Come funziona", testo:"Se non si è d'accordo su una regola o si vuole aggiungerne una nuova, si può indire una votazione: se si raggiunge la maggioranza, verrà cambiata o aggiunta."},
+  // BONUS
+  {cat:"✅ Bonus", testo:"Presenza in sede, evento o riunione → +50 pt"},
+  {cat:"✅ Bonus", testo:"Delegato/a per un giorno per un'iniziativa CFP → +30 pt"},
+  {cat:"✅ Bonus", testo:"Post sui social di spontanea volontà → +10 pt"},
+  {cat:"✅ Bonus", testo:"Condividi un'esperienza, ricordo o contenuto utile sul gruppo condivisioni → +10 pt"},
+  {cat:"✅ Bonus", testo:"Condividi un evento o post/link sul gruppo condivisioni → +5 pt"},
+  {cat:"✅ Bonus", testo:"Porti qualcuno che si iscrive all'associazione → +100 pt"},
+  {cat:"✅ Bonus", testo:"Porti una persona a partecipare a una singola attività → +25 pt"},
+  {cat:"✅ Bonus", testo:"Ricordi un compleanno o fai un complimento sincero → +10 pt"},
+  {cat:"✅ Bonus", testo:"Offri un passaggio per un'attività dell'associazione → +20 pt"},
+  {cat:"✅ Bonus", testo:"Gestisci bene una situazione trovando una soluzione rapida → +30 pt"},
+  {cat:"✅ Bonus", testo:"Hai pulito o allestito la sede → +50 pt"},
+  {cat:"✅ Bonus", testo:"Arrivato in orario (tolleranza 10 minuti) → +10 pt"},
+  {cat:"✅ Bonus", testo:"Articolo per il blog → +50 pt"},
+  {cat:"✅ Bonus", testo:"Audio per il podcast → +50 pt"},
+  {cat:"✅ Bonus", testo:"Donazione: ogni 1€ donato = +1 pt"},
+  {cat:"✅ Bonus", testo:"Hai destinato il 5x1000 all'associazione → +50 pt (bonus una tantum)"},
+  // MALUS
+  {cat:"❌ Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt"},
+  {cat:"❌ Malus", testo:"Leggi un messaggio e non rispondi per ore → -20 pt"},
+  {cat:"❌ Malus", testo:"Arrivi in ritardo (tolleranza 10 minuti) → -1 pt per ogni minuto"},
+  {cat:"❌ Malus", testo:"Domanda la cui risposta era già in un messaggio precedente → -10 pt"},
+  {cat:"❌ Malus", testo:"Citi il FantaSocio direttamente o indirettamente → -10 pt"},
+  {cat:"❌ Malus", testo:"Lamentarsi senza proporre una soluzione → -15 pt"},
+  {cat:"❌ Malus", testo:"Presente ma al telefono continuamente → -20 pt"},
+  {cat:"❌ Malus", testo:"Intasi la chat con messaggi per una sola persona → -5 pt a messaggio"},
+  {cat:"❌ Malus", testo:"Parolacce offensive → -15 pt · Bestemmie → -25 pt"},
+  // PREMI
+  {cat:"🏆 Premi", testo:"Socio del Mese: chi ottiene più punti nel mese vince il diritto di scegliere l'attività ludica del mese successivo (film, ristorante, ecc.)."},
+  {cat:"🏆 Premi", testo:"Socio dell'Anno: chi totalizza più punti nell'anno solare."},
+  {cat:"🏆 Premi", testo:"La mission non è la competizione in sé, ma la crescita individuale e collettiva attraverso collaborazione e coesione. 💜"},
+  // CLASSIFICHE
+  {cat:"📅 Classifiche", testo:"I progressi annuali sono archiviati su file Excel gestito da Angelo Greco, presidente CFP."},
+  {cat:"📅 Classifiche", testo:"In casi particolari si realizzerà un sondaggio per assegnare punti extra o modificare una regola."},
 ];
 
 function renderRegolamento(){
@@ -1341,6 +1387,76 @@ function renderCerca(){
         </div>
       </div>`;
     }).join("")}`;
+}
+
+// ── STORICO SCUDERIE (per Bacheca) ───────────────────────────
+const STORICO_SQUADRE_CICLO = [
+  {ciclo:1, mesi:"Mar-Mag 2026", squadre:[
+    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Antonella","Giovanni","Giorgia","Rosa","Danilo","Frizzo","Marco L."]},
+    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Valentina","Luigi","Jessica","Lorenzo","F. Giardina","Martina"]},
+    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Mirella","F. Pio","Annarosa","Monica","Ivan","Arianna","Greta"]},
+  ]},
+  {ciclo:2, mesi:"Giu-Ago 2026", squadre:[
+    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Lorenzo","Antonella","Martina","F. Giardina","Ivan","Monica"]},
+    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Luigi","Valentina","F. Pio","Frizzo","Jessica","Greta","Annarosa"]},
+    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Arianna","Rosa","Mirella","Danilo","Maria","Giorgia","Giovanni"]},
+  ]},
+];
+
+
+// ── TUTORIAL ────────────────────────────────────────────────
+// Per mostrare il video: carica il file su YouTube o Google Drive
+// e incolla il link embed qui sotto (sostituisci VIDEO_ID)
+const TUTORIAL_VIDEO_URL = "https://www.youtube.com/embed/SmFlxIyacb8";
+
+function renderTutorial(){
+  return`
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;background:linear-gradient(90deg,#fbbf24,#f472b6,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
+        🎬 COME SI GIOCA
+      </div>
+      <div style="font-size:13px;opacity:.5;margin-top:4px">Guarda il tutorial completo del FantaSocio</div>
+    </div>
+
+    ${TUTORIAL_VIDEO_URL ? `
+    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;margin-bottom:20px">
+      <iframe src="${TUTORIAL_VIDEO_URL}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px" allowfullscreen></iframe>
+    </div>` : `
+    <div style="background:rgba(129,140,248,.08);border:2px dashed rgba(129,140,248,.3);border-radius:20px;padding:40px 20px;text-align:center;margin-bottom:20px">
+      <div style="font-size:48px;margin-bottom:12px">🎬</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:8px;color:#818cf8">VIDEO IN ARRIVO</div>
+      <div style="font-size:13px;opacity:.6;line-height:1.7">
+        Per attivare il video tutorial:<br>
+        1. Carica <strong>FantaSocio_Tutorial.mp4</strong> su YouTube o Google Drive<br>
+        2. Copia il link embed<br>
+        3. Incollalo nella variabile <strong>TUTORIAL_VIDEO_URL</strong> nel codice
+      </div>
+    </div>`}
+
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#818cf8;margin-bottom:12px">📋 GUIDA RAPIDA</div>
+
+    ${[
+      {emoji:"🏆",titolo:"Classifica",      desc:"Vedi i punteggi totali di tutti i soci. Clicca su un nome per aprire il profilo personale con andamento e trofei."},
+      {emoji:"📅",titolo:"Mesi",            desc:"Guarda la classifica mese per mese. Usa i pulsanti per navigare tra i mesi e scopri chi ha vinto il Socio del Mese."},
+      {emoji:"📊",titolo:"Grafici",         desc:"Visualizza l'andamento nel tempo dei top 5 soci e la distribuzione dei punteggi."},
+      {emoji:"🎯",titolo:"Missioni",        desc:"Sfide mensili con punti bonus. Completa le missioni per guadagnare punti extra oltre ai bonus standard."},
+      {emoji:"🏅",titolo:"Bacheca",         desc:"L'Albo d'Oro con i vincitori di ogni mese, i titoli speciali, i trofei e lo storico delle scuderie."},
+      {emoji:"📜",titolo:"Regolamento",     desc:"Tutte le regole del FantaSocio: bonus, malus, premi e come funziona il gioco."},
+      {emoji:"🔍",titolo:"Cerca",           desc:"Trova rapidamente un socio cercando per nome. Clicca sul risultato per vedere il suo profilo."},
+      {emoji:"➕",titolo:"Assegna (admin)", desc:"Solo per l'admin. Seleziona un socio, scegli l'azione (bonus o malus) e conferma. I punti vanno al mese corrente."},
+    ].map(g=>`
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start">
+        <div style="font-size:26px;flex-shrink:0">${g.emoji}</div>
+        <div>
+          <div style="font-weight:800;font-size:14px;margin-bottom:4px">${g.titolo}</div>
+          <div style="font-size:12px;opacity:.65;line-height:1.6">${g.desc}</div>
+        </div>
+      </div>`).join("")}
+
+    <div style="background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.06));border:1px solid rgba(251,191,36,.2);border-radius:16px;padding:16px;margin-top:16px;text-align:center;font-size:13px;line-height:1.8">
+      💡 <strong>Per entrare come Admin:</strong> fai triplo click sul titolo <strong>"FANTA SOCIO"</strong><br>
+      inserisci la password e gestisci i punti dal tab ➕ Assegna
+    </div>`;
 }
 
 // ═══════════════════════════════════════════════════════════

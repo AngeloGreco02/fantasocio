@@ -460,7 +460,7 @@ function logout(){
 //  TABS
 // ═══════════════════════════════════════════════════════════
 function getTabs(){
-  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🎯 Missioni","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
+  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
   if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
   return t;
 }
@@ -503,7 +503,6 @@ function renderTab(){
   if(label.includes("Classifica"))el.innerHTML=renderClassifica();
   else if(label.includes("Mesi"))el.innerHTML=renderMesi();
   else if(label.includes("Grafici")){el.innerHTML=renderGrafici();initGrafici();}
-  else if(label.includes("Missioni"))el.innerHTML=renderMissioni();
   else if(label.includes("Bacheca"))el.innerHTML=renderBacheca();
   else if(label.includes("Regolamento")){el.innerHTML=renderRegolamento();initRegolamento();}
   else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();

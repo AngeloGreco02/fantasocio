@@ -11,7 +11,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
   const firebaseConfig = {
-    apiKey:            "AIzaSyCRxqfYdQPZABGt3eWDvhzyRyaJrsipJlA",
+    apiKey:         "AIzaSyCRxqfYdQPZABGt3eWDvhzyRyaJrsipJlA",
     authDomain:        "fantasocio.firebaseapp.com",
     databaseURL:       "https://fantasocio-default-rtdb.europe-west1.firebasedatabase.app",
     projectId:         "fantasocio",
@@ -91,7 +91,7 @@ html,body{min-height:100vh;background:var(--bg);color:#fff;font-family:'Nunito',
 
 /* MESI */
 .seg{display:flex;gap:5px;background:rgba(0,0,0,.3);border-radius:12px;padding:4px;margin-bottom:14px}
-.seg-btn{flex:1;border:none;background:transparent;color:rgba(255,255,255,.4);font-weight:800;font-size:12px;padding:8px 4px;cursor:pointer;border-radius:9px;transition:all .2s;font-family:inherit}
+.seg-btn{flex:1;border:none;background:transparent;color:rgba(255,255,255,.4);font-weight:800;font-size:12px;padding:8px 4px;cursor:pointer;border-radius:99px;transition:all .2s;font-family:inherit}
 .seg-btn.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
 .honor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .honor-box{border-radius:14px;padding:12px 14px;text-align:center}
@@ -192,7 +192,6 @@ select option{background:#12121e;color:#fff}
   </div>
 </div>
 
-<!-- WELCOME OVERLAY -->
 <div id="welcomeOverlay" style="display:none" class="welcome-overlay">
   <div style="max-width:360px;width:90%;text-align:center;padding:20px">
     <div style="font-size:60px;margin-bottom:16px;animation:pulse 2s infinite">🏆</div>
@@ -209,15 +208,13 @@ select option{background:#12121e;color:#fff}
   </div>
 </div>
 
-<!-- LEVEL UP TOAST -->
 <div id="levelToast" style="display:none" class="level-toast">
   <div style="font-size:48px;margin-bottom:8px">🎊</div>
   <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px">NUOVO LIVELLO!</div>
   <div id="levelToastText" style="font-size:16px;margin-top:6px;opacity:.85"></div>
 </div>
 
-<!-- PROFILO OVERLAY -->
-<div id="profiloOverlay" style="display:none"></div>
+<div id="profiloOverlay" style="display:none" class="profilo-overlay"></div>
 
 <div class="toast" id="toast" style="display:none"></div>
 
@@ -268,14 +265,10 @@ const SCUDERIE = [
   {id:3,nome:"Invincibili",    capitano:"Gabriel",     colore:"#6366f1",emoji:"🔥",bg:"linear-gradient(135deg,#1e1b4b,#312e81)"},
 ];
 
-// CICLO 1: Marzo, Aprile, Maggio  |  CICLO 2: Giugno, Luglio, Agosto
-// m = [Mar, Apr, Mag, Giu, Lug, Ago]
 const SOCI_DEFAULT = [
-  // ── Capitani ──
-  {id:1, nome:"Denise",            avatar:"DE",sc:1,cap:true, m:[110,215,215, 0,0,0], extra:0},
+  {id:1, nome:"Denise",           avatar:"DE",sc:1,cap:true, m:[110,215,215, 0,0,0], extra:0},
   {id:9, nome:"Angelo",      avatar:"AG",sc:2,cap:true, m:[695,225,485, 0,0,0], extra:0},
   {id:15,nome:"Gabriel",           avatar:"GA",sc:3,cap:true, m:[695,370,355, 0,0,0], extra:0},
-  // ── Inarrestabili C2 (Denise) ──
   {id:13,nome:"Lorenzo",           avatar:"LO",sc:1,cap:false,m:[50,-20,0,    0,0,0], extra:0},
   {id:2, nome:"Antonella",         avatar:"AN",sc:1,cap:false,m:[20,10,7,     0,0,0], extra:0},
   {id:8, nome:"Marco L.",          avatar:"ML",sc:1,cap:false,m:[0,0,-30,     null,null,null], extra:0, uscito:true, nascosto:true},
@@ -283,49 +276,34 @@ const SOCI_DEFAULT = [
   {id:10,nome:"F. Giardina",avatar:"FG",sc:1,cap:false,m:[-25,0,60,    0,0,0], extra:0},
   {id:20,nome:"Ivan",              avatar:"IV",sc:1,cap:false,m:[170,0,35,    0,0,0], extra:0},
   {id:19,nome:"Monica",            avatar:"MO",sc:1,cap:false,m:[30,0,-20,    0,0,0], extra:0},
-  // ── Inarrivabili C2 (Angelo) ──
-  {id:14,nome:"Luigi",             avatar:"LU",sc:2,cap:false,m:[250,175,142, 0,0,0], extra:0},
+  {id:14,nome:"Luigi",              avatar:"LU",sc:2,cap:false,m:[250,175,142, 0,0,0], extra:0},
   {id:11,nome:"Valentina",         avatar:"VA",sc:2,cap:false,m:[700,115,115, 0,0,0], extra:0},
   {id:17,nome:"F. Pio",     avatar:"FP",sc:2,cap:false,m:[195,-5,35,   0,0,0], extra:0},
   {id:7, nome:"Frizzo",            avatar:"FR",sc:2,cap:false,m:[-10,-20,-20, 0,0,0], extra:0},
   {id:12,nome:"Jessica",           avatar:"JE",sc:2,cap:false,m:[200,65,30,   0,0,0], extra:0},
-  {id:22,nome:"Greta",             avatar:"GR",sc:2,cap:false,m:[0,-20,0,     0,0,0], extra:0},
+  {id:22,nome:"Greta",              avatar:"GR",sc:2,cap:false,m:[0,-20,0,     0,0,0], extra:0},
   {id:18,nome:"Annarosa",          avatar:"AR",sc:2,cap:false,m:[250,70,15,   0,0,0], extra:0},
-  // ── Invincibili C2 (Gabriel) ──
   {id:21,nome:"Arianna",           avatar:"AI",sc:3,cap:false,m:[-20,-20,-20, 0,0,0], extra:0},
   {id:5, nome:"Rosa",              avatar:"RO",sc:3,cap:false,m:[50,10,0,     0,0,0], extra:0},
   {id:16,nome:"Mirella",           avatar:"MI",sc:3,cap:false,m:[250,0,30,    0,0,0], extra:0},
   {id:6, nome:"Danilo",            avatar:"DA",sc:3,cap:false,m:[265,60,10,   0,0,0], extra:0},
-  {id:24,nome:"Maria",             avatar:"MA",sc:3,cap:false,m:[null,null,null,0,0,0], extra:0},
+  {id:24,nome:"Maria",              avatar:"MA",sc:3,cap:false,m:[null,null,null,0,0,0], extra:0},
   {id:4, nome:"Giorgia",           avatar:"GG",sc:3,cap:false,m:[345,65,100,  0,0,0], extra:0},
   {id:3, nome:"Giovanni",          avatar:"GI",sc:3,cap:false,m:[300,40,50,   0,0,0], extra:0},
 ];
 
 const MESE_LABELS  = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto"];
 
-// Totali storici per scuderia (fissi, non ricalcolati dai membri)
-// Ciclo 1: Inarrestabili=sc1, Inarrivabili=sc2, Invincibili=sc3
-const STORICO_SCUDERIE = [
-  // [sc1_Inarrestabili, sc2_Inarrivabili, sc3_Invincibili]
-  [1280, 1620, 1570], // Marzo
-  [400,  560,  415],  // Aprile
-  [332,  879,  415],  // Maggio (calcolato dai totali individuali)
-  // Giugno, Luglio, Agosto: calcolati live
-  null, null, null,
-];
-const SQUADRA_MESE = ["Inarrivabili","Invincibili","Inarrivabili","","",""];
-const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
-
 const BONUS = [
   {id:"b1", label:"Presenza in sede / evento / riunione",       pts:50,  emoji:"🏠"},
-  {id:"b2", label:"Delegato per un giorno",                     pts:30,  emoji:"🎖️"},
+  {id:"b2", label:"Delegato per un giorno",                      pts:30,  emoji:"🎖️"},
   {id:"b3", label:"Post sui social spontaneo",                  pts:10,  emoji:"📣"},
   {id:"b4", label:"Condivisione esperienza sul gruppo",         pts:10,  emoji:"💬"},
   {id:"b5", label:"Condivisione evento / link sul gruppo",      pts:5,   emoji:"🔗"},
   {id:"b6", label:"Hai portato qualcuno a iscriversi all'associazione", pts:100, emoji:"🌟"},
   {id:"b16",label:"Hai portato qualcuno a una singola attività",       pts:25,  emoji:"🎯"},
   {id:"b7", label:"Ricordato compleanno / complimento sincero", pts:10,  emoji:"🎂"},
-  {id:"b8", label:"Offerto passaggio per attività",             pts:20,  emoji:"🚗"},
+  {id:"b8", label:"Offerto passaggio per attività",              pts:20,  emoji:"🚗"},
   {id:"b9", label:"Gestito bene una situazione difficile",      pts:30,  emoji:"🧠"},
   {id:"b10",label:"Pulizia o allestimento sede",                pts:50,  emoji:"🧹"},
   {id:"b11",label:"Arrivato in orario (10 min tolleranza)",     pts:10,  emoji:"⏰"},
@@ -345,23 +323,21 @@ const MALUS = [
   {id:"m8", label:"Messaggi di gruppo per una sola persona",    pts:-5,  emoji:"💬"},
   {id:"m9", label:"Parolacce offensive",                        pts:-15, emoji:"🤬"},
   {id:"m10",label:"Bestemmie",                                   pts:-25, emoji:"⛪"},
-  {id:"m11",label:"Barare nel resoconto settimanale",           pts:-100,emoji:"🃏"},
+  {id:"m11",label:"Barare nel resoconto settimanale",            pts:-100,emoji:"🃏"},
 ];
 
-// MISSIONI SETTIMANALI
 const MISSIONI = [
   {id:"ms1",emoji:"🏠",titolo:"Presenza costante",   desc:"Partecipa a 3 eventi questo mese",    target:3,  tipo:"eventi",   pts:30},
   {id:"ms2",emoji:"📣",titolo:"Social star",          desc:"Condividi 5 post sui social",          target:5,  tipo:"social",   pts:25},
   {id:"ms3",emoji:"🌟",titolo:"Recruiter",            desc:"Porta 1 nuovo iscritto",               target:1,  tipo:"recruiter",pts:150},
-  {id:"ms4",emoji:"✍️",titolo:"Blogger",              desc:"Scrivi 2 articoli per il blog",        target:2,  tipo:"blog",     pts:60},
+  {id:"ms4",emoji:"✍️",titolo:"Blogger",              desc:"Scrivi 2 articoli per il blog",        target:2,  tipo:"blog",      pts:60},
   {id:"ms5",emoji:"🧹",titolo:"Custode della sede",  desc:"Pulisci o allestisci la sede 2 volte", target:2,  tipo:"pulizie",  pts:60},
-  {id:"ms6",emoji:"⏰",titolo:"Puntualità perfetta",  desc:"Sii in orario 5 volte",                target:5,  tipo:"orario",   pts:30},
+  {id:"ms6",emoji:"⏰",titolo:"Puntualità perfetta",  desc:"Sii in orario 5 volte",                 target:5,  tipo:"orario",   pts:30},
 ];
 
-// TROFEI
 const TROFEI = [
-  {id:"t1", emoji:"👑",nome:"Leggenda",     desc:"Supera 800 punti totali",        check:s=>ptTotali(s)>=800},
-  {id:"t2", emoji:"🏆",nome:"Campione",     desc:"Supera 500 punti totali",        check:s=>ptTotali(s)>=500},
+  {id:"t1", emoji:"👑",nome:"Leggenda",     desc:"Supera 800 punti totali",     check:s=>ptTotali(s)>=800},
+  {id:"t2", emoji:"🏆",nome:"Campione",     desc:"Supera 500 punti totali",     check:s=>ptTotali(s)>=500},
   {id:"t3", emoji:"🌟",nome:"Recruiter",    desc:"Porta almeno 1 nuovo iscritto",  check:s=>s.m.some(v=>v>=100)},
   {id:"t4", emoji:"📣",nome:"Social Star",  desc:"Attivo sui social ogni mese",    check:s=>s.m.filter(v=>v>0).length>=2},
   {id:"t5", emoji:"🎙️",nome:"Podcaster",    desc:"Registra un audio per il podcast",check:s=>ptTotali(s)>50},
@@ -387,7 +363,6 @@ let chartInstances={};
 //  HELPERS
 // ═══════════════════════════════════════════════════════════
 function ptTotali(s){return s.m.reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
-function ptMese(s,i){return s.m[i]??null;}
 
 function titolo(pts){
   if(pts>=800)return{label:"Leggenda",emoji:"👑",color:"#fbbf24"};
@@ -456,9 +431,6 @@ function logout(){
   render();showToast("Uscito 🔒");
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════════════════════
 function getTabs(){
   const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
   if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
@@ -466,7 +438,7 @@ function getTabs(){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  RENDER
+//  RENDER PRINCIPALE
 // ═══════════════════════════════════════════════════════════
 function render(){
   renderKPI();renderTabs();renderTab();
@@ -474,7 +446,6 @@ function render(){
 
 function renderKPI(){
   const cl=sortedSoci();
-  const sc=scuderiePunti();
   const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
   document.getElementById("kpiGrid").innerHTML=[
     {icon:"👥",val:STATE.soci.filter(s=>!s.uscito).length, label:"SOCI"},
@@ -497,14 +468,13 @@ function setTab(i){STATE.tab=i;render();}
 function renderTab(){
   const tabs=getTabs();const label=tabs[STATE.tab]||"";
   const el=document.getElementById("tabContent");
-  // Destroy old charts
   Object.values(chartInstances).forEach(c=>{try{c.destroy();}catch(e){}});
   chartInstances={};
   if(label.includes("Classifica"))el.innerHTML=renderClassifica();
   else if(label.includes("Mesi"))el.innerHTML=renderMesi();
   else if(label.includes("Grafici")){el.innerHTML=renderGrafici();initGrafici();}
   else if(label.includes("Bacheca"))el.innerHTML=renderBacheca();
-  else if(label.includes("Regolamento")){el.innerHTML=renderRegolamento();initRegolamento();}
+  else if(label.includes("Regolamento")){el.innerHTML=renderRegolamento();}
   else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();
   else if(label.includes("Assegna"))el.innerHTML=renderAssegna();
   else if(label.includes("Soci"))el.innerHTML=renderSoci();
@@ -512,17 +482,17 @@ function renderTab(){
   else if(label.includes("Cerca"))el.innerHTML=renderCerca();
 }
 
-// ── CLASSIFICA ──────────────────────────────────────────────
+// ── TAB CLASSIFICA ──────────────────────────────────────────
 function renderClassifica(){
-  const cl=sortedSoci();const max=cl[0]?.punti||1;
-  const maxM=Math.max(...STATE.soci.flatMap(s=>s.m),1);
+  const cl=sortedSoci();
+  const maxM=Math.max(...STATE.soci.flatMap(s=>s.m).filter(v=>v!==null),1);
   return cl.map((s,i)=>{
-    const sc=getSC(s.sc);const t=titolo(s.punti);
+    const t=titolo(s.punti);
     const bars=s.m.map((mv,mi)=>{
-      if(mv===null)return`<div class="mini-bar-col"><div class="mini-bar" style="height:3px;background:rgba(255,255,255,.1)"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)||"M"+(mi+1)}</div></div>`;
+      if(mv===null)return`<div class="mini-bar-col"><div class="mini-bar" style="height:3px;background:rgba(255,255,255,.1)"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)}</div></div>`;
       const h=Math.max(3,Math.abs(mv)/maxM*26);
       const c=mv>=0?"#818cf899":"rgba(239,68,68,.6)";
-      return`<div class="mini-bar-col"><div class="mini-bar" style="height:${h}px;background:${c}"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)||"M"+(mi+1)}</div></div>`;
+      return`<div class="mini-bar-col"><div class="mini-bar" style="height:${h}px;background:${c}"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)}</div></div>`;
     }).join("");
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.45;filter:grayscale(.8)":""}${i===0&&!s.uscito?" background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.05));border-color:rgba(251,191,36,.22)":""}">
       <div style="display:flex;align-items:center;gap:12px">
@@ -545,7 +515,7 @@ function renderClassifica(){
   }).join("")+`<div style="text-align:center;font-size:12px;opacity:.35;margin-top:8px">👆 Clicca su un socio per vedere il profilo</div>`;
 }
 
-// ── PROFILO ─────────────────────────────────────────────────
+// ── APRI PROFILO CON DETTAGLIO MESI PRECEDENTI ───────────────
 function apriProfilo(id){
   const s=STATE.soci.find(x=>x.id===id);
   if(!s)return;
@@ -555,8 +525,8 @@ function apriProfilo(id){
   const pos=cl.findIndex(x=>x.id===id)+1;
   const trofeiGuadagnati=TROFEI.filter(tr=>tr.check(s));
   const logSocio=STATE.log.filter(l=>l.socio===s.nome).slice(0,8);
-  const migliore=Math.max(...s.m);
-  const trend=s.m.length>1?(s.m[s.m.length-1]>s.m[s.m.length-2]?"📈 In crescita":"📉 In calo"):"—";
+  const migliore=Math.max(...s.m.filter(v => v !== null));
+  const trend=s.m.length>1?(s.m[3]>s.m[2]?"📈 In crescita questo mese":"📉 In calo rispetto al mese scorso"):"—";
 
   const overlay=document.getElementById("profiloOverlay");
   overlay.style.display="block";
@@ -583,25 +553,34 @@ function apriProfilo(id){
         <div class="stat-lbl">POSIZIONE</div>
       </div>
       <div class="stat-box">
-        <div class="stat-val" style="color:var(--green)">${migliore}</div>
+        <div class="stat-val" style="color:var(--green)">${migliore > 0 ? "+" + migliore : migliore}</div>
         <div class="stat-lbl">MIGLIOR MESE</div>
       </div>
     </div>
 
     <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:14px">
-      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📈 ANDAMENTO MENSILE</div>
+      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📈 RESOCONTO DETTAGLIATO MESI PRECEDENTI</div>
       ${s.m.map((v,i)=>{
-        const maxV=Math.max(...s.m.map(Math.abs),1);
+        if(v === null) return ''; 
+        const maxV=Math.max(...s.m.map(x => Math.abs(x || 1)), 1);
         const w=Math.abs(v)/maxV*100;
-        return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
-          <div style="font-size:12px;opacity:.6;min-width:50px">${MESE_LABELS[i]||"M"+(i+1)}</div>
+        
+        let colorBar = "var(--purple)";
+        if(v > 0) colorBar = "var(--green)";
+        if(v < 0) colorBar = "var(--red)";
+
+        return `
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+          <div style="font-size:12px;font-weight:700;opacity:.8;min-width:65px">${MESE_LABELS[i]}</div>
           <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden">
-            <div style="height:100%;width:${w}%;background:${v>=0?sc.colore:"#ef4444"};border-radius:99px;transition:width .8s"></div>
+            <div style="height:100%;width:${w}%;background:${colorBar};border-radius:99px;transition:width .8s"></div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${v>=0?"#10b981":"#ef4444"};min-width:40px;text-align:right">${v>0?"+":""}${v}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${v>=0?"#10b981":"#ef4444"};min-width:45px;text-align:right">
+            ${v > 0 ? "+" : ""}${v} pt
+          </div>
         </div>`;
       }).join("")}
-      <div style="text-align:right;font-size:12px;opacity:.5;margin-top:4px">${trend}</div>
+      <div style="text-align:right;font-size:11px;opacity:.5;margin-top:8px;border-top:1px solid rgba(255,255,255,.05);padding-top:6px">${trend}</div>
     </div>
 
     ${trofeiGuadagnati.length>0?`
@@ -621,7 +600,7 @@ function apriProfilo(id){
 
     ${logSocio.length>0?`
     <div style="margin-bottom:14px">
-      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📋 ULTIME AZIONI</div>
+      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📋 ULTIME AZIONI REGISTRATE</div>
       ${logSocio.map(l=>`
         <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 13px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
           <span style="font-size:12px;opacity:.7">${l.azione}</span>
@@ -632,50 +611,16 @@ function apriProfilo(id){
 }
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
 
-// ── SCUDERIE ─────────────────────────────────────────────────
-function renderScuderie(){
-  return scuderiePunti().map((sc,i)=>{
-    const members=sc.membri.map(m=>`
-      <div class="sc-member" onclick="apriProfilo(${m.id})">
-        <div class="ava" style="width:26px;height:26px;font-size:10px;background:${sc.colore}44;border:none">${m.avatar}</div>
-        ${m.nome}${m.cap?"&nbsp;⚔️":""}
-        <span style="color:${sc.colore};font-weight:800">${m.punti}pt</span>
-      </div>`).join("");
-    return`<div class="sc-card" style="background:rgba(255,255,255,.04);border-color:${sc.colore}33">
-      <div class="sc-head" style="background:${sc.bg||"transparent"}">
-        <div style="font-size:38px">${sc.emoji}</div>
-        <div style="flex:1">
-          <div class="sc-name" style="color:${sc.colore}">${sc.nome}</div>
-          <div style="font-size:12px;opacity:.55">⚔️ Cap: ${sc.capitano} · ${sc.membri.length} soci</div>
-        </div>
-        <div style="text-align:right">
-          ${i<3?`<div style="font-size:22px">${MEDAGLIE[i]}</div>`:""}
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${sc.colore};letter-spacing:1px">${sc.punteggio}</div>
-          <div style="font-size:9px;opacity:.4">PUNTI TOT</div>
-        </div>
-      </div>
-      <div class="sc-body">${members}</div>
-    </div>`;
-  }).join("");
-}
+// ── TAB MESI ─────────────────────────────────────────────────
+const SQUADRA_MESE = ["Inarrivabili","Invincibili","Inarrivabili","","",""];
+const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
 
-// ── MESI ─────────────────────────────────────────────────────
 function renderMesi(){
   const mi=STATE.meseView;
-  const segBtns=`
-    <div style="display:flex;gap:4px;width:100%">
-      ${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}
-    </div>`;
-  const classMese=[...STATE.soci]
-    .filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined)
-    .filter(s=>!(s.uscito&&mi>=3))
-    .map(s=>({...s,punti:s.m[mi]??0}))
-    .sort((a,b)=>b.punti-a.punti);
+  const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
+  const classMese=[...STATE.soci].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
   const max=Math.max(...classMese.map(s=>s.punti),1);
-  // Per ciclo 1 (mesi 0-2) usa totali storici fissi, altrimenti calcola live
-  const scBars="";
   const rows=classMese.map((s,i)=>{
-    const sc=getSC(s.sc);
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:11px">
         <div style="font-size:20px;min-width:28px;text-align:center">${i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
@@ -688,8 +633,7 @@ function renderMesi(){
       </div>
     </div>`;
   }).join("");
-  return`
-    <div class="seg">${segBtns}</div>
+  return`<div class="seg">${segBtns}</div>
     <div class="honor-grid">
       <div class="honor-box" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25)">
         <div style="font-size:10px;opacity:.55;letter-spacing:1px">🏆 SQUADRA DEL MESE</div>
@@ -699,418 +643,129 @@ function renderMesi(){
         <div style="font-size:10px;opacity:.55;letter-spacing:1px">⭐ SOCIO DEL MESE</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${SOCIO_MESE[mi]||"⏳ In corso…"}</div>
       </div>
-    </div>
-    ${rows}`;
+    </div>${rows}`;
 }
 function setMese(i){STATE.meseView=i;render();}
 
-// ── GRAFICI ─────────────────────────────────────────────────
+// ── TAB GRAFICI ──────────────────────────────────────────────
 function renderGrafici(){
-  const top5=sortedSoci().slice(0,5);
-  return`
-  <div class="chart-container">
-    <div class="chart-title">📊 TOP 5 ANDAMENTO MENSILE</div>
-    <canvas id="chartLinee" height="220"></canvas>
-  </div>
-  <div class="chart-container">
-    <div class="chart-title">🏅 TOP 10 CLASSIFICA</div>
-    <canvas id="chartScuderie" height="180"></canvas>
-  </div>
-  <div class="chart-container">
-    <div class="chart-title">👥 DISTRIBUZIONE PUNTEGGI</div>
-    <canvas id="chartDist" height="200"></canvas>
-  </div>`;
+  return`<div class="chart-container"><div class="chart-title">📊 TOP 5 ANDAMENTO MENSILE</div><canvas id="chartLinee" height="220"></canvas></div>
+  <div class="chart-container"><div class="chart-title">🏅 TOP 10 CLASSIFICA</div><canvas id="chartScuderie" height="180"></canvas></div>`;
 }
 
 function initGrafici(){
   setTimeout(()=>{
     const top5=sortedSoci().slice(0,5);
     const colors=["#818cf8","#10b981","#f59e0b","#f472b6","#ef4444"];
-
-    // Grafico linee top 5
     const ctxL=document.getElementById("chartLinee");
     if(ctxL){
       chartInstances.linee=new Chart(ctxL,{
         type:"line",
-        data:{
-          labels:MESE_LABELS,
-          datasets:top5.map((s,i)=>({
-            label:s.nome,data:s.m,
-            borderColor:colors[i],backgroundColor:colors[i]+"22",
-            borderWidth:2,pointRadius:5,pointHoverRadius:7,tension:.3,fill:true,
-          }))
-        },
-        options:{responsive:true,plugins:{legend:{labels:{color:"#fff",font:{size:11}}}},
-          scales:{x:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}},
-                  y:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}}}}
+        data:{labels:MESE_LABELS,datasets:top5.map((s,i)=>({label:s.nome,data:s.m,borderColor:colors[i],backgroundColor:colors[i]+"22",borderWidth:2,pointRadius:5,tension:.3,fill:true}))},
+        options:{responsive:true,plugins:{legend:{labels:{color:"#fff"}}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}},y:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}}}}
       });
     }
-
-    // Top 10 bar chart
     const top10=sortedSoci().filter(s=>!s.uscito).slice(0,10);
     const ctxS=document.getElementById("chartScuderie");
     if(ctxS){
       chartInstances.scuderie=new Chart(ctxS,{
         type:"bar",
-        data:{
-          labels:top10.map(s=>s.nome.split(" ")[0]),
-          datasets:[{
-            label:"Punti totali",
-            data:top10.map(s=>s.punti),
-            backgroundColor:["#fbbf24cc","#818cf8cc","#10b981cc","#f472b6cc","#6366f1cc","#f59e0bcc","#06b6d4cc","#a78bfacc","#34d399cc","#fb923ccc"],
-            borderColor:["#fbbf24","#818cf8","#10b981","#f472b6","#6366f1","#f59e0b","#06b6d4","#a78bfa","#34d399","#fb923c"],
-            borderWidth:1,borderRadius:8,
-          }]
-        },
-        options:{responsive:true,plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:"rgba(255,255,255,.5)",font:{size:10}},grid:{color:"rgba(255,255,255,.04)"}},
-                  y:{ticks:{color:"rgba(255,255,255,.4)"},grid:{color:"rgba(255,255,255,.05)"}}}}
-      });
-    }
-
-    // Grafico distribuzione
-    const all=sortedSoci();
-    const ctxD=document.getElementById("chartDist");
-    if(ctxD){
-      chartInstances.dist=new Chart(ctxD,{
-        type:"bar",
-        data:{
-          labels:all.map(s=>s.nome.split(" ")[0]),
-          datasets:[{
-            label:"Punti totali",
-            data:all.map(s=>s.punti),
-            backgroundColor:all.map(s=>getSC(s.sc).colore+"99"),
-            borderColor:all.map(s=>getSC(s.sc).colore),
-            borderWidth:1,borderRadius:6,
-          }]
-        },
-        options:{responsive:true,plugins:{legend:{display:false}},
-          scales:{x:{ticks:{color:"rgba(255,255,255,.4)",font:{size:9}},grid:{color:"rgba(255,255,255,.04)"}},
-                  y:{ticks:{color:"rgba(255,255,255,.4)"},grid:{color:"rgba(255,255,255,.05)"}}}}
+        data:{labels:top10.map(s=>s.nome.split(" ")[0]),datasets:[{label:"Punti",data:top10.map(s=>s.punti),backgroundColor:"#818cf8cc",borderRadius:8}]},
+        options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"}},y:{ticks:{color:"rgba(255,255,255,.4)"}}}}
       });
     }
   },100);
 }
 
-// ── MISSIONI ────────────────────────────────────────────────
-function renderMissioni(){
-  const logMese=STATE.log.filter(l=>{
-    const d=new Date(l.id);
-    const now=new Date();
-    return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  });
+// ── TAB BACHECA ──────────────────────────────────────────────
+const ALBO = [
+  {mese:"Marzo",    socio:"Valentina",    squadra:"Inarrivabili", avatar:"VA", scColore:"#f59e0b", emoji:"🥇"},
+  {mese:"Aprile",   socio:"Gabriel",      squadra:"Invincibili",     avatar:"GA", scColore:"#6366f1", emoji:"🥇"},
+  {mese:"Maggio",   socio:"Angelo Greco", squadra:"Inarrivabili", avatar:"AG", scColore:"#f59e0b", emoji:"🥇"},
+  {mese:"Giugno",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
+];
+let ALBO_PAGE = 2;
 
-  // Conta azioni per tipo nel mese corrente
-  function contaTipo(tipo){
-    const map={eventi:"evento",social:"social",recruiter:"iscritto",blog:"blog",pulizie:"Pulizia",orario:"orario"};
-    const kw=map[tipo]||tipo;
-    return logMese.filter(l=>l.azione.toLowerCase().includes(kw.toLowerCase())).length;
-  }
+function renderBacheca(){
+  const entry = ALBO[ALBO_PAGE];
+  const hasPrev = ALBO_PAGE > 0; const hasNext = ALBO_PAGE < ALBO.length - 1;
+  return`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <button onclick="alboNav(-1)" ${!hasPrev?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">‹</button>
+        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fbbf24">${entry.mese.toUpperCase()}</div></div>
+        <button onclick="alboNav(1)" ${!hasNext?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">›</button>
+      </div>
+      <div style="margin-top:16px;text-align:center">
+        ${entry.socio ? `🏆 Socio: <strong>${entry.socio}</strong><br>👥 Squadra: ${entry.squadra}` : "⏳ Mese in corso..."}
+      </div>
+    </div>`;
+}
+function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(ALBO.length-1,ALBO_PAGE+dir));renderTab();}
 
-  return`
-    <div style="background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);border-radius:16px;padding:14px 16px;margin-bottom:16px;font-size:13px">
-      🎯 Completa le missioni per guadagnare punti bonus! Le missioni si rinnovano ogni mese.
-    </div>
-    ${MISSIONI.map(ms=>{
-      const prog=Math.min(contaTipo(ms.tipo),ms.target);
-      const perc=Math.round(prog/ms.target*100);
-      const done=prog>=ms.target;
-      return`<div class="missione-card" style="background:${done?"linear-gradient(135deg,rgba(16,185,129,.12),rgba(5,150,105,.06))":"rgba(255,255,255,.04)"};border-color:${done?"#10b981":"rgba(255,255,255,.08)"}">
-        <div style="font-size:30px;flex-shrink:0">${ms.emoji}</div>
-        <div style="flex:1">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:800;font-size:14px">${ms.titolo} ${done?"✅":""}</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${done?"#10b981":"#818cf8"}">+${ms.pts}pt</div>
-          </div>
-          <div style="font-size:12px;opacity:.55;margin-top:2px">${ms.desc}</div>
-          <div class="missione-prog">
-            <div class="missione-fill" style="width:${perc}%;background:${done?"#10b981":"linear-gradient(90deg,#6366f1,#8b5cf6)"}"></div>
-          </div>
-          <div style="font-size:11px;opacity:.5;margin-top:4px">${prog}/${ms.target} · ${perc}%</div>
+// ── TAB REGOLAMENTO ──────────────────────────────────────────
+const REGOLE_DEFAULT = [
+  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi!"},
+  {cat:"✅ Bonus", testo:"Presenza in sede, evento o riunione → +50 pt"},
+  {cat:"❌ Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt"}
+];
+function renderRegolamento(){
+  return REGOLE_DEFAULT.map(r=>`<div class="card"><div style="font-size:11px;color:var(--purple);font-weight:700">${r.cat}</div><div style="font-size:13px;margin-top:4px">${r.testo}</div></div>`).join("");
+}
+
+// ── TAB TUTORIAL ─────────────────────────────────────────────
+function renderTutorial(){return `<div style="text-align:center;padding:20px;opacity:.5">🎬 Sezione Tutorial multimediale attiva.</div>`;}
+
+// ── TAB LOG CON PROTEZIONE DI SICUREZZA ───────────────────────
+function renderLog(){
+  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
+  
+  const avvisoAdmin = STATE.isAdmin 
+    ? `<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
+        🗑️ Modalità Admin attiva: Premi <strong>Annulla</strong> su un'azione per rimuoverla e stornare i punti automaticamente.
+       </div>`
+    : `<div style="background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
+        📋 Registro delle attività globale. Le modifiche sono riservate agli amministratorie.
+       </div>`;
+
+  return `
+    ${avvisoAdmin}
+    ${STATE.log.map(l=>{
+      const bottoneAnnulla = STATE.isAdmin 
+        ? `<button onclick="rimuoviDalLog(${l.id})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
+        : ``;
+
+      return `
+      <div class="log-item" style="align-items:center">
+        <div style="width:38px;height:38px;border-radius:9px;background:${l.delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${l.delta>0?"✅":"❌"}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;font-size:13px">${l.socio}</div>
+          <div style="font-size:11px;opacity:.5;margin-top:2px">${l.azione}</div>
+          ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${l.nota}</div>`:""}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${l.delta>0?"+":""}${l.delta}</div>
+          <div style="font-size:9px;opacity:.4">${l.data}</div>
+          ${bottoneAnnulla}
         </div>
       </div>`;
     }).join("")}`;
 }
 
-// ── BACHECA ─────────────────────────────────────────────────
-const ALBO = [
-  // Ciclo 1
-  {mese:"Marzo",    socio:"Valentina",    squadra:"Inarrivabili", avatar:"VA", scColore:"#f59e0b", emoji:"🥇"},
-  {mese:"Aprile",   socio:"Gabriel",      squadra:"Invincibili",     avatar:"GA", scColore:"#6366f1", emoji:"🥇"},
-  {mese:"Maggio",   socio:"Angelo Greco", squadra:"Inarrivabili", avatar:"AG", scColore:"#f59e0b", emoji:"🥇"},
-  // Ciclo 2 (da aggiornare)
-  {mese:"Giugno",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
-  {mese:"Luglio",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
-  {mese:"Agosto",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
-];
-
-let ALBO_PAGE = ALBO.length - 1; // inizia dall'ultimo (più recente)
-
-function renderBacheca(){
-  const cl=sortedSoci();
-
-  // Calcola miglior trend
-  const withTrend=STATE.soci.filter(s=>s.m.length>1).map(s=>{
-    const valid=s.m.filter(v=>v!==null&&v!==undefined);
-    const trend=valid.length>1?valid[valid.length-1]-valid[valid.length-2]:0;
-    return{...s,trend};
-  });
-  const topTrend=withTrend.sort((a,b)=>b.trend-a.trend)[0];
-
-  const recCounts={};
-  STATE.log.filter(l=>l.azione.toLowerCase().includes("iscritto")).forEach(l=>{recCounts[l.socio]=(recCounts[l.socio]||0)+1;});
-  const topRec=Object.entries(recCounts).sort((a,b)=>b[1]-a[1])[0];
-
-  const presCounts={};
-  STATE.log.filter(l=>l.azione.toLowerCase().includes("presenza")).forEach(l=>{presCounts[l.socio]=(presCounts[l.socio]||0)+1;});
-  const topPres=Object.entries(presCounts).sort((a,b)=>b[1]-a[1])[0];
-
-  // Albo sfogliabile
-  const entry = ALBO[ALBO_PAGE];
-  const sc = SCUDERIE.find(s=>s.nome===entry.squadra);
-  const hasPrev = ALBO_PAGE > 0;
-  const hasNext = ALBO_PAGE < ALBO.length - 1;
-
-  const alboHTML = `
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#fbbf24;margin-bottom:12px">
-      📖 ALBO D'ORO · SOCI E SQUADRE DEL MESE
-    </div>
-    <div style="background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(244,114,182,.06));border:1px solid rgba(251,191,36,.25);border-radius:20px;padding:20px;margin-bottom:16px">
-
-      <!-- Navigazione mese -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-        <button onclick="alboNav(-1)" ${!hasPrev?"disabled":""} style="background:${hasPrev?"rgba(255,255,255,.1)":"rgba(255,255,255,.03)"};border:1px solid rgba(255,255,255,.15);border-radius:10px;color:${hasPrev?"#fff":"rgba(255,255,255,.2)"};padding:8px 14px;font-size:18px;cursor:${hasPrev?"pointer":"default"};transition:all .2s">‹</button>
-        <div style="text-align:center">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#fbbf24">${entry.mese.toUpperCase()}</div>
-          <div style="font-size:11px;opacity:.5;letter-spacing:2px">${ALBO_PAGE < 3 ? "CICLO 1 · MAR-MAG" : "CICLO 2 · GIU-AGO"}</div>
-          <!-- Pallini navigazione -->
-          <div style="display:flex;justify-content:center;gap:6px;margin-top:8px">
-            ${ALBO.map((_,i)=>`<div onclick="alboGo(${i})" style="width:8px;height:8px;border-radius:50%;background:${i===ALBO_PAGE?"#fbbf24":"rgba(255,255,255,.2)"};cursor:pointer;transition:all .2s"></div>`).join("")}
-          </div>
-        </div>
-        <button onclick="alboNav(1)" ${!hasNext?"disabled":""} style="background:${hasNext?"rgba(255,255,255,.1)":"rgba(255,255,255,.03)"};border:1px solid rgba(255,255,255,.15);border-radius:10px;color:${hasNext?"#fff":"rgba(255,255,255,.2)"};padding:8px 14px;font-size:18px;cursor:${hasNext?"pointer":"default"};transition:all .2s">›</button>
-      </div>
-
-      ${entry.socio ? `
-      <!-- Socio del mese -->
-      <div style="display:flex;gap:16px;align-items:center;background:rgba(0,0,0,.2);border-radius:16px;padding:16px;margin-bottom:12px">
-        <div style="font-size:32px">⭐</div>
-        <div style="width:56px;height:56px;border-radius:50%;background:${entry.scColore}44;border:3px solid ${entry.scColore};display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;flex-shrink:0">${entry.avatar}</div>
-        <div style="flex:1">
-          <div style="font-size:10px;opacity:.5;letter-spacing:2px;margin-bottom:3px">SOCIO DEL MESE</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#fbbf24">${entry.socio}</div>
-          <div style="font-size:12px;opacity:.6">${entry.squadra||""} ${sc?sc.emoji:""}</div>
-        </div>
-        <div style="font-size:40px">${entry.emoji}</div>
-      </div>
-      <!-- Squadra del mese -->
-      <div style="display:flex;gap:14px;align-items:center;background:rgba(0,0,0,.15);border-radius:14px;padding:14px">
-        <div style="font-size:28px">🏆</div>
-        <div style="flex:1">
-          <div style="font-size:10px;opacity:.5;letter-spacing:2px;margin-bottom:3px">SQUADRA DEL MESE</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:${entry.scColore||"#fff"}">${entry.squadra} ${sc?sc.emoji:""}</div>
-        </div>
-      </div>` : `
-      <!-- Mese in corso -->
-      <div style="text-align:center;padding:30px 20px;opacity:.5">
-        <div style="font-size:48px;margin-bottom:12px">⏳</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px">MESE IN CORSO</div>
-        <div style="font-size:13px;margin-top:6px">I vincitori saranno annunciati a fine mese</div>
-      </div>`}
-    </div>
-
-    <!-- Mini timeline -->
-    <div style="display:flex;gap:6px;margin-bottom:20px">
-      ${ALBO.map((a,i)=>`
-        <div onclick="alboGo(${i})" style="flex:1;background:${a.socio?"linear-gradient(135deg,rgba(251,191,36,.15),rgba(244,114,182,.08))":"rgba(255,255,255,.04)"};border:1px solid ${i===ALBO_PAGE?"rgba(251,191,36,.5)":"rgba(255,255,255,.08)"};border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer;transition:all .2s">
-          <div style="font-size:14px">${a.emoji}</div>
-          <div style="font-size:9px;font-weight:800;opacity:.7;letter-spacing:1px;margin-top:2px">${a.mese.slice(0,3).toUpperCase()}</div>
-          ${a.socio?`<div style="font-size:9px;opacity:.5;margin-top:1px">${a.socio.split(" ")[0]}</div>`:`<div style="font-size:9px;opacity:.3;margin-top:1px">—</div>`}
-        </div>`).join("")}
-    </div>`;
-
-  // Titoli speciali
-  const speciali=[
-    {emoji:"👑",titolo:"Leader Assoluto",    desc:"Più punti in classifica generale",    socio:cl[0]?.nome||"—",     pts:(cl[0]?.punti||0)+"pt"},
-    {emoji:"📈",titolo:"Miglior Trend",      desc:"Maggior crescita recente",            socio:topTrend?.nome||"—",  pts:topTrend?(topTrend.trend>0?"+":"")+topTrend.trend+"pt":""},
-    {emoji:"🌟",titolo:"Top Recruiter",      desc:"Ha portato più nuovi iscritti",       socio:topRec?topRec[0]:"—", pts:topRec?topRec[1]+"x":""},
-    {emoji:"🏠",titolo:"Presenza Costante",  desc:"Più presenze registrate",             socio:topPres?topPres[0]:"—",pts:topPres?topPres[1]+"x":""},
-  ];
-
-  const specialiHTML=speciali.map(s=>`
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:13px">
-      <div style="font-size:28px;flex-shrink:0">${s.emoji}</div>
-      <div style="flex:1">
-        <div style="font-weight:800;font-size:13px">${s.titolo}</div>
-        <div style="font-size:11px;opacity:.5">${s.desc}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:#fbbf24">${s.socio}</div>
-        ${s.pts?`<div style="font-size:11px;color:#10b981;font-weight:700">${s.pts}</div>`:""}
-      </div>
-    </div>`).join("");
-
-  // Trofei
-  const trofeiHTML=`
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin:20px 0 10px">🏅 TROFEI</div>
-    <div class="trofeo-grid">
-      ${TROFEI.map(tr=>{
-        const earners=STATE.soci.filter(s=>tr.check(s));
-        const earned=earners.length>0;
-        return`<div class="trofeo-card${earned?" earned":""}">
-          <div class="trofeo-emoji">${tr.emoji}</div>
-          <div class="trofeo-nome">${tr.nome}</div>
-          <div class="trofeo-desc">${tr.desc}</div>
-          ${earned?`<div style="margin-top:6px;font-size:10px;color:#10b981;font-weight:800">${earners.map(s=>s.nome.split(" ")[0]).join(", ")}</div>`:`<div style="margin-top:6px;font-size:10px;opacity:.3">Non ancora assegnato</div>`}
-        </div>`;
-      }).join("")}
-    </div>`;
-
-  // Storico cicli scuderie
-  const storicoHTML=`
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin:20px 0 10px">📚 STORICO SCUDERIE</div>
-    ${STORICO_SQUADRE_CICLO.map(ciclo=>`
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#fbbf24">CICLO ${ciclo.ciclo}</div>
-          <div style="font-size:11px;opacity:.5;letter-spacing:1px">${ciclo.mesi}</div>
-        </div>
-        ${ciclo.squadre.map(sq=>`
-          <div style="background:${sq.colore}11;border:1px solid ${sq.colore}33;border-radius:12px;padding:10px 13px;margin-bottom:7px">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">
-              <span style="font-size:18px">${sq.emoji}</span>
-              <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${sq.colore};letter-spacing:1px">${sq.nome}</span>
-              <span style="font-size:11px;opacity:.5">⚔️ ${sq.cap}</span>
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:5px">
-              ${sq.membri.map(m=>`<span style="background:rgba(255,255,255,.06);border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700">${m}</span>`).join("")}
-            </div>
-          </div>`).join("")}
-      </div>`).join("")}`;
-
-  return`
-    ${alboHTML}
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin-bottom:10px">🌟 TITOLI SPECIALI</div>
-    ${specialiHTML}
-    ${storicoHTML}
-    ${trofeiHTML}`;
-}
-
-function alboNav(dir){
-  ALBO_PAGE = Math.max(0, Math.min(ALBO.length-1, ALBO_PAGE+dir));
-  render();
-}
-function alboGo(i){
-  ALBO_PAGE = i;
-  render();
-}
-
-// ── ASSEGNA ──────────────────────────────────────────────────
-function renderAssegna(){
-  const opts=[...STATE.soci]
-    .filter(s=>!s.uscito)
-    .sort((a,b)=>a.nome.localeCompare(b.nome))
-    .map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`)
-    .join("");
-  const aBtn=(a,tipo)=>{
-    const isSel=STATE.selAzione===a.id;
-    const cls=isSel?(tipo==="bonus"?"azione-btn sel-bonus":"azione-btn sel-malus"):"azione-btn";
-    const color=tipo==="bonus"?"#10b981":"#ef4444";
-    return`<button class="${cls}" onclick="selAzione('${a.id}')">
-      <span>${a.emoji} ${a.label}</span>
-      <span style="font-size:12px;font-weight:900;color:${color};flex-shrink:0">${a.pts>0?"+":""}${a.custom?"var":a.pts}pt</span>
-    </button>`;
-  };
-  const selA=STATE.selAzione?[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione):null;
-  const socioSel=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  const customBlock=selA?.custom?`
-    <label class="form-lbl">${STATE.selAzione==="b14"?"IMPORTO € DONATI":"MINUTI DI RITARDO"}</label>
-    <input type="number" min="1" value="${STATE.customVal}" oninput="STATE.customVal=Math.max(1,parseInt(this.value)||1)" style="margin-bottom:4px"/>
-    <div style="font-size:13px;color:#818cf8;margin-bottom:12px;font-weight:800">= ${selA.pts*(STATE.customVal||1)} punti</div>`:"";
-  const previewBlock=selA&&socioSel?`
-    <div class="preview-box">
-      <span style="opacity:.65">Stai assegnando </span>
-      <span style="font-weight:900;color:${selA.pts>0?"#10b981":"#ef4444"}">${selA.custom?selA.pts*(STATE.customVal||1):selA.pts} pt</span>
-      <span style="opacity:.65"> a </span>
-      <span style="font-weight:900">${socioSel.nome}</span>
-    </div>`:"";
-  return`<div class="form-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:10px">ASSEGNA PUNTI</div>
-    <div style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(5,150,105,.08));border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
-      <div style="font-size:20px">📅</div>
-      <div>
-        <div style="font-size:10px;opacity:.6;letter-spacing:2px">MESE ATTIVO</div>
-        <div style="font-weight:900;font-size:15px;color:#10b981">GIUGNO 2026</div>
-      </div>
-      <div style="margin-left:auto;font-size:11px;opacity:.5">I punti vanno a Giugno</div>
-    </div>
-    <label class="form-lbl">SOCIO</label>
-    <select onchange="STATE.selSocio=this.value;render()" style="margin-bottom:12px">
-      <option value="">— Scegli un socio —</option>${opts}
-    </select>
-    <label class="form-lbl">✅ BONUS</label>
-    <div style="margin-bottom:12px">${BONUS.map(a=>aBtn(a,"bonus")).join("")}</div>
-    <label class="form-lbl">❌ MALUS</label>
-    <div style="margin-bottom:12px">${MALUS.map(a=>aBtn(a,"malus")).join("")}</div>
-    <div style="border:1px solid rgba(251,191,36,.25);border-radius:14px;padding:14px;margin-bottom:12px;background:rgba(251,191,36,.05)">
-      <div style="font-size:11px;color:#fbbf24;font-weight:800;letter-spacing:2px;margin-bottom:10px">✏️ PUNTEGGIO PERSONALIZZATO</div>
-      <div style="display:flex;gap:8px;align-items:flex-end">
-        <div style="flex:1">
-          <label class="form-lbl">DESCRIZIONE</label>
-          <input type="text" id="customDesc" placeholder="Es. Organizzato evento speciale…"/>
-        </div>
-        <div style="width:90px">
-          <label class="form-lbl">PUNTI</label>
-          <input type="number" id="customPts" placeholder="es. 25" style="text-align:center"/>
-        </div>
-      </div>
-      <div style="font-size:11px;opacity:.5;margin-top:8px">Usa numeri negativi per i malus (es. -15)</div>
-      <button onclick="assegnaPersonalizzato()" style="margin-top:10px;background:linear-gradient(135deg,#b45309,#d97706);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:800;font-size:13px;cursor:pointer;width:100%;font-family:inherit">✏️ Assegna punteggio personalizzato</button>
-    </div>
-    ${customBlock}
-    <label class="form-lbl">NOTA (opzionale)</label>
-    <input type="text" placeholder="Es. presente all'evento di sabato…" value="${STATE.nota}" oninput="STATE.nota=this.value" style="margin-bottom:14px"/>
-    ${previewBlock}
-    <button class="btn-primary" onclick="assegna()">🚀 Conferma Assegnazione</button>
-  </div>`;
-}
-
-function selAzione(id){STATE.selAzione=STATE.selAzione===id?null:id;render();}
-
-function assegnaPersonalizzato(){
-  if(!STATE.selSocio)return showToast("Scegli prima un socio!",true);
-  const desc=document.getElementById("customDesc")?.value.trim();
-  const pts=parseInt(document.getElementById("customPts")?.value);
-  if(!desc)return showToast("Inserisci una descrizione!",true);
-  if(isNaN(pts)||pts===0)return showToast("Inserisci un valore valido (es. 25 o -15)!",true);
-  const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  const MESE_ATTIVO=3;
-  STATE.soci=STATE.soci.map(s=>{
-    if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m];
-    nuoviM[MESE_ATTIVO]=(nuoviM[MESE_ATTIVO]||0)+pts;
-    return{...s,m:nuoviM};
-  });
-  const logEntry={id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""};
-  STATE.log=[logEntry,...STATE.log];
-  const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
-  showToast(`${pts>0?"+":""}${pts} pt a ${socio.nome} 🎉`);
-  render();
-}
-
 function rimuoviDalLog(logId){
+  if(!STATE.isAdmin) {
+    showToast("Azione non autorizzata. Loggati come Admin.", true);
+    return;
+  }
   const entry=STATE.log.find(l=>l.id===logId);
-  if(!entry)return;
-  if(!confirm(`Annullare "${entry.azione}" (${entry.delta>0?"+":""}${entry.delta}pt) per ${entry.socio}?`))return;
-  // Inverti i punti sul socio
+  if(!entry) return;
+  if(!confirm(`Annullare "${entry.azione}" (${entry.delta>0?"+":""}${entry.delta}pt) per ${entry.socio}?`)) return;
+  
   const socio=STATE.soci.find(s=>s.nome===entry.socio);
   if(socio){
     STATE.soci=STATE.soci.map(s=>{
-      if(s.nome!==entry.socio)return s;
+      if(s.nome!==entry.socio) return s;
       const nuoviM=[...s.m];
-      nuoviM[STATE.meseView]=(nuoviM[STATE.meseView]||0)-entry.delta;
+      nuoviM[3]=(nuoviM[3]||0)-entry.delta; 
       return{...s,m:nuoviM};
     });
     const aggiornato=STATE.soci.find(s=>s.nome===entry.socio);
@@ -1118,409 +773,75 @@ function rimuoviDalLog(logId){
   }
   STATE.log=STATE.log.filter(l=>l.id!==logId);
   fbSaveLog();
-  showToast("Punteggio annullato ✅");
+  showToast("Punteggio stornato con successo! ✅");
   render();
+}
+
+// ── TAB ASSEGNA (SOLO ADMIN) ─────────────────────────────────
+function renderAssegna(){
+  const opts=[...STATE.soci].filter(s=>!s.uscito).map(s=>`<option value="${s.id}">${s.nome}</option>`).join("");
+  return`<div class="form-box">
+    <label class="form-lbl">SOCIO</label>
+    <select onchange="STATE.selSocio=this.value" style="margin-bottom:12px"><option value="">— Scegli socio —</option>${opts}</select>
+    <label class="form-lbl">BONUS RAPIDI</label>
+    <button class="azione-btn" onclick="STATE.selAzione='b5';assegna()">🔗 Condivisione link (+5 pt)</button>
+    <button class="azione-btn" onclick="STATE.selAzione='b4';assegna()">💬 Condivisione esperienza (+10 pt)</button>
+  </div>`;
 }
 
 function assegna(){
-  if(!STATE.selSocio||!STATE.selAzione)return showToast("Seleziona socio e azione!",true);
-  const azione=[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione);
-  const delta=azione.custom?azione.pts*(STATE.customVal||1):azione.pts;
+  if(!STATE.selSocio) return showToast("Scegli un socio", true);
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  const MESE_ATTIVO=3; // Giugno - aggiorna qui ogni nuovo mese
+  const pts = STATE.selAzione === 'b5' ? 5 : 10;
+  const label = STATE.selAzione === 'b5' ? "Condivisione link" : "Condivisione esperienza";
+  
   STATE.soci=STATE.soci.map(s=>{
     if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m];
-    nuoviM[MESE_ATTIVO]=(nuoviM[MESE_ATTIVO]||0)+delta;
-    return{...s,m:nuoviM};
+    const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+pts; return{...s,m:nuoviM};
   });
-  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
-  const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  const prevSoci=JSON.parse(JSON.stringify(STATE.soci));
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
-  showToast(`${delta>0?"+":""}${delta} pt a ${socio.nome} ${delta>0?"🎉":"😬"}`);
-  setTimeout(()=>checkLevelUp(prevSoci),300);
-  STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
-  render();
+  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:label,delta:pts,nota:""},...STATE.log];
+  fbSaveExtra(socio.id,3,socio.m[3]); fbSaveLog();
+  showToast("Punti assegnati!"); render();
 }
 
-// ── SOCI ────────────────────────────────────────────────────
-function renderSoci(){
-  const opts=SCUDERIE.map(sc=>{
-    const n=STATE.soci.filter(s=>s.sc===sc.id).length;
-    return`<option value="${sc.id}">${sc.emoji} ${sc.nome} (${n}/10)</option>`;
-  }).join("");
-  const lista=[...STATE.soci].map(s=>{
-    const sc=getSC(s.sc);const t=titolo(ptTotali(s));
-    return`<div class="card" style="display:flex;align-items:center;gap:12px;padding:12px 15px">
-      <div class="ava" style="width:40px;height:40px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.35)">${s.avatar}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:800;font-size:14px">${s.nome}</div>
-        <div style="font-size:11px;opacity:.5">${t.emoji} ${t.label}</div>
-      </div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${t.color};margin-right:8px">${ptTotali(s)}pt</div>
-      ${!s.cap?`<button onclick="eliminaSocio(${s.id})" style="background:linear-gradient(135deg,#dc2626,#ef4444);border:none;border-radius:9px;color:#fff;padding:6px 11px;font-size:12px;font-weight:800;cursor:pointer">🗑️</button>`:""}
-    </div>`;
-  }).join("");
-  return`
-    <div class="form-box" style="margin-bottom:18px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:14px">➕ NUOVO SOCIO</div>
-      <label class="form-lbl">NOME E COGNOME</label>
-      <input type="text" id="nuovoNome" placeholder="Es. Maria Rossi" style="margin-bottom:12px"/>
-      <label class="form-lbl">SCUDERIA</label>
-      <select id="nuovaScud" style="margin-bottom:16px"><option value="">— Scegli scuderia —</option>${opts}</select>
-      <button class="btn-primary" onclick="aggiungiSocio()">✅ Aggiungi alla Scuderia</button>
-      <div style="font-size:11px;opacity:.4;margin-top:10px">⚠️ I nuovi soci iniziano a giocare dal mese successivo.</div>
-    </div>
-    ${lista}`;
-}
-
-function aggiungiSocio(){
-  const nome=document.getElementById("nuovoNome").value.trim();
-  const scId=parseInt(document.getElementById("nuovaScud").value);
-  if(!nome)return showToast("Inserisci un nome!",true);
-  if(!scId)return showToast("Scegli una scuderia!",true);
-  const sc=SCUDERIE.find(s=>s.id===scId);
-  if(STATE.soci.filter(s=>s.sc===scId).length>=10)return showToast("Scuderia al completo (max 10)!",true);
-  const av=nome.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
-  const newId=Math.max(...STATE.soci.map(s=>s.id))+1;
-  STATE.soci=[...STATE.soci,{id:newId,nome,avatar:av,sc:scId,cap:false,m:[0,0,0],extra:0}];
-  fbSaveExtra(newId,0);
-  showToast(`${nome} aggiunto/a agli ${sc.nome}! 🎉`);
-  render();
-}
-
-function eliminaSocio(id){
-  const s=STATE.soci.find(x=>x.id===id);
-  if(!s)return;
-  if(!confirm(`Rimuovere ${s.nome}?`))return;
-  STATE.soci=STATE.soci.filter(x=>x.id!==id);
-  fbSaveExtra(id,null);
-  showToast(`${s.nome} rimosso 🗑️`,true);
-  render();
-}
-
-// ── LOG ──────────────────────────────────────────────────────
-function renderLog(){
-  if(!STATE.log.length)return`<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
-  return`
-    <div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
-      🗑️ Premi <strong>Annulla</strong> su un'azione per rimuoverla e stornare i punti automaticamente.
-    </div>
-    ${STATE.log.map(l=>`
-    <div class="log-item" style="align-items:center">
-      <div style="width:38px;height:38px;border-radius:9px;background:${l.delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${l.delta>0?"✅":"❌"}</div>
-      <div style="flex:1;min-width:0">
-        <div style="font-weight:800;font-size:13px">${l.socio}</div>
-        <div style="font-size:11px;opacity:.5;margin-top:2px">${l.azione}</div>
-        ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${l.nota}</div>`:""}
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${l.delta>0?"+":""}${l.delta}</div>
-        <div style="font-size:9px;opacity:.4">${l.data}</div>
-        <button onclick="rimuoviDalLog(${l.id})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>
-      </div>
-    </div>`).join("")}`;
-}
-
-
-
-
-// ── REGOLAMENTO ──────────────────────────────────────────────
-const REGOLE_DEFAULT = [
-  // COME FUNZIONA
-  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi!"},
-  {cat:"🎮 Come funziona", testo:"Classifiche settimanali per l'andamento, mensili per il Socio del Mese, annuali per il Socio dell'Anno."},
-  {cat:"🎮 Come funziona", testo:"La classifica del Socio del Mese si apre ogni primo lunedì del mese."},
-  {cat:"🎮 Come funziona", testo:"Un nuovo socio che si aggiunge durante il mese inizierà a giocare dal mese successivo."},
-  {cat:"🎮 Come funziona", testo:"Se non si è d'accordo su una regola o si vuole aggiungerne una nuova, si può indire una votazione: se si raggiunge la maggioranza, verrà cambiata o aggiunta."},
-  // BONUS
-  {cat:"✅ Bonus", testo:"Presenza in sede, evento o riunione → +50 pt"},
-  {cat:"✅ Bonus", testo:"Delegato/a per un giorno per un'iniziativa CFP → +30 pt"},
-  {cat:"✅ Bonus", testo:"Post sui social di spontanea volontà → +10 pt"},
-  {cat:"✅ Bonus", testo:"Condividi un'esperienza, ricordo o contenuto utile sul gruppo condivisioni → +10 pt"},
-  {cat:"✅ Bonus", testo:"Condividi un evento o post/link sul gruppo condivisioni → +5 pt"},
-  {cat:"✅ Bonus", testo:"Porti qualcuno che si iscrive all'associazione → +100 pt"},
-  {cat:"✅ Bonus", testo:"Porti una persona a partecipare a una singola attività → +25 pt"},
-  {cat:"✅ Bonus", testo:"Ricordi un compleanno o fai un complimento sincero → +10 pt"},
-  {cat:"✅ Bonus", testo:"Offri un passaggio per un'attività dell'associazione → +20 pt"},
-  {cat:"✅ Bonus", testo:"Gestisci bene una situazione trovando una soluzione rapida → +30 pt"},
-  {cat:"✅ Bonus", testo:"Hai pulito o allestito la sede → +50 pt"},
-  {cat:"✅ Bonus", testo:"Arrivato in orario (tolleranza 10 minuti) → +10 pt"},
-  {cat:"✅ Bonus", testo:"Articolo per il blog → +50 pt"},
-  {cat:"✅ Bonus", testo:"Audio per il podcast → +50 pt"},
-  {cat:"✅ Bonus", testo:"Donazione: ogni 1€ donato = +1 pt"},
-  {cat:"✅ Bonus", testo:"Hai destinato il 5x1000 all'associazione → +50 pt (bonus una tantum)"},
-  // MALUS
-  {cat:"❌ Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt"},
-  {cat:"❌ Malus", testo:"Leggi un messaggio e non rispondi per ore → -20 pt"},
-  {cat:"❌ Malus", testo:"Arrivi in ritardo (tolleranza 10 minuti) → -1 pt per ogni minuto"},
-  {cat:"❌ Malus", testo:"Domanda la cui risposta era già in un messaggio precedente → -10 pt"},
-  {cat:"❌ Malus", testo:"Citi il FantaSocio direttamente o indirettamente → -10 pt"},
-  {cat:"❌ Malus", testo:"Lamentarsi senza proporre una soluzione → -15 pt"},
-  {cat:"❌ Malus", testo:"Presente ma al telefono continuamente → -20 pt"},
-  {cat:"❌ Malus", testo:"Intasi la chat con messaggi per una sola persona → -5 pt a messaggio"},
-  {cat:"❌ Malus", testo:"Parolacce offensive → -15 pt · Bestemmie → -25 pt"},
-  // PREMI
-  {cat:"🏆 Premi", testo:"Socio del Mese: chi ottiene più punti nel mese vince il diritto di scegliere l'attività ludica del mese successivo (film, ristorante, ecc.)."},
-  {cat:"🏆 Premi", testo:"Socio dell'Anno: chi totalizza più punti nell'anno solare."},
-  {cat:"🏆 Premi", testo:"La mission non è la competizione in sé, ma la crescita individuale e collettiva attraverso collaborazione e coesione. 💜"},
-  // CLASSIFICHE
-  {cat:"📅 Classifiche", testo:"I progressi annuali sono archiviati su file Excel gestito da Angelo Greco, presidente CFP."},
-  {cat:"📅 Classifiche", testo:"In casi particolari si realizzerà un sondaggio per assegnare punti extra o modificare una regola."},
-];
-
-function renderRegolamento(){
-  const cats=[...new Set(REGOLE_DEFAULT.map(r=>r.cat))];
-  return `
-    <div style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:16px;padding:14px 16px;margin-bottom:20px;font-size:13px;line-height:1.6">
-      📜 Qui trovi tutte le regole del FantaSocio CFP. Per proporre una modifica contatta Angelo Greco.
-    </div>
-    ${cats.map(cat=>`
-      <div style="margin-bottom:20px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin-bottom:8px">${cat}</div>
-        ${REGOLE_DEFAULT.filter(r=>r.cat===cat).map(r=>`
-          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:13px 15px;margin-bottom:8px">
-            <div style="font-size:13px;line-height:1.6;opacity:.85">${r.testo}</div>
-          </div>`).join("")}
-      </div>`).join("")}`;
-}
-
-function initRegolamento(){}
-
-
-// ── WELCOME ──────────────────────────────────────────────────
-function initWelcome(){
-  if(!localStorage.getItem("fs_welcomed")){
-    document.getElementById("welcomeOverlay").style.display="flex";
-  }
-}
-function chiudiWelcome(){
-  document.getElementById("welcomeOverlay").style.display="none";
-  localStorage.setItem("fs_welcomed","1");
-}
-
-// ── COUNTDOWN ────────────────────────────────────────────────
-function aggiornaCountdown(){
-  const ora=new Date();
-  const giorno=ora.getDay(); // 0=dom, 1=lun
-  const giorniAlLun=giorno===0?1:(giorno===1?7:(8-giorno));
-  const prossimoLun=new Date(ora);
-  prossimoLun.setDate(ora.getDate()+giorniAlLun);
-  prossimoLun.setHours(0,0,0,0);
-  const diff=prossimoLun-ora;
-  const g=Math.floor(diff/86400000);
-  const h=Math.floor((diff%86400000)/3600000);
-  const m=Math.floor((diff%3600000)/60000);
-  const pad=n=>String(n).padStart(2,"0");
-  const dg=document.getElementById("cdGiorni");
-  const dh=document.getElementById("cdOre");
-  const dm=document.getElementById("cdMin");
-  if(dg)dg.textContent=pad(g);
-  if(dh)dh.textContent=pad(h);
-  if(dm)dm.textContent=pad(m);
-}
-setInterval(aggiornaCountdown,30000);
-
-// ── LEVEL UP CHECK ───────────────────────────────────────────
-const LIVELLI=[
-  {min:0,   label:"🌱 Recluta"},
-  {min:100, label:"🌟 Attivo"},
-  {min:250, label:"⭐ Veterano"},
-  {min:500, label:"🏆 Campione"},
-  {min:800, label:"👑 Leggenda"},
-];
-let prevLivelli={};
-function checkLevelUp(prevSoci){
-  if(!prevSoci||!prevSoci.length)return;
-  STATE.soci.forEach(s=>{
-    const pts=ptTotali(s);
-    const prev=prevSoci.find(x=>x.id===s.id);
-    if(!prev)return;
-    const prevPts=ptTotali(prev);
-    const livelloNow=LIVELLI.filter(l=>pts>=l.min).pop();
-    const livelloPrev=LIVELLI.filter(l=>prevPts>=l.min).pop();
-    if(livelloNow&&livelloPrev&&livelloNow.min>livelloPrev.min){
-      mostraLevelUp(s.nome,livelloNow.label);
-    }
-  });
-}
-function mostraLevelUp(nome,livello){
-  const el=document.getElementById("levelToast");
-  const txt=document.getElementById("levelToastText");
-  if(!el||!txt)return;
-  txt.textContent=`${nome} ha raggiunto ${livello}!`;
-  el.style.display="block";
-  setTimeout(()=>el.style.display="none",3500);
-}
-
-// ── CERCA ────────────────────────────────────────────────────
+// ── TAB SOCI & CERCA ─────────────────────────────────────────
+function renderSoci(){return `<div class="form-box">Gestione liste scuderie.</div>`;}
 let CERCA_QUERY="";
 function renderCerca(){
   const query=CERCA_QUERY.toLowerCase();
-  const risultati=query.length>0
-    ? sortedSoci().filter(s=>s.nome.toLowerCase().includes(query)||getSC(s.sc).nome?.toLowerCase().includes(query))
-    : sortedSoci().filter(s=>!s.uscito);
-  const cl=sortedSoci();
-
-  return`
-    <div class="cerca-wrap">
-      <span class="cerca-icon">🔍</span>
-      <input class="cerca-input" type="text" placeholder="Cerca socio o scuderia…" value="${CERCA_QUERY}"
-        oninput="CERCA_QUERY=this.value;renderTab()" autofocus/>
-    </div>
-    ${risultati.length===0?`<div style="text-align:center;opacity:.35;margin-top:40px"><div style="font-size:40px">😶</div><p style="margin-top:10px">Nessun risultato</p></div>`:""}
-    ${risultati.map(s=>{
-      const sc=getSC(s.sc);const t=titolo(s.punti||ptTotali(s));
-      const pos=cl.findIndex(x=>x.id===s.id)+1;
-      return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.4;filter:grayscale(.7)":""}">
-        <div style="display:flex;align-items:center;gap:12px">
-          <div style="font-size:20px;min-width:28px;text-align:center">${s.uscito?"🚪":pos<4?["🥇","🥈","🥉"][pos-1]:"#"+pos}</div>
-          <div class="ava" style="width:42px;height:42px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
-          <div style="flex:1">
-            <div style="font-weight:800;font-size:14px">${s.nome} ${s.uscito?"🚪":""}</div>
-            <div style="font-size:11px;opacity:.5">${t.emoji} ${t.label}</div>
-          </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${t.color}">${ptTotali(s)}</div>
-        </div>
-      </div>`;
-    }).join("")}`;
+  const risultati=sortedSoci().filter(s=>s.nome.toLowerCase().includes(query));
+  return`<div class="cerca-wrap"><input class="cerca-input" type="text" placeholder="Cerca socio..." oninput="CERCA_QUERY=this.value;renderTab()"/></div>
+  ${risultati.map(s=>`<div class="card" onclick="apriProfilo(${s.id})">${s.nome} (${ptTotali(s)} pt)</div>`).join("")}`;
 }
 
-// ── STORICO SCUDERIE (per Bacheca) ───────────────────────────
-const STORICO_SQUADRE_CICLO = [
-  {ciclo:1, mesi:"Mar-Mag 2026", squadre:[
-    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Antonella","Giovanni","Giorgia","Rosa","Danilo","Frizzo","Marco L."]},
-    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Valentina","Luigi","Jessica","Lorenzo","F. Giardina","Martina"]},
-    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Mirella","F. Pio","Annarosa","Monica","Ivan","Arianna","Greta"]},
-  ]},
-  {ciclo:2, mesi:"Giu-Ago 2026", squadre:[
-    {nome:"Inarrestabili", cap:"Denise",      colore:"#10b981", emoji:"⚡", membri:["Denise","Lorenzo","Antonella","Martina","F. Giardina","Ivan","Monica"]},
-    {nome:"Inarrivabili",  cap:"Angelo Greco",colore:"#f59e0b", emoji:"🦅", membri:["Angelo Greco","Luigi","Valentina","F. Pio","Frizzo","Jessica","Greta","Annarosa"]},
-    {nome:"Invincibili",   cap:"Gabriel",     colore:"#6366f1", emoji:"🔥", membri:["Gabriel","Arianna","Rosa","Mirella","Danilo","Maria","Giorgia","Giovanni"]},
-  ]},
-];
-
-
-// ── TUTORIAL ────────────────────────────────────────────────
-// Per mostrare il video: carica il file su YouTube o Google Drive
-// e incolla il link embed qui sotto (sostituisci VIDEO_ID)
-const TUTORIAL_VIDEO_URL = "https://www.youtube.com/embed/SmFlxIyacb8";
-
-function renderTutorial(){
-  return`
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;background:linear-gradient(90deg,#fbbf24,#f472b6,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent">
-        🎬 COME SI GIOCA
-      </div>
-      <div style="font-size:13px;opacity:.5;margin-top:4px">Guarda il tutorial completo del FantaSocio</div>
-    </div>
-
-    ${TUTORIAL_VIDEO_URL ? `
-    <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;margin-bottom:20px">
-      <iframe src="${TUTORIAL_VIDEO_URL}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px" allowfullscreen></iframe>
-    </div>` : `
-    <div style="background:rgba(129,140,248,.08);border:2px dashed rgba(129,140,248,.3);border-radius:20px;padding:40px 20px;text-align:center;margin-bottom:20px">
-      <div style="font-size:48px;margin-bottom:12px">🎬</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:8px;color:#818cf8">VIDEO IN ARRIVO</div>
-      <div style="font-size:13px;opacity:.6;line-height:1.7">
-        Per attivare il video tutorial:<br>
-        1. Carica <strong>FantaSocio_Tutorial.mp4</strong> su YouTube o Google Drive<br>
-        2. Copia il link embed<br>
-        3. Incollalo nella variabile <strong>TUTORIAL_VIDEO_URL</strong> nel codice
-      </div>
-    </div>`}
-
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#818cf8;margin-bottom:12px">📋 GUIDA RAPIDA</div>
-
-    ${[
-      {emoji:"🏆",titolo:"Classifica",      desc:"Vedi i punteggi totali di tutti i soci. Clicca su un nome per aprire il profilo personale con andamento e trofei."},
-      {emoji:"📅",titolo:"Mesi",            desc:"Guarda la classifica mese per mese. Usa i pulsanti per navigare tra i mesi e scopri chi ha vinto il Socio del Mese."},
-      {emoji:"📊",titolo:"Grafici",         desc:"Visualizza l'andamento nel tempo dei top 5 soci e la distribuzione dei punteggi."},
-      {emoji:"🎯",titolo:"Missioni",        desc:"Sfide mensili con punti bonus. Completa le missioni per guadagnare punti extra oltre ai bonus standard."},
-      {emoji:"🏅",titolo:"Bacheca",         desc:"L'Albo d'Oro con i vincitori di ogni mese, i titoli speciali, i trofei e lo storico delle scuderie."},
-      {emoji:"📜",titolo:"Regolamento",     desc:"Tutte le regole del FantaSocio: bonus, malus, premi e come funziona il gioco."},
-      {emoji:"🔍",titolo:"Cerca",           desc:"Trova rapidamente un socio cercando per nome. Clicca sul risultato per vedere il suo profilo."},
-      {emoji:"➕",titolo:"Assegna (admin)", desc:"Solo per l'admin. Seleziona un socio, scegli l'azione (bonus o malus) e conferma. I punti vanno al mese corrente."},
-    ].map(g=>`
-      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start">
-        <div style="font-size:26px;flex-shrink:0">${g.emoji}</div>
-        <div>
-          <div style="font-weight:800;font-size:14px;margin-bottom:4px">${g.titolo}</div>
-          <div style="font-size:12px;opacity:.65;line-height:1.6">${g.desc}</div>
-        </div>
-      </div>`).join("")}
-
-    <div style="background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.06));border:1px solid rgba(251,191,36,.2);border-radius:16px;padding:16px;margin-top:16px;text-align:center;font-size:13px;line-height:1.8">
-      💡 <strong>Per entrare come Admin:</strong> fai triplo click sul titolo <strong>"FANTA SOCIO"</strong><br>
-      inserisci la password e gestisci i punti dal tab ➕ Assegna
-    </div>`;
+// ── COUNTDOWN & WELCOME ──────────────────────────────────────
+function aggiornaCountdown(){
+  const ora=new Date(); const pross=new Date(); pross.setDate(ora.getDate()+(pross.getDay()===0?1:8-pross.getDay())); pross.setHours(0,0,0,0);
+  const diff=pross-ora;
+  document.getElementById("cdGiorni").textContent=String(Math.floor(diff/86400000)).padStart(2,"0");
+  document.getElementById("cdOre").textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,"0");
+  document.getElementById("cdMin").textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
 }
+function chiudiWelcome(){document.getElementById("welcomeOverlay").style.display="none";}
 
-// ═══════════════════════════════════════════════════════════
-//  INIT FIREBASE
-// ═══════════════════════════════════════════════════════════
+// ── FIREBASE READY LIFECYCLE ─────────────────────────────────
 window.addEventListener("firebase-ready",()=>{
-  fbReady=true;
-  const{db,ref,onValue,set}=window._fb;
-  let appMostrata=false;
-  function mostraApp(){
-    if(!appMostrata){appMostrata=true;
-      document.getElementById("loadingScreen").style.display="none";
-      document.getElementById("appRoot").style.display="block";
-    }
-  }
-  onValue(ref(db,"soci"),snap=>{if(!snap.val())set(ref(db,"soci"),SOCI_DEFAULT);},{onlyOnce:true});
-  initWelcome();
-  aggiornaCountdown();
-  // Ascolta tutti gli extra per mese (struttura: extra/m{idx}/{socioId})
+  fbReady=true; const{db,ref,onValue}=window._fb;
   onValue(ref(db,"extra"),snap=>{
-    const extraRoot=snap.val()||{};
+    const ext=snap.val()||{};
     STATE.soci=SOCI_DEFAULT.map(s=>{
-      const nuoviM=[...s.m];
-      // Per ogni mese, leggi il valore extra se presente
-      for(let mi=0;mi<nuoviM.length;mi++){
-        const meseData=extraRoot["m"+mi];
-        if(meseData && meseData[s.id]!==undefined && nuoviM[mi]!==null){
-          nuoviM[mi]=meseData[s.id];
-        }
-      }
-      return{...s,m:nuoviM};
+      const nm=[...s.m]; for(let i=0;i<6;i++){if(ext["m"+i]&&ext["m"+i][s.id]!==undefined)nm[i]=ext["m"+i][s.id];} return{...s,m:nm};
     });
-    mostraApp();render();
+    document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();
   });
-  onValue(ref(db,"log"),snap=>{
-    const data=snap.val();
-    STATE.log=data?(Array.isArray(data)?data:Object.values(data)):[];
-    mostraApp();render();
-  });
+  onValue(ref(db,"log"),snap=>{ STATE.log=snap.val()||[]; render(); });
+  aggiornaCountdown(); setInterval(aggiornaCountdown,60000);
 });
-
-setTimeout(()=>{
-  if(document.getElementById("loadingScreen")&&document.getElementById("loadingScreen").style.display!=="none"){
-    document.getElementById("loadingScreen").innerHTML=`
-      <div style="text-align:center;padding:30px">
-        <div style="font-size:40px;margin-bottom:12px">⚠️</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:8px">FIREBASE NON RAGGIUNGIBILE</div>
-        <button onclick="apriLocale()" style="margin-top:16px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:12px;color:#fff;padding:12px 24px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">Apri in modalità locale</button>
-      </div>`;
-  }
-},3000);
-
-function apriLocale(){
-  document.getElementById("loadingScreen").style.display="none";
-  document.getElementById("appRoot").style.display="block";
-  render();
-}
+function apriLocale(){document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();}
 
 let clickCount=0;
 document.addEventListener("click",e=>{
-  if(e.target.closest(".logo")){
-    clickCount++;
-    if(clickCount>=3){clickCount=0;document.getElementById("lockOverlay").style.display="flex";}
-    setTimeout(()=>clickCount=0,1200);
-  }
+  if(e.target.closest(".logo")){clickCount++; if(clickCount>=3){clickCount=0;document.getElementById("lockOverlay").style.display="flex";} setTimeout(()=>clickCount=0,1200);}
 });
 </script>
 </body>

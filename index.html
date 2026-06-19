@@ -26,19 +26,22 @@
 </script>
 
 <style>
+/* Reset di base del box-model */
 *{box-sizing:border-box;margin:0;padding:0}
+
 :root{
   --bg:#05050b;--card:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);
   --gold:#fbbf24;--pink:#f472b6;--purple:#818cf8;--green:#10b981;--red:#ef4444;
   --panel-bg: rgba(13, 13, 25, 0.7);
 }
+
 html,body{min-height:100vh;background:var(--bg);color:#fff;font-family:'Nunito','Segoe UI',sans-serif}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes spin{to{transform:rotate(360deg)}}
 
 .wrap{max-width:950px;margin:0 auto;padding:20px 13px 100px}
 
+/* Elementi d'impatto grafici (Gamification) */
 .logo{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:5px;
   background:linear-gradient(90deg,var(--gold),var(--pink),var(--purple));
   background-size:200% auto;line-height:1;
@@ -77,7 +80,7 @@ select,input[type=text],input[type=number],input[type=password]{
 .preview-box{background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);border-radius:12px;padding:11px 14px;font-size:13px}
 .log-item{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 15px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px}
 
-/* ASSEGNA GAMIFICATION GRID */
+/* CSS GRID ABILITÀ E ASSIGNAZIONE */
 .admin-grid-layout {
   display: grid;
   grid-template-columns: 310px 1fr;
@@ -151,12 +154,9 @@ select,input[type=text],input[type=number],input[type=password]{
 .profilo-overlay{position:fixed;inset:0;background:rgba(7,7,14,.97);z-index:500;overflow-y:auto;animation:fadeUp .3s ease}
 .profilo-wrap{max-width:500px;margin:0 auto;padding:20px 14px 60px}
 .profilo-header{border-radius:24px;padding:28px 24px;margin-bottom:18px;text-align:center}
-.profilo-ava{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;margin:0 auto 12px; background:rgba(129,140,248,.2); border:2px solid var(--purple);}
+.profilo-ava{width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-weight:900; background:rgba(129,140,248,.2); border:2px solid var(--purple);}
 .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}
 .stat-box{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 8px;text-align:center}
-.countdown-box{background:linear-gradient(135deg,rgba(129,140,248,.15),rgba(139,92,246,.08));border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.countdown-num{font-family:"Bebas Neue",sans-serif;font-size:32px;color:var(--purple);letter-spacing:2px;min-width:36px;text-align:center}
-.countdown-lbl{font-size:9px;opacity:.5;letter-spacing:2px;text-align:center;margin-top:2px}
 .trofeo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .trofeo-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 10px;text-align:center}
 
@@ -225,7 +225,7 @@ select,input[type=text],input[type=number],input[type=password]{
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  SOCI CONFIGURATION (SOCI INDIVIDUALI, NO SCUDERIE)
+//  SOCI CONFIGURATION (SOCI INDIVIDUALI - SINTASSI CORRETTA)
 // ═══════════════════════════════════════════════════════════
 const ADMIN_PASSWORD = "cfp2024admin";
 const AUTH_TOKEN = "cfp2024admin_secret_token_2026"; 
@@ -287,8 +287,8 @@ const TROFEI = [
 
 const REGOLE_COMPLETE = [
   {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi! Classifiche mensili per il Socio del Mese e annuali per il Socio dell'Anno."},
-  {cat:"Cat", testo:"La classifica del Socio del Mese si apre ogni primo lunedì del mese. Un nuovo socio che si aggiunge inizierà a giocare dal mese successivo."},
-  {cat:"Cat", testo:"Se non si è d'accordo su una regola o si vuole aggiungerne una nuova, si può indire una votazione: con la maggioranza, verrà modificata."},
+  {cat:"⚙️ Apertura Sessioni", testo:"La classifica del Socio del Mese si apre ogni primo lunedì del mese. Un nuovo socio che si aggiunge inizierà a giocare dal mese successivo."},
+  {cat:"🗳️ Votazioni", testo:"Se non si è d'accordo su una regola o si vuole aggiungerne una nuova, si può indire una votazione: con la maggioranza, verrà modificata."},
   {cat:"✅ Tabella Bonus", testo:"Presenza in sede, evento o riunione → +50 pt | Delegato/a per un giorno per un'iniziativa CFP → +30 pt"},
   {cat:"✅ Tabella Bonus", testo:"Post sui social di spontanea volontà → +10 pt | Condivisione esperienza o ricordo utile → +10 pt"},
   {cat:"✅ Tabella Bonus", testo:"Porti qualcuno che si iscrive all'associazione → +100 pt | Porti una persona a una singola attività → +25 pt"},
@@ -300,8 +300,6 @@ const REGOLE_COMPLETE = [
 ];
 
 const MEDAGLIE = ["🥇","🥈","🥉"];
-let STATE = { soci:SOCI_DEFAULT, log:[], isAdmin:false, tab:0, selAZIONE:null, selSocio:"", customVal:1, nota:"" };
-let fbReady=false;
 
 function titolo(pts){
   if(pts>=800)return{label:"Leggenda",emoji:"👑",color:"#fbbf24"};
@@ -310,6 +308,9 @@ function titolo(pts){
   return{label:"In gioco",emoji:"🌱",color:"#94a3b8"};
 }
 
+// ═══════════════════════════════════════════════════════════
+//  METODI CORE DI RENDERING
+// ═══════════════════════════════════════════════════════════
 function sortedSoci(){ return[...STATE.soci].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{ if(a.uscito&&!b.uscito)return 1; if(!a.uscito&&b.uscito)return -1; return b.punti-a.punti; }); }
 function getTabs(){ const t=["🏆 Classifica", "🏅 Bacheca", "📜 Regolamento", "🎬 Tutorial", "📋 Log", "🔍 Cerca"]; if(STATE.isAdmin) t.push("➕ Assegna"); return t; }
 
@@ -393,89 +394,41 @@ function apriProfilo(id){
 }
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
 
-function renderMesi(){ return ``; }
-
-// ── TAB BACHECA: TITOLI INDIVIDUALI SENZA ALCUN RIFERIMENTO SQUADRE ──
-function renderBacheca(){
-  const cl=sortedSoci();
-  const withTrend=STATE.soci.map(s=>{
-    const valid=s.m.filter(v=>v!==null);
-    const trend=valid.length>1?valid[valid.length-1]-valid[valid.length-2]:0;
-    return{...s,trend};
-  });
-  const topTrend=withTrend.sort((a,b)=>b.trend-a.trend)[0];
-
-  return `
-    <div style="background:var(--panel-bg); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
-      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--gold); text-align:center; margin-bottom:14px;">🏅 ALBO D'ORO & ECCELLENZE INDIVIDUALI</div>
-      
-      <div class="card" style="border-left:4px solid var(--gold);">
-        🏆 **LEADER ASSOLUTO:** ${cl[0]?.nome || '—'} (${cl[0]?.punti || 0} Punti Totatli)
-      </div>
-      <div class="card" style="border-left:4px solid var(--purple);">
-        📈 **MIGLIOR TREND MENSILE:** ${topTrend?.nome || '—'} (${topTrend?.trend > 0 ? '+' : ''}${topTrend?.trend || 0} pt rispetto a ieri)
-      </div>
-    </div>
-    
-    <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--purple); margin-bottom:8px;">🎖️ TROFEI ATTIVI DA CONQUISTARE</div>
-    <div class="trofeo-grid">
-      ${TROFEI.map(tr=>{
-        const earners=STATE.soci.filter(s=>tr.check(s));
-        return `<div class="trofeo-card">
-          <div style="font-size:28px">${tr.emoji}</div>
-          <div style="font-weight:800; font-size:13px; color:var(--gold); margin-top:4px">${tr.nome}</div>
-          <div style="font-size:10px; opacity:0.6; margin-top:2px">${tr.desc}</div>
-          <div style="font-size:10px; color:var(--green); font-weight:800; margin-top:6px;">Conquistato da: ${earners.length>0 ? earners.map(x=>x.nome).join(", ") : 'Nessuno'}</div>
-        </div>`;
-      }).join("")}
-    </div>
-  `;
-}
-
-// ── TAB REGOLAMENTO: COMPLETO DI TUTTE LE SEZIONI ORIGINARIE ──
-function renderRegolamento(){
-  return `<div style="display:flex; flex-direction:column; gap:10px;">
-    <div class="card" style="background:rgba(99,102,241,.05); border-color:rgba(99,102,241,0.2)">
-      📜 **Linee Guida Ufficiali:** Contatta la presidenza CFP per proporre modifiche o varianti regolamentari.
-    </div>
-    ${REGOLE_COMPLETE.map(r=>`
-      <div class="card">
-        <div style="font-size:11px; color:var(--purple); font-weight:900; text-transform:uppercase;">${r.cat}</div>
-        <div style="font-size:13px; margin-top:4px; opacity:0.85; line-height:1.5">${r.testo}</div>
-      </div>
-    `).join("")}
-  </div>`;
-}
-
-// ── TAB TUTORIAL: VIDEO PLAYER INCORPORATO FUNZIONANTE ────────
-function renderTutorial(){
-  return `
-    <div style="text-align:center; margin-bottom:16px;">
-      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--pink);">🎬 VIDEO TUTORIAL MULTIMEDIALE</div>
-      <div style="font-size:12px; opacity:0.5;">Guida rapida visuale alle logiche ed ai punteggi del FantaSocio</div>
-    </div>
-    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:16px; border:1px solid var(--border); background:#000;">
-      <iframe src="https://www.youtube.com/embed/SmFlxIyacb8" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
-    </div>
-  `;
-}
-
 function renderLog(){
-  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;padding:40px">Registro log vuoto.</div>`;
-  return `${STATE.log.map(l=>{
-    return `<div class="log-item" style="align-items:center;">
-      <div style="flex:1; min-width:0;">
-        <div style="font-weight:800;font-size:14px">${l.socio}</div>
-        <div style="font-size:12px;opacity:0.6;">${l.azione} ${l.nota?` [📝 ${l.nota}]`:''}</div>
-      </div>
-      <div style="text-align:right; flex-shrink:0;">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?'var(--green)':'var(--red)'}">${l.delta>0?'+':''}${l.delta}</div>
-      </div>
-    </div>`;
-  }).join("")}`;
+  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;padding:40px">Registro attività vuoto.</div>`;
+  const intestazione = STATE.isAdmin ? `<div style="background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.15);border-radius:12px;padding:12px;font-size:12px;margin-bottom:12px;">🗑️ Modalità amministratore: Clicca <strong>Annulla</strong> per stornare.</div>` : '';
+  return `${intestazione}
+    ${STATE.log.map(l=>{
+      const btn = STATE.isAdmin ? `<button onclick="rimuoviDalLog(${l.id})" style="background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:2px 8px;cursor:pointer;font-size:11px;">✕ Annulla</button>` : '';
+      return `<div class="log-item" style="align-items:center;">
+        <div style="flex:1;">
+          <div style="font-weight:800;font-size:14px">${l.socio}</div>
+          <div style="font-size:12px;opacity:0.6;">${l.azione} ${l.nota?` - 📝 ${l.nota}`:''}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${l.delta>0?'var(--green)':'var(--red)'}">${l.delta>0?'+':''}${l.delta}</div>
+          ${btn}
+        </div>
+      </div>`;
+    }).join("")}`;
 }
 
-// ── TAB ASSEGNA - GAMIFICATION LAYOUT A DUE COLONNE ──────────
+function rimuoviDalLog(logId){
+  if(!STATE.isAdmin) return;
+  const entry=STATE.log.find(l=>l.id===logId); if(!entry) return;
+  if(!confirm(`Annullare "${entry.azione}" per ${entry.socio}?`)) return;
+  const socio=STATE.soci.find(s=>s.nome===entry.socio);
+  if(socio){
+    STATE.soci=STATE.soci.map(s=>{
+      if(s.nome!==entry.socio) return s;
+      const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)-entry.delta; return{...s,m:nuoviM};
+    });
+    window._fb.set(window._fb.ref(window._fb.db,"extra/m3/"+socio.id), STATE.soci.find(s=>s.id===socio.id).m[3]);
+  }
+  STATE.log=STATE.log.filter(l=>l.id!==logId); fbSaveLog(); render();
+}
+
+// ── TAB ASSEGNA - STRUTTURA A DUE COLONNE AD IMPATTO VISIVO ──
 function renderAssegna(){
   if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Pannello riservato agli amministratori.</div>`;
   const opts=[...STATE.soci].filter(s=>!s.uscito).sort((a,b)=>a.nome.localeCompare(b.nome)).map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`).join("");
@@ -491,7 +444,8 @@ function renderAssegna(){
 
   const selA=STATE.selAzione?[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione):null;
   const socioSel=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  const previewBlock=selA&&socioSel?`<div class="preview-box" style="margin-top:10px;"><span style="opacity:.65">Pronto a dare </span><span style="font-weight:900;color:${selA.pts>0?"var(--green)":"var(--red)"}">${selA.pts} PT</span><span style="opacity:.65"> a </span><span style="font-weight:900;color:var(--purple);">${socioSel.nome}</span></div>`:"";
+  const customBlock=selA?.custom?`<div style="margin-top:10px;background:rgba(255,255,255,0.02);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04)"><label class="form-lbl">VALORE VARIABILE</label><input type="number" min="1" value="${STATE.customVal}" oninput="STATE.customVal=Math.max(1,parseInt(this.value)||1);document.getElementById('gamePreviewCalc').textContent='= '+( ${selA.pts} * this.value )+' punti'"/><div id="gamePreviewCalc" style="font-size:12px;color:var(--purple);font-weight:800;margin-top:4px;">= ${selA.pts*(STATE.customVal||1)} punti</div></div>`:"";
+  const previewBlock=selA&&socioSel?`<div class="preview-box" style="margin-top:10px;"><span style="opacity:.65">Inviando </span><span style="font-weight:900;color:${selA.pts>0?"var(--green)":"var(--red)"}">${selA.custom?selA.pts*(STATE.customVal||1):selA.pts} PT</span><span style="opacity:.65"> verso </span><span style="font-weight:900;color:var(--purple);">${socioSel.nome}</span></div>`:"";
 
   return `<div class="admin-grid-layout">
       <div style="display:flex; flex-direction:column; gap:16px;">
@@ -500,13 +454,14 @@ function renderAssegna(){
           <label class="form-lbl">🎯 SOCIO BERSAGLIO</label>
           <select id="socioSelectField" onchange="STATE.selSocio=this.value; renderTab();"><option value="">— Seleziona —</option>${opts}</select>
           <script>document.getElementById('socioSelectField').value="${STATE.selSocio}";<\/script>
-          <label class="form-lbl" style="margin-top:14px;">📝 INSERISCI NOTA</label>
+          ${customBlock}
+          <label class="form-lbl" style="margin-top:10px;">📝 INSERISCI NOTA</label>
           <input type="text" placeholder="Note facoltative…" value="${STATE.nota}" oninput="STATE.nota=this.value" style="margin-bottom:12px"/>
           ${previewBlock}
           <button class="btn-primary" onclick="assegna()" style="margin-top:8px;">🚀 Registra Attività</button>
         </div>
         <div class="form-box console-box">
-          <div style="font-size:11px;color:var(--gold);font-weight:900;letter-spacing:1px;margin-bottom:8px">✏️ VALORE FUORI LISTA</div>
+          <div style="font-size:11px;color:var(--gold);font-weight:900;letter-spacing:1px;margin-bottom:8px">✏️ PUNTEGGIO STRAORDINARIO</div>
           <input type="text" id="customDesc" placeholder="Descrizione attività…" style="margin-bottom:6px; font-size:12px!important;"/>
           <input type="number" id="customPts" placeholder="Punti" style="margin-bottom:10px; text-align:center; font-size:12px!important;"/>
           <button onclick="assegnaPersonalizzato()" style="background:linear-gradient(135deg,#b45309,#d97706);color:#fff;border:none;border-radius:10px;padding:9px;font-weight:900;font-size:11px;cursor:pointer;width:100%;">Inietta Extra Punti</button>
@@ -543,12 +498,55 @@ function assegna(){
   STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
   window._fb.set(window._fb.ref(window._fb.db,"extra/m3/"+socio.id), STATE.soci.find(s=>s.id===socio.id).m[3]);
   window._fb.set(window._fb.ref(window._fb.db,"log"), STATE.log);
-  showToast("Push completato!"); STATE.selAzione=null;STATE.nota=""; render();
+  showToast("Completato!"); STATE.selAzione=null;STATE.nota=""; STATE.customVal=1; render();
+}
+
+// ── ALTRE INTERFACCE STRUTTURATE ─────────────────────────────
+function renderBacheca(){
+  const cl=sortedSoci();
+  return `
+    <div style="background:var(--panel-bg); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--gold); text-align:center; margin-bottom:14px;">🏅 ALBO D'ORO & ECCELLENZE INDIVIDUALI</div>
+      <div class="card" style="border-left:4px solid var(--gold);">🏆 **LEADER ASSOLUTO ALL-TIME:** ${cl[0]?.nome || '—'} (${cl[0]?.punti || 0} Punti Generali)</div>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--purple); margin-bottom:8px;">🎖️ TROFEI PROGRESSIVI INDIVIDUALI</div>
+    <div class="trofeo-grid">
+      ${TROFEI.map(tr=>{
+        const earners=STATE.soci.filter(s=>tr.check(s));
+        return `<div class="trofeo-card">
+          <div style="font-size:28px">${tr.emoji}</div>
+          <div style="font-weight:800; font-size:13px; color:var(--gold); margin-top:4px">${tr.nome}</div>
+          <div style="font-size:10px; opacity:0.6; margin-top:2px">${tr.desc}</div>
+          <div style="font-size:10px; color:var(--green); font-weight:800; margin-top:6px;">Detentori: ${earners.length>0 ? earners.map(x=>x.nome).join(", ") : 'In attesa'}</div>
+        </div>`;
+      }).join("")}
+    </div>`;
+}
+
+function renderRegolamento(){
+  return `<div style="display:flex; flex-direction:column; gap:10px;">
+    ${REGOLE_COMPLETE.map(r=>`
+      <div class="card">
+        <div style="font-size:11px; color:var(--purple); font-weight:900; text-transform:uppercase;">${r.cat}</div>
+        <div style="font-size:13px; margin-top:4px; opacity:0.85; line-height:1.5">${r.testo}</div>
+      </div>
+    `).join("")}
+  </div>`;
+}
+
+function renderTutorial(){
+  return `
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--pink);">🎬 VIDEO REQUISITI E REGOLAMENTO</div>
+    </div>
+    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:16px; border:1px solid var(--border); background:#000;">
+      <iframe src="https://www.youtube.com/embed/SmFlxIyacb8" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
+    </div>`;
 }
 
 function renderCerca(){
   const query=CERCA_QUERY.toLowerCase(); const risultati=sortedSoci().filter(s=>s.nome.toLowerCase().includes(query));
-  return`<div class="cerca-wrap" style="margin-bottom:12px;"><input class="cerca-input" type="text" placeholder="Digita il nome del socio da cercare…" oninput="CERCA_QUERY=this.value;renderTab()"/></div>
+  return`<div class="cerca-wrap" style="margin-bottom:12px;"><input class="cerca-input" type="text" placeholder="Digita il nome da filtrare…" oninput="CERCA_QUERY=this.value;renderTab()"/></div>
   ${risultati.map(s=>`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;">${s.nome} (${ptTotali(s)} pt)</div>`).join("")}`;
 }
 let CERCA_QUERY="";
@@ -568,11 +566,12 @@ function showAppRoot() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  SINCRO ENGINE REALTIME ANTI-BLOCCO RECOVERY
+//  SINCRO ENGINE REALTIME ANTI-BLOCCO (FALLBACK INTELLIGENTE)
 // ═══════════════════════════════════════════════════════════
 window.addEventListener("firebase-ready", () => {
   fbReady = true; const { db, ref, onValue } = window._fb;
 
+  // Meccanismo di sblocco forzato a 2 secondi se la sincronizzazione cloud fallisce
   setTimeout(() => { showAppRoot(); }, 2000);
 
   onValue(ref(db, "extra"), snap => {

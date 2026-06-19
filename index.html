@@ -28,147 +28,141 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#07070e;--card:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);
+  --bg:#05050b;--card:rgba(255,255,255,.03);--border:rgba(255,255,255,.06);
   --gold:#fbbf24;--pink:#f472b6;--purple:#818cf8;--green:#10b981;--red:#ef4444;
+  --panel-bg: rgba(13, 13, 25, 0.7);
 }
 html,body{min-height:100vh;background:var(--bg);color:#fff;font-family:'Nunito','Segoe UI',sans-serif}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
-@keyframes glow{0%,100%{box-shadow:0 0 10px rgba(129,140,248,.3)}50%{box-shadow:0 0 25px rgba(129,140,248,.7)}}
 
-.wrap{max-width:700px;margin:0 auto;padding:20px 13px 100px}
+.wrap{max-width:950px;margin:0 auto;padding:20px 13px 100px}
 
-/* LOGO */
 .logo{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:5px;
   background:linear-gradient(90deg,var(--gold),var(--pink),var(--purple));
-  background-size:200% auto;animation:shimmer 4s linear infinite;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+  background-size:200% auto;line-height:1;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 
-/* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 8px;text-align:center;transition:transform .2s}
-.kpi:hover{transform:translateY(-2px)}
 .kpi-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--purple);letter-spacing:1px}
 .kpi-lbl{font-size:9px;opacity:.4;letter-spacing:2px;margin-top:2px}
 
-/* TABS */
 .tabs{display:flex;gap:4px;background:rgba(0,0,0,.4);border-radius:14px;padding:4px;margin-bottom:18px;overflow-x:auto;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab-btn{flex:0 0 auto;border:none;border-radius:10px;padding:9px 13px;cursor:pointer;font-size:11px;font-weight:800;background:transparent;color:rgba(255,255,255,.4);transition:all .2s;font-family:inherit;white-space:nowrap}
 .tab-btn.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 3px 12px rgba(99,102,241,.4)}
 
-/* CARD */
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:9px;transition:transform .2s,box-shadow .2s;animation:fadeUp .35s ease}
 .card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.4)}
-.card.gold{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.05));border-color:rgba(251,191,36,.22)}
 
-/* AVATAR */
 .ava{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
-
-/* BADGE */
 .badge{font-size:10px;border-radius:20px;padding:2px 8px;font-weight:700;border:1px solid}
-
-/* BAR */
 .bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-top:6px}
 .bar{height:100%;border-radius:99px;transition:width .8s ease}
-
-/* MINI BARS */
 .mini-bars{display:flex;gap:4px;align-items:flex-end;margin-top:6px}
 .mini-bar-col{display:flex;flex-direction:column;align-items:center;gap:2px}
 .mini-bar{width:20px;border-radius:3px;transition:height .4s}
 .mini-lbl{font-size:8px;opacity:.4}
 
-/* SCUDERIA */
-.sc-card{border-radius:20px;overflow:hidden;margin-bottom:14px;border:1px solid}
-.sc-head{padding:15px 18px;display:flex;align-items:center;gap:13px}
-.sc-name{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}
-.sc-body{padding:0 18px 14px;display:flex;flex-wrap:wrap;gap:7px}
-.sc-member{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:30px;padding:5px 11px 5px 6px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s}
-.sc-member:hover{background:rgba(255,255,255,.12)}
-
-/* MESI */
-.seg{display:flex;gap:5px;background:rgba(0,0,0,.3);border-radius:12px;padding:4px;margin-bottom:14px}
-.seg-btn{flex:1;border:none;background:transparent;color:rgba(255,255,255,.4);font-weight:800;font-size:12px;padding:8px 4px;cursor:pointer;border-radius:99px;transition:all .2s;font-family:inherit}
-.seg-btn.on{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff}
-.honor-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.honor-box{border-radius:14px;padding:12px 14px;text-align:center}
-
-/* FORM */
-.form-box{background:rgba(255,255,255,.04);border:1px solid rgba(129,140,248,.16);border-radius:20px;padding:20px}
-.form-lbl{font-size:10px;opacity:.5;letter-spacing:2px;display:block;margin-bottom:6px}
+.form-box{background:var(--panel-bg);border:1px solid var(--border);border-radius:20px;padding:20px;backdrop-filter:blur(10px)}
+.form-lbl{font-size:10px;opacity:.6;letter-spacing:1px;font-weight:800;display:block;margin-bottom:6px}
 select,input[type=text],input[type=number],input[type=password]{
-  background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important;
+  background:rgba(255,255,255,.04)!important;border:1px solid rgba(255,255,255,.08)!important;
   border-radius:10px!important;color:#fff!important;padding:10px 13px!important;
   width:100%!important;font-size:14px!important;outline:none!important;font-family:inherit!important;box-sizing:border-box!important}
-select:focus,input:focus{border-color:#818cf8!important;background:rgba(129,140,248,.1)!important}
-select option{background:#12121e;color:#fff}
-.azione-btn{border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 12px;background:rgba(255,255,255,.03);color:#fff;cursor:pointer;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:inherit;transition:all .15s;width:100%;margin-bottom:4px;font-size:12px;font-weight:600}
-.azione-btn.sel-bonus{border-color:var(--green)!important;background:rgba(16,185,129,.12)!important}
-.azione-btn.sel-malus{border-color:var(--red)!important;background:rgba(239,68,68,.12)!important}
-.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:800;width:100%;cursor:pointer;font-family:inherit;transition:opacity .18s,transform .15s}
-.btn-primary:hover{opacity:.88;transform:scale(1.02)}
-.preview-box{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.22);border-radius:11px;padding:11px 14px;margin-bottom:13px;font-size:13px}
 
-/* LOG */
+.btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-size:14px;font-weight:900;width:100%;cursor:pointer;font-family:inherit;transition:all .2s;text-transform:uppercase;letter-spacing:1px}
+.preview-box{background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);border-radius:12px;padding:11px 14px;font-size:13px}
 .log-item{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:12px 15px;margin-bottom:7px;display:flex;align-items:flex-start;gap:11px}
 
-/* ADMIN */
+/* ASSEGNA GAMIFICATION GRID */
+.admin-grid-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  gap: 20px;
+  align-items: start;
+  animation: fadeUp .4s ease;
+}
+.actions-panel-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding-bottom: 6px;
+}
+.actions-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 10px;
+}
+
+.action-game-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.01), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 12px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+.action-game-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.18); }
+.action-game-card-lbl { font-size: 12px; line-height: 1.4; font-weight: 700; opacity: 0.85; }
+.action-game-card-pts {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  background: rgba(0,0,0,0.2);
+  padding: 2px 8px;
+  border-radius: 8px;
+  align-self: flex-end;
+}
+
+.action-game-card.sel-bonus {
+  border-color: var(--green) !important;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.02)) !important;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+}
+.action-game-card.sel-bonus .action-game-card-pts { color: var(--green); }
+
+.action-game-card.sel-malus {
+  border-color: var(--red) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(239, 68, 68, 0.02)) !important;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+}
+.action-game-card.sel-malus .action-game-card-pts { color: var(--red); }
+
+.console-box { border: 1px solid rgba(251,191,36,0.12); border-radius: 16px; padding: 14px; }
 .admin-bar{background:linear-gradient(90deg,rgba(99,102,241,.2),rgba(139,92,246,.1));border-bottom:1px solid rgba(129,140,248,.2);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:700}
 .lock-overlay{position:fixed;inset:0;background:rgba(7,7,14,.96);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(4px)}
 .lock-box{background:#12121e;border:1px solid rgba(129,140,248,.25);border-radius:20px;padding:32px 28px;max-width:340px;width:90%;text-align:center}
-.toast{position:fixed;top:18px;right:18px;z-index:9999;border-radius:14px;padding:11px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 28px rgba(0,0,0,.5);animation:slideIn .3s ease;max-width:290px}
+.toast{position:fixed;top:18px;right:18px;z-index:9999;border-radius:14px;padding:11px 20px;font-weight:800;font-size:14px;box-shadow:0 8px 28px rgba(0,0,0,.5);animation:slideIn .3s ease}
 .spinner{width:40px;height:40px;border:3px solid rgba(129,140,248,.2);border-top-color:var(--purple);border-radius:50%;animation:spin 1s linear infinite;margin:40px auto}
-
-/* PROFILO OVERLAY */
 .profilo-overlay{position:fixed;inset:0;background:rgba(7,7,14,.97);z-index:500;overflow-y:auto;animation:fadeUp .3s ease}
 .profilo-wrap{max-width:500px;margin:0 auto;padding:20px 14px 60px}
-.profilo-header{border-radius:24px;padding:28px 24px;margin-bottom:18px;text-align:center;position:relative}
-.profilo-ava{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;margin:0 auto 12px;animation:glow 3s ease infinite}
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.profilo-header{border-radius:24px;padding:28px 24px;margin-bottom:18px;text-align:center}
+.profilo-ava{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:26px;margin:0 auto 12px; background:rgba(129,140,248,.2); border:2px solid var(--purple);}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}
 .stat-box{background:rgba(255,255,255,.06);border-radius:12px;padding:10px 8px;text-align:center}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
-.stat-lbl{font-size:9px;opacity:.5;letter-spacing:1px;margin-top:2px}
-
-/* MISSIONI */
-.missione-card{border-radius:16px;padding:14px 16px;margin-bottom:10px;border:1px solid;display:flex;align-items:center;gap:14px;transition:transform .2s}
-.missione-card:hover{transform:translateY(-2px)}
-.missione-prog{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-top:8px}
-.missione-fill{height:100%;border-radius:99px;transition:width .8s ease}
-
-/* BACHECA */
-.trofeo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-.trofeo-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 10px;text-align:center;transition:transform .2s}
-.trofeo-card:hover{transform:translateY(-3px)}
-.trofeo-card.earned{background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(244,114,182,.06));border-color:rgba(251,191,36,.3);animation:glow 3s ease infinite}
-.trofeo-emoji{font-size:32px;margin-bottom:6px}
-.trofeo-nome{font-size:12px;font-weight:800;margin-bottom:3px}
-.trofeo-desc{font-size:10px;opacity:.5}
-
-/* GRAFICO */
-.chart-container{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;margin-bottom:14px}
-.chart-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;margin-bottom:14px;color:var(--purple)}
-
-/* CERCA */
-.cerca-input{background:rgba(255,255,255,.07)!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:14px!important;color:#fff!important;padding:12px 16px 12px 42px!important;width:100%!important;font-size:15px!important;outline:none!important;font-family:inherit!important;box-sizing:border-box!important}
-.cerca-wrap{position:relative;margin-bottom:16px}
-.cerca-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none}
-/* COUNTDOWN */
 .countdown-box{background:linear-gradient(135deg,rgba(129,140,248,.15),rgba(139,92,246,.08));border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .countdown-num{font-family:"Bebas Neue",sans-serif;font-size:32px;color:var(--purple);letter-spacing:2px;min-width:36px;text-align:center}
 .countdown-lbl{font-size:9px;opacity:.5;letter-spacing:2px;text-align:center;margin-top:2px}
-/* STORICO SCUDERIE */
-.storico-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px}
-/* WELCOME */
-.welcome-overlay{position:fixed;inset:0;background:rgba(7,7,14,.98);z-index:800;display:flex;align-items:center;justify-content:center;animation:fadeUp .4s ease}
-/* LIVELLO NOTIFICA */
-@keyframes levelUp{0%{transform:scale(0.5);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-.level-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:24px;padding:28px 36px;text-align:center;box-shadow:0 20px 60px rgba(124,58,237,.5);animation:levelUp .5s ease}
-@media(max-width:420px){
-  .logo{font-size:40px}
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+.trofeo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.trofeo-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 10px;text-align:center}
+
+@media(max-width: 820px) {
+  .admin-grid-layout { grid-template-columns: 1fr; gap: 16px; }
+  .kpi-grid { grid-template-columns: repeat(2,1fr); }
   .trofeo-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -184,7 +178,6 @@ select option{background:#12121e;color:#fff}
   <div class="lock-box">
     <div style="font-size:40px;margin-bottom:12px">🔐</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:6px">AREA ADMIN</div>
-    <div style="font-size:13px;opacity:.5;margin-bottom:22px">Inserisci la password per modificare i dati</div>
     <input type="password" id="pwdInput" placeholder="Password admin…" onkeydown="if(event.key==='Enter')checkPwd()"/>
     <button class="btn-primary" style="margin-top:10px" onclick="checkPwd()">Entra</button>
     <div id="pwdErr" style="color:#ef4444;font-size:12px;margin-top:10px;display:none">❌ Password errata</div>
@@ -192,41 +185,17 @@ select option{background:#12121e;color:#fff}
   </div>
 </div>
 
-<div id="welcomeOverlay" style="display:none" class="welcome-overlay">
-  <div style="max-width:360px;width:90%;text-align:center;padding:20px">
-    <div style="font-size:60px;margin-bottom:16px;animation:pulse 2s infinite">🏆</div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;background:linear-gradient(90deg,#fbbf24,#f472b6,#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px">FANTA SOCIO</div>
-    <div style="font-size:13px;opacity:.6;letter-spacing:2px;margin-bottom:24px">CFP · CLASSIFICA UFFICIALE</div>
-    <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:16px;margin-bottom:20px;font-size:13px;line-height:1.7;opacity:.8">
-      🎮 Benvenuto nel FantaSocio!<br>
-      Guadagna punti partecipando alle attività CFP.<br>
-      Ogni socio gioca per sé — vinca il migliore! 🏆<br>
-      <span style="color:#fbbf24;font-weight:800">Mese attivo: Giugno 2026</span>
-    </div>
-    <button onclick="chiudiWelcome()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:14px;color:#fff;padding:14px 32px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;width:100%;letter-spacing:1px">INIZIA 🚀</button>
-    <div style="font-size:11px;opacity:.35;margin-top:12px">Triplica click sul titolo per accedere come admin</div>
-  </div>
-</div>
-
-<div id="levelToast" style="display:none" class="level-toast">
-  <div style="font-size:48px;margin-bottom:8px">🎊</div>
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px">NUOVO LIVELLO!</div>
-  <div id="levelToastText" style="font-size:16px;margin-top:6px;opacity:.85"></div>
-</div>
-
-<div id="profiloOverlay" style="display:none" class="profilo-overlay"></div>
-
 <div class="toast" id="toast" style="display:none"></div>
 
 <div id="loadingScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px">
   <div class="spinner"></div>
   <div style="opacity:.4;font-size:13px;letter-spacing:1px">CONNESSIONE IN CORSO…</div>
-  <button onclick="apriLocale()" style="margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:rgba(255,255,255,.4);padding:8px 18px;font-size:12px;cursor:pointer;font-family:inherit">Apri senza connessione</button>
+  <button onclick="apriLocale()" style="margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:rgba(255,255,255,.4);padding:8px 18px;font-size:12px;cursor:pointer;font-family:inherit">Sblocca senza connessione</button>
 </div>
 
 <div id="appRoot" style="display:none">
   <div class="wrap">
-    <div style="text-align:center;margin-bottom:16px;animation:fadeUp .5s ease">
+    <div style="text-align:center;margin-bottom:16px;">
       <div class="logo" id="logoClick">FANTA SOCIO</div>
       <div style="font-size:11px;opacity:.4;letter-spacing:3px;margin-top:3px">CFP · CLASSIFICA UFFICIALE</div>
     </div>
@@ -244,7 +213,6 @@ select option{background:#12121e;color:#fff}
       <div style="margin-left:auto;text-align:right">
         <div style="font-size:10px;opacity:.5;letter-spacing:1px">MESE ATTIVO</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#10b981;letter-spacing:1px">GIUGNO 2026</div>
-        <div style="font-size:10px;opacity:.4">Classifica individuale</div>
       </div>
     </div>
     <div class="kpi-grid" id="kpiGrid"></div>
@@ -253,44 +221,40 @@ select option{background:#12121e;color:#fff}
   </div>
 </div>
 
+<div id="profiloOverlay" style="display:none" class="profilo-overlay"></div>
+
 <script>
 // ═══════════════════════════════════════════════════════════
-//  CONFIGURAZIONE TOKEN DI SICUREZZA E BASE
+//  SOCI CONFIGURATION (SOCI INDIVIDUALI, NO SCUDERIE)
 // ═══════════════════════════════════════════════════════════
 const ADMIN_PASSWORD = "cfp2024admin";
-const AUTH_TOKEN = "cfp2024admin_secret_token_2026"; // Token richiesto lato server dalle regole di Firebase
-
-const SCUDERIE = [
-  {id:1,nome:"Inarrestabili", capitano:"Denise",      colore:"#10b981",emoji:"⚡",bg:"linear-gradient(135deg,#064e3b,#065f46)"},
-  {id:2,nome:"Inarrivabili",   capitano:"Angelo Greco",colore:"#f59e0b",emoji:"🦅",bg:"linear-gradient(135deg,#78350f,#92400e)"},
-  {id:3,nome:"Invincibili",    capitano:"Gabriel",     colore:"#6366f1",emoji:"🔥",bg:"linear-gradient(135deg,#1e1b4b,#312e81)"},
-];
+const AUTH_TOKEN = "cfp2024admin_secret_token_2026"; 
 
 const SOCI_DEFAULT = [
-  {id:1, nome:"Denise",           avatar:"DE",sc:1,cap:true, m:[110,215,215, 0,0,0], extra:0},
-  {id:9, nome:"Angelo",      avatar:"AG",sc:2,cap:true, m:[695,225,485, 0,0,0], extra:0},
-  {id:15,nome:"Gabriel",           avatar:"GA",sc:3,cap:true, m:[695,370,355, 0,0,0], extra:0},
-  {id:13,nome:"Lorenzo",           avatar:"LO",sc:1,cap:false,m:[50,-20,0,    0,0,0], extra:0},
-  {id:2, nome:"Antonella",         avatar:"AN",sc:1,cap:false,m:[20,10,7,     0,0,0], extra:0},
-  {id:8, nome:"Marco L.",          avatar:"ML",sc:1,cap:false,m:[0,0,-30,     null,null,null], extra:0, uscito:true, nascosto:true},
-  {id:23,nome:"Martina",           avatar:"MA",sc:1,cap:false,m:[null,null,57, 0,0,0], extra:0},
-  {id:10,nome:"F. Giardina",avatar:"FG",sc:1,cap:false,m:[-25,0,60,    0,0,0], extra:0},
-  {id:20,nome:"Ivan",              avatar:"IV",sc:1,cap:false,m:[170,0,35,    0,0,0], extra:0},
-  {id:19,nome:"Monica",            avatar:"MO",sc:1,cap:false,m:[30,0,-20,    0,0,0], extra:0},
-  {id:14,nome:"Luigi",              avatar:"LU",sc:2,cap:false,m:[250,175,142, 0,0,0], extra:0},
-  {id:11,nome:"Valentina",         avatar:"VA",sc:2,cap:false,m:[700,115,115, 0,0,0], extra:0},
-  {id:17,nome:"F. Pio",     avatar:"FP",sc:2,cap:false,m:[195,-5,35,   0,0,0], extra:0},
-  {id:7, nome:"Frizzo",            avatar:"FR",sc:2,cap:false,m:[-10,-20,-20, 0,0,0], extra:0},
-  {id:12,nome:"Jessica",           avatar:"JE",sc:2,cap:false,m:[200,65,30,   0,0,0], extra:0},
-  {id:22,nome:"Greta",              avatar:"GR",sc:2,cap:false,m:[0,-20,0,     0,0,0], extra:0},
-  {id:18,nome:"Annarosa",          avatar:"AR",sc:2,cap:false,m:[250,70,15,   0,0,0], extra:0},
-  {id:21,nome:"Arianna",           avatar:"AI",sc:3,cap:false,m:[-20,-20,-20, 0,0,0], extra:0},
-  {id:5, nome:"Rosa",              avatar:"RO",sc:3,cap:false,m:[50,10,0,     0,0,0], extra:0},
-  {id:16,nome:"Mirella",           avatar:"MI",sc:3,cap:false,m:[250,0,30,    0,0,0], extra:0},
-  {id:6, nome:"Danilo",            avatar:"DA",sc:3,cap:false,m:[265,60,10,   0,0,0], extra:0},
-  {id:24,nome:"Maria",              avatar:"MA",sc:3,cap:false,m:[null,null,null,0,0,0], extra:0},
-  {id:4, nome:"Giorgia",           avatar:"GG",sc:3,cap:false,m:[345,65,100,  0,0,0], extra:0},
-  {id:3, nome:"Giovanni",          avatar:"GI",sc:3,cap:false,m:[300,40,50,   0,0,0], extra:0},
+  {id:1, nome:"Denise",           avatar:"DE", m:[110,215,215, 0,0,0]},
+  {id:9, nome:"Angelo",           avatar:"AG", m:[695,225,485, 0,0,0]},
+  {id:15,nome:"Gabriel",          avatar:"GA", m:[695,370,355, 0,0,0]},
+  {id:13,nome:"Lorenzo",          avatar:"LO", m:[50,-20,0,    0,0,0]},
+  {id:2, nome:"Antonella",        avatar:"AN", m:[20,10,7,     0,0,0]},
+  {id:8, nome:"Marco L.",         avatar:"ML", m:[0,0,-30,     null,null,null], uscito:true},
+  {id:23,nome:"Martina",          avatar:"MA", m:[null,null,57, 0,0,0]},
+  {id:10,nome:"F. Giardina",      avatar:"FG", m:[-25,0,60,    0,0,0]},
+  {id:20,nome:"Ivan",             avatar:"IV", m:[170,0,35,    0,0,0]},
+  {id:19,nome:"Monica",           avatar:"MO", m:[30,0,-20,    0,0,0]},
+  {id:14,nome:"Luigi",            avatar:"LU", m:[250,175,142, 0,0,0]},
+  {id:11,nome:"Valentina",        avatar:"VA", m:[700,115,115, 0,0,0]},
+  {id:17,nome:"F. Pio",           avatar:"FP", m:[195,-5,35,   0,0,0]},
+  {id:7, nome:"Frizzo",           avatar:"FR", m:[-10,-20,-20, 0,0,0]},
+  {id:12,nome:"Jessica",          avatar:"JE", m:[200,65,30,   0,0,0]},
+  {id:22,nome:"Greta",            avatar:"GR", m:[0,-20,0,     0,0,0]},
+  {id:18,nome:"Annarosa",         avatar:"AR", m:[250,70,15,   0,0,0]},
+  {id:21,nome:"Arianna",          avatar:"AI", m:[-20,-20,-20, 0,0,0]},
+  {id:5, nome:"Rosa",             avatar:"RO", m:[50,10,0,     0,0,0]},
+  {id:16,nome:"Mirella",          avatar:"MI", m:[250,0,30,    0,0,0]},
+  {id:6, nome:"Danilo",           avatar:"DA", m:[265,60,10,   0,0,0]},
+  {id:24,nome:"Maria",            avatar:"MA", m:[null,null,null,0,0,0]},
+  {id:4, nome:"Giorgia",          avatar:"GG", m:[345,65,100,  0,0,0]},
+  {id:3, nome:"Giovanni",         avatar:"GI", m:[300,40,50,   0,0,0]},
 ];
 
 const MESE_LABELS  = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto"];
@@ -301,665 +265,343 @@ const BONUS = [
   {id:"b3", label:"Post sui social spontaneo",                  pts:10,  emoji:"📣"},
   {id:"b4", label:"Condivisione esperienza sul gruppo",         pts:10,  emoji:"💬"},
   {id:"b5", label:"Condivisione evento / link sul gruppo",      pts:5,   emoji:"🔗"},
-  {id:"b6", label:"Hai portato qualcuno a iscriversi all'associazione", pts:100, emoji:"🌟"},
-  {id:"b16",label:"Hai portato qualcuno a una singola attività",       pts:25,  emoji:"🎯"},
-  {id:"b7", label:"Ricordato compleanno / complimento sincero", pts:10,  emoji:"🎂"},
-  {id:"b8", label:"Offerto passaggio per attività",              pts:20,  emoji:"🚗"},
-  {id:"b9", label:"Gestito bene una situazione difficile",      pts:30,  emoji:"🧠"},
+  {id:"b6", label:"Iscrizione nuovo socio",                     pts:100, emoji:"🌟"},
+  {id:"b16",label:"Partecipazione singola attività",            pts:25,  emoji:"🎯"},
+  {id:"b7", label:"Compleanno o complimento",                  pts:10,  emoji:"🎂"},
   {id:"b10",label:"Pulizia o allestimento sede",                pts:50,  emoji:"🧹"},
-  {id:"b11",label:"Arrivato in orario (10 min tolleranza)",     pts:10,  emoji:"⏰"},
-  {id:"b12",label:"Articolo per il blog",                       pts:50,  emoji:"✍️"},
-  {id:"b13",label:"Audio per il podcast",                       pts:50,  emoji:"🎙️"},
-  {id:"b14",label:"Donazione (1€ = 1pt)",                       pts:1,   emoji:"💶",custom:true},
-  {id:"b15",label:"5x1000 destinato all'associazione",          pts:50,  emoji:"📋"},
+  {id:"b11",label:"Arrivato in orario",                         pts:10,  emoji:"⏰"},
 ];
 const MALUS = [
-  {id:"m1", label:"Dici 'ci sono' e sparisci senza avvisare",   pts:-30, emoji:"👻"},
-  {id:"m2", label:"Leggi e non rispondi per ore",               pts:-20, emoji:"👀"},
-  {id:"m3", label:"Ritardo (inserisci minuti)",                  pts:-1,  emoji:"⏱️",custom:true},
-  {id:"m4", label:"Domanda già risposta nel messaggio prima",   pts:-10, emoji:"🤦"},
-  {id:"m5", label:"Hai citato il FantaSocio",                   pts:-10, emoji:"🤫"},
-  {id:"m6", label:"Lamentarsi senza proporre soluzione",        pts:-15, emoji:"😤"},
-  {id:"m7", label:"Presente ma al telefono continuamente",      pts:-20, emoji:"📱"},
-  {id:"m8", label:"Messaggi di gruppo per una sola persona",    pts:-5,  emoji:"💬"},
-  {id:"m9", label:"Parolacce offensive",                        pts:-15, emoji:"🤬"},
-  {id:"m10",label:"Bestemmie",                                   pts:-25, emoji:"⛪"},
-  {id:"m11",label:"Barare nel resoconto settimanale",            pts:-100,emoji:"🃏"},
-];
-
-const MISSIONI = [
-  {id:"ms1",emoji:"🏠",titolo:"Presenza costante",   desc:"Partecipa a 3 eventi questo mese",    target:3,  tipo:"eventi",   pts:30},
-  {id:"ms2",emoji:"📣",titolo:"Social star",          desc:"Condividi 5 post sui social",          target:5,  tipo:"social",   pts:25},
-  {id:"ms3",emoji:"🌟",titolo:"Recruiter",            desc:"Porta 1 nuovo iscritto",               target:1,  tipo:"recruiter",pts:150},
-  {id:"ms4",emoji:"✍️",titolo:"Blogger",              desc:"Scrivi 2 articoli per il blog",        target:2,  tipo:"blog",      pts:60},
-  {id:"ms5",emoji:"🧹",titolo:"Custode della sede",  desc:"Pulisci o allestisci la sede 2 volte", target:2,  tipo:"pulizie",  pts:60},
-  {id:"ms6",emoji:"⏰",titolo:"Puntualità perfetta",  desc:"Sii in orario 5 volte",                 target:5,  tipo:"orario",   pts:30},
+  {id:"m1", label:"Sparire senza avvisare",                     pts:-30, emoji:"👻"},
+  {id:"m2", label:"Non rispondere per ore",                     pts:-20, emoji:"👀"},
+  {id:"m4", label:"Domanda ripetuta",                           pts:-10, emoji:"🤦"},
+  {id:"m5", label:"Citato il FantaSocio",                       pts:-10, emoji:"🤫"},
+  {id:"m6", label:"Lamentarsi senza soluzioni",                 pts:-15, emoji:"😤"},
 ];
 
 const TROFEI = [
-  {id:"t1", emoji:"👑",nome:"Leggenda",     desc:"Supera 800 punti totali",     check:s=>ptTotali(s)>=800},
-  {id:"t2", emoji:"🏆",nome:"Campione",     desc:"Supera 500 punti totali",     check:s=>ptTotali(s)>=500},
-  {id:"t3", emoji:"🌟",nome:"Recruiter",    desc:"Porta almeno 1 nuovo iscritto",  check:s=>s.m.some(v=>v>=100)},
-  {id:"t4", emoji:"📣",nome:"Social Star",  desc:"Attivo sui social ogni mese",    check:s=>s.m.filter(v=>v>0).length>=2},
-  {id:"t5", emoji:"🎙️",nome:"Podcaster",    desc:"Registra un audio per il podcast",check:s=>ptTotali(s)>50},
-  {id:"t6", emoji:"⚡",nome:"Inarrestabile",desc:"Non perdi mai un evento",        check:s=>s.m.every(v=>v>=0)},
-  {id:"t7", emoji:"🔥",nome:"In fiamme",    desc:"3 mesi positivi di fila",        check:s=>s.m.filter(v=>v>0).length===3},
-  {id:"t8", emoji:"💎",nome:"Diamante",     desc:"Mese da oltre 300 punti",        check:s=>s.m.some(v=>v>=300)},
-  {id:"t9", emoji:"🚀",nome:"Lancio",       desc:"Primo mese con punti positivi",  check:s=>s.m[0]>0},
+  {id:"t1", emoji:"👑", nome:"Leggenda",     desc:"Supera 800 punti totali",     check:s=>ptTotali(s)>=800},
+  {id:"t2", emoji:"🏆", nome:"Campione",     desc:"Supera 500 punti totali",     check:s=>ptTotali(s)>=500},
+  {id:"t3", emoji:"🌟", nome:"Attivo",       desc:"Supera 100 punti totali",     check:s=>ptTotali(s)>=100}
+];
+
+const REGOLE_COMPLETE = [
+  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi! Classifiche mensili per il Socio del Mese e annuali per il Socio dell'Anno."},
+  {cat:"Cat", testo:"La classifica del Socio del Mese si apre ogni primo lunedì del mese. Un nuovo socio che si aggiunge inizierà a giocare dal mese successivo."},
+  {cat:"Cat", testo:"Se non si è d'accordo su una regola o si vuole aggiungerne una nuova, si può indire una votazione: con la maggioranza, verrà modificata."},
+  {cat:"✅ Tabella Bonus", testo:"Presenza in sede, evento o riunione → +50 pt | Delegato/a per un giorno per un'iniziativa CFP → +30 pt"},
+  {cat:"✅ Tabella Bonus", testo:"Post sui social di spontanea volontà → +10 pt | Condivisione esperienza o ricordo utile → +10 pt"},
+  {cat:"✅ Tabella Bonus", testo:"Porti qualcuno che si iscrive all'associazione → +100 pt | Porti una persona a una singola attività → +25 pt"},
+  {cat:"✅ Tabella Bonus", testo:"Offri un passaggio per un'attività dell'associazione → +20 pt | Pulizia o allestimento sede → +50 pt | Arrivato in orario → +10 pt"},
+  {cat:"❌ Tabella Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt | Leggi un messaggio e non rispondi per ore → -20 pt"},
+  {cat:"❌ Tabella Malus", testo:"Arrivi in ritardo (tolleranza 10 minuti) → -1 pt per ogni minuto di ritardo."},
+  {cat:"❌ Tabella Malus", testo:"Domanda la cui risposta era già presente nel messaggio precedente → -10 pt | Citi direttamente o indirettamente il FantaSocio → -10 pt"},
+  {cat:"🏆 Premi", testo:"Socio del Mese: chi ottiene più punti nel mese vince il diritto di scegliere l'attività ludica del mese successivo (film, ristorante, ecc.)."}
 ];
 
 const MEDAGLIE = ["🥇","🥈","🥉"];
-
-// ═══════════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════════
-let STATE = {
-  soci:SOCI_DEFAULT,log:[],isAdmin:false,tab:0,meseView:3,
-  selAzione:null,selSocio:"",customVal:1,nota:"",
-};
+let STATE = { soci:SOCI_DEFAULT, log:[], isAdmin:false, tab:0, selAZIONE:null, selSocio:"", customVal:1, nota:"" };
 let fbReady=false;
-let chartInstances={};
-
-// ═══════════════════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════════════════
-function ptTotali(s){return s.m.reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
 
 function titolo(pts){
   if(pts>=800)return{label:"Leggenda",emoji:"👑",color:"#fbbf24"};
   if(pts>=500)return{label:"Campione",emoji:"🏆",color:"#f59e0b"};
   if(pts>=250)return{label:"Veterano",emoji:"⭐",color:"#10b981"};
-  if(pts>=100)return{label:"Attivo",  emoji:"🌟",color:"#6366f1"};
-  if(pts>0)   return{label:"In gioco",emoji:"🌱",color:"#94a3b8"};
-  return            {label:"Zero",    emoji:"😶",color:"#64748b"};
+  return{label:"In gioco",emoji:"🌱",color:"#94a3b8"};
 }
 
-function getSC(id){return SCUDERIE.find(s=>s.id===id)||{};}
-function sortedSoci(){
-  return[...STATE.soci].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{
-    if(a.uscito&&!b.uscito)return 1;
-    if(!a.uscito&&b.uscito)return -1;
-    return b.punti-a.punti;
-  });
-}
+function sortedSoci(){ return[...STATE.soci].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{ if(a.uscito&&!b.uscito)return 1; if(!a.uscito&&b.uscito)return -1; return b.punti-a.punti; }); }
+function getTabs(){ const t=["🏆 Classifica", "🏅 Bacheca", "📜 Regolamento", "🎬 Tutorial", "📋 Log", "🔍 Cerca"]; if(STATE.isAdmin) t.push("➕ Assegna"); return t; }
 
-function scuderiePunti(){
-  return SCUDERIE.map(sc=>({
-    ...sc,
-    punteggio:STATE.soci.filter(s=>s.sc===sc.id).reduce((a,s)=>a+ptTotali(s),0),
-    membri:[...STATE.soci].filter(s=>s.sc===sc.id&&!s.uscito).map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>b.punti-a.punti),
-  })).sort((a,b)=>b.punteggio-a.punteggio);
-}
-
-function showToast(msg,err=false){
-  const t=document.getElementById("toast");
-  t.textContent=msg;t.style.background=err?"#dc2626":"#059669";t.style.display="block";
-  setTimeout(()=>t.style.display="none",3000);
-}
-
-// ═══════════════════════════════════════════════════════════
-//  FIREBASE WRITERS - PROTETTI CON TOKEN STRUTTURATO
-// ═══════════════════════════════════════════════════════════
-function fbSaveExtra(socioId,meseIdx,val){
-  if(!fbReady || !STATE.isAdmin) return;
-  const{db,ref,set}=window._fb;
-  set(ref(db,"extra/m"+meseIdx+"/"+socioId), {
-    value: val,
-    auth_token: AUTH_TOKEN
-  });
-}
-function fbSaveLog(){
-  if(!fbReady || !STATE.isAdmin) return;
-  const{db,ref,set}=window._fb;
-  set(ref(db,"log"), {
-    data: STATE.log,
-    auth_token: AUTH_TOKEN
-  });
-}
-
-// ═══════════════════════════════════════════════════════════
-//  AUTH
-// ═══════════════════════════════════════════════════════════
-function checkPwd(){
-  const v=document.getElementById("pwdInput").value;
-  if(v===ADMIN_PASSWORD){
-    STATE.isAdmin=true;
-    document.getElementById("lockOverlay").style.display="none";
-    document.getElementById("adminBar").style.display="flex";
-    render();showToast("Benvenuto Admin! 🔓");
-  }else{
-    document.getElementById("pwdErr").style.display="block";
-    document.getElementById("pwdInput").value="";
-  }
-}
-function logout(){
-  STATE.isAdmin=false;
-  document.getElementById("adminBar").style.display="none";
-  render();showToast("Uscito 🔒");
-}
-
-function getTabs(){
-  const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
-  if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
-  return t;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  LIFECYCLE CORE RENDERING
-// ═══════════════════════════════════════════════════════════
-function render(){
-  renderKPI();renderTabs();renderTab();
-}
+function render(){ renderKPI(); renderTabs(); renderTab(); }
 
 function renderKPI(){
-  const cl=sortedSoci();
-  const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
+  const cl=sortedSoci(); const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
   document.getElementById("kpiGrid").innerHTML=[
     {icon:"👥",val:STATE.soci.filter(s=>!s.uscito).length, label:"SOCI"},
     {icon:"🥇",val:cl[0]?.nome?.split(" ")[0]||"-",        label:"LEADER"},
     {icon:"⭐",val:cl[0]?.punti??0,                        label:"TOP PT"},
     {icon:"📊",val:media,                                   label:"MEDIA PT"},
-  ].map(k=>`<div class="kpi"><div style="font-size:18px">${k.icon}</div><div class="kpi-val" style="font-size:${k.label==="LEADER"?"18px":"26px"}">${k.val}</div><div class="kpi-lbl">${k.label}</div></div>`).join("");
+  ].map(k=>`<div class="kpi"><div style="font-size:18px">${k.icon}</div><div class="kpi-val">${k.val}</div><div class="kpi-lbl">${k.label}</div></div>`).join("");
 }
 
-function renderTabs(){
-  const tabs=getTabs();
-  if(STATE.tab>=tabs.length)STATE.tab=0;
-  document.getElementById("tabBar").innerHTML=tabs.map((t,i)=>
-    `<button class="tab-btn${STATE.tab===i?" on":""}" onclick="setTab(${i})">${t}</button>`
-  ).join("");
-}
-
-function setTab(i){STATE.tab=i;render();}
+function renderTabs(){ document.getElementById("tabBar").innerHTML=getTabs().map((t,i)=>`<button class="tab-btn${STATE.tab===i?" on":""}" onclick="setTab(${i})">${t}</button>`).join(""); }
+function setTab(i){STATE.tab=i; render();}
 
 function renderTab(){
-  const tabs=getTabs();const label=tabs[STATE.tab]||"";
-  const el=document.getElementById("tabContent");
-  Object.values(chartInstances).forEach(c=>{try{c.destroy();}catch(e){}});
-  chartInstances={};
-  if(label.includes("Classifica"))el.innerHTML=renderClassifica();
-  else if(label.includes("Mesi"))el.innerHTML=renderMesi();
-  else if(label.includes("Grafici")){el.innerHTML=renderGrafici();initGrafici();}
-  else if(label.includes("Bacheca"))el.innerHTML=renderBacheca();
-  else if(label.includes("Regolamento"))el.innerHTML=renderRegolamento();
-  else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();
-  else if(label.includes("Assegna"))el.innerHTML=renderAssegna();
-  else if(label.includes("Soci"))el.innerHTML=renderSoci();
-  else if(label.includes("Log"))el.innerHTML=renderLog();
-  else if(label.includes("Cerca"))el.innerHTML=renderCerca();
+  const label=getTabs()[STATE.tab]||""; const el=document.getElementById("tabContent");
+  if(label.includes("Classifica")) el.innerHTML=renderClassifica();
+  else if(label.includes("Bacheca")) el.innerHTML=renderBacheca();
+  else if(label.includes("Regolamento")) el.innerHTML=renderRegolamento();
+  else if(label.includes("Tutorial")) el.innerHTML=renderTutorial();
+  else if(label.includes("Log")) el.innerHTML=renderLog();
+  else if(label.includes("Cerca")) el.innerHTML=renderCerca();
 }
 
-// ── CLASSIFICA GENERALIZZATA ────────────────────────────────
 function renderClassifica(){
-  const cl=sortedSoci();
-  const maxM=Math.max(...STATE.soci.flatMap(s=>s.m).filter(v=>v!==null),1);
+  const cl=sortedSoci(); const maxM=Math.max(...STATE.soci.flatMap(s=>s.m).filter(v=>v!==null),1);
   return cl.map((s,i)=>{
     const t=titolo(s.punti);
     const bars=s.m.map((mv,mi)=>{
       if(mv===null)return`<div class="mini-bar-col"><div class="mini-bar" style="height:3px;background:rgba(255,255,255,.1)"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)}</div></div>`;
-      const h=Math.max(3,Math.abs(mv)/maxM*26);
-      const c=mv>=0?"#818cf899":"rgba(239,68,68,.6)";
-      return`<div class="mini-bar-col"><div class="mini-bar" style="height:${h}px;background:${c}"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)}</div></div>`;
+      return`<div class="mini-bar-col"><div class="mini-bar" style="height:${Math.max(3,Math.abs(mv)/maxM*26)}px;background:${mv>=0?"#818cf899":"rgba(239,68,68,.6)"}"></div><div class="mini-lbl">${MESE_LABELS[mi]?.slice(0,3)}</div></div>`;
     }).join("");
-    return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.45;filter:grayscale(.8)":""}${i===0&&!s.uscito?" background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.05));border-color:rgba(251,191,36,.22)":""}">
+    return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;${s.uscito?"opacity:.45;":""}">
       <div style="display:flex;align-items:center;gap:12px">
-        <div style="font-size:22px;min-width:28px;text-align:center">${s.uscito?"🚪":i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
-        <div class="ava" style="width:44px;height:44px;font-size:13px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
+        <div style="font-size:22px;min-width:28px;text-align:center">${i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
+        <div class="ava" style="width:44px;height:44px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-            ${s.nome}
-            ${s.uscito?`<span class="badge" style="background:rgba(239,68,68,.15);color:#ef4444;border-color:rgba(239,68,68,.3)">🚪 Uscito</span>`:""}
-            <span class="badge" style="background:${t.color}18;color:${t.color};border-color:${t.color}35">${t.emoji} ${t.label}</span>
-          </div>
+          <div style="font-weight:800;font-size:14px;">${s.nome} <span class="badge" style="color:${t.color};border-color:${t.color}35">${t.emoji} ${t.label}</span></div>
           <div class="mini-bars">${bars}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${t.color};letter-spacing:1px">${s.punti}</div>
-          <div style="font-size:9px;opacity:.35;letter-spacing:1px">PUNTI</div>
-        </div>
+        <div style="text-align:right;"><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:${t.color};">${s.punti}</div></div>
       </div>
     </div>`;
-  }).join("")+`<div style="text-align:center;font-size:12px;opacity:.35;margin-top:8px">👆 Clicca su un socio per vedere il profilo</div>`;
+  }).join("");
 }
 
-// ── OVERLAY PROFILO - STORICO COMPLETO ───────────────────────
 function apriProfilo(id){
-  const s=STATE.soci.find(x=>x.id===id);
-  if(!s)return;
-  const sc=getSC(s.sc);const t=titolo(ptTotali(s));
-  const pts=ptTotali(s);
-  const cl=sortedSoci();
-  const pos=cl.findIndex(x=>x.id===id)+1;
-  const trofeiGuadagnati=TROFEI.filter(tr=>tr.check(s));
-  const logSocio=STATE.log.filter(l=>l.socio===s.nome).slice(0,8);
-  const migliore=Math.max(...s.m.filter(v => v !== null));
-  const trend=s.m.length>1?(s.m[3]>s.m[2]?"📈 In crescita questo mese":"📉 In calo rispetto al mese scorso"):"—";
-
-  const overlay=document.getElementById("profiloOverlay");
-  overlay.style.display="block";
+  const s=STATE.soci.find(x=>x.id===id); if(!s)return;
+  const overlay=document.getElementById("profiloOverlay"); overlay.style.display="block";
+  const cl=sortedSoci(); const pos=cl.findIndex(x=>x.id===id)+1;
   overlay.innerHTML=`
   <div class="profilo-wrap">
-    <button onclick="chiudiProfilo()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;padding:10px 18px;font-weight:800;cursor:pointer;margin-bottom:16px;font-size:13px;font-family:inherit">← Torna alla classifica</button>
-
-    <div class="profilo-header" style="background:linear-gradient(135deg,rgba(129,140,248,.12),rgba(139,92,246,.06));border:1px solid rgba(129,140,248,.2)">
-      <div class="profilo-ava" style="background:rgba(129,140,248,.25);border:3px solid #818cf8">${s.avatar}</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px">${s.nome}</div>
-      <div style="margin-top:6px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
-        <span class="badge" style="background:${t.color}22;color:${t.color};border-color:${t.color}44">${t.emoji} ${t.label}</span>
-        ${s.uscito?`<span class="badge" style="background:rgba(239,68,68,.18);color:#ef4444;border-color:rgba(239,68,68,.3)">🚪 Ha lasciato</span>`:""}
-      </div>
+    <button onclick="chiudiProfilo()" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;padding:10px 18px;cursor:pointer;margin-bottom:16px;">← Chiudi</button>
+    <div class="profilo-header" style="background:var(--panel-bg); border:1px solid var(--border); padding:20px; border-radius:16px; margin-bottom:12px;">
+      <div class="profilo-ava" style="width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 10px; font-weight:900; background:rgba(129,140,248,.2); border:2px solid var(--purple);">${s.avatar}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:32px; text-align:center;">${s.nome}</div>
     </div>
-
-    <div class="stat-grid">
-      <div class="stat-box">
-        <div class="stat-val" style="color:var(--purple)">${pts}</div>
-        <div class="stat-lbl">PUNTI TOT</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" style="color:var(--gold)">#${pos}</div>
-        <div class="stat-lbl">POSIZIONE</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" style="color:var(--green)">${migliore > 0 ? "+" + migliore : migliore}</div>
-        <div class="stat-lbl">MIGLIOR MESE</div>
-      </div>
+    <div class="stat-grid" style="margin-bottom:12px;">
+      <div class="stat-box"> <div style="font-family:'Bebas Neue',sans-serif; font-size:24px;">${ptTotali(s)}</div> <div style="font-size:9px; opacity:0.5;">PUNTI TOT</div> </div>
+      <div class="stat-box"> <div style="font-family:'Bebas Neue',sans-serif; font-size:24px;">#${pos}</div> <div style="font-size:9px; opacity:0.5;">POSIZIONE</div> </div>
     </div>
-
-    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:14px">
-      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📈 RESOCONTO DETTAGLIATO MESI PRECEDENTI</div>
+    <div style="background:var(--panel-bg);border:1px solid var(--border);border-radius:14px;padding:14px;">
+      <div style="font-size:11px;opacity:.5;margin-bottom:10px;font-weight:800;">📈 PUNTEGGI DETTAGLIATI MESI PRECEDENTI</div>
       ${s.m.map((v,i)=>{
-        if(v === null) return ''; 
+        if(v === null) return '';
         const maxV=Math.max(...s.m.map(x => Math.abs(x || 1)), 1);
-        const w=Math.abs(v)/maxV*100;
-        
-        let colorBar = "var(--purple)";
-        if(v > 0) colorBar = "var(--green)";
-        if(v < 0) colorBar = "var(--red)";
-
-        return `
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
-          <div style="font-size:12px;font-weight:700;opacity:.8;min-width:65px">${MESE_LABELS[i]}</div>
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px">
+          <div style="font-size:12px;font-weight:700;min-width:65px">${MESE_LABELS[i]}</div>
           <div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden">
-            <div style="height:100%;width:${w}%;background:${colorBar};border-radius:99px;transition:width .8s"></div>
+            <div style="height:100%;width:${Math.abs(v)/maxV*100}%;background:${v>0?"var(--green)":"var(--red)"};"></div>
           </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${v>=0?"#10b981":"#ef4444"};min-width:45px;text-align:right">
-            ${v > 0 ? "+" : ""}${v} pt
-          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${v>=0?"var(--green)":"var(--red)"};min-width:45px;text-align:right">${v>0?"+":""}${v} pt</div>
         </div>`;
       }).join("")}
-      <div style="text-align:right;font-size:11px;opacity:.5;margin-top:8px;border-top:1px solid rgba(255,255,255,.05);padding-top:6px">${trend}</div>
     </div>
-
-    ${trofeiGuadagnati.length>0?`
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">🏅 TROFEI GUADAGNATI</div>
-      <div style="display:flex;flex-wrap:wrap;gap:8px">
-        ${trofeiGuadagnati.map(tr=>`
-          <div style="background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(244,114,182,.08));border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px">
-            <span style="font-size:20px">${tr.emoji}</span>
-            <div>
-              <div style="font-weight:800;font-size:12px">${tr.nome}</div>
-              <div style="font-size:10px;opacity:.5">${tr.desc}</div>
-            </div>
-          </div>`).join("")}
-      </div>
-    </div>`:""}
-
-    ${logSocio.length>0?`
-    <div style="margin-bottom:14px">
-      <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📋 ULTIME AZIONI REGISTRATE</div>
-      ${logSocio.map(l=>`
-        <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 13px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:12px;opacity:.7">${l.azione}</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${l.delta>0?"#10b981":"#ef4444"}">${l.delta>0?"+":""}${l.delta}</span>
-        </div>`).join("")}
-    </div>`:""}
   </div>`;
 }
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
 
-// ── TAB MESI ─────────────────────────────────────────────────
-const SQUADRA_MESE = ["Inarrivabili","Invincibili","Inarrivabili","","",""];
-const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
+function renderMesi(){ return ``; }
 
-function renderMesi(){
-  const mi=STATE.meseView;
-  const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
-  const classMese=[...STATE.soci].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
-  const max=Math.max(...classMese.map(s=>s.punti),1);
-  const rows=classMese.map((s,i)=>{
-    return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer">
-      <div style="display:flex;align-items:center;gap:11px">
-        <div style="font-size:20px;min-width:28px;text-align:center">${i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
-        <div class="ava" style="width:38px;height:38px;font-size:12px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.4)">${s.avatar}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13px">${s.nome}</div>
-          <div class="bar-wrap"><div class="bar" style="width:${s.punti>0?(s.punti/max*100):0}%;background:linear-gradient(90deg,#6366f1,#818cf8)"></div></div>
-        </div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${s.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px;flex-shrink:0">${s.punti>0?"+":""}${s.punti}</div>
-      </div>
-    </div>`;
-  }).join("");
-  return`<div class="seg">${segBtns}</div>
-    <div class="honor-grid">
-      <div class="honor-box" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25)">
-        <div style="font-size:10px;opacity:.55;letter-spacing:1px">🏆 SQUADRA DEL MESE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);margin-top:4px">${SQUADRA_MESE[mi]||"⏳ In corso…"}</div>
-      </div>
-      <div class="honor-box" style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25)">
-        <div style="font-size:10px;opacity:.55;letter-spacing:1px">⭐ SOCIO DEL MESE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${SOCIO_MESE[mi]||"⏳ In corso…"}</div>
-      </div>
-    </div>${rows}`;
-}
-function setMese(i){STATE.meseView=i;render();}
-
-// ── TAB GRAFICI ──────────────────────────────────────────────
-function renderGrafici(){
-  return`<div class="chart-container"><div class="chart-title">📊 TOP 5 ANDAMENTO MENSILE</div><canvas id="chartLinee" height="220"></canvas></div>
-  <div class="chart-container"><div class="chart-title">🏅 TOP 10 CLASSIFICA</div><canvas id="chartScuderie" height="180"></canvas></div>`;
-}
-
-function initGrafici(){
-  setTimeout(()=>{
-    const top5=sortedSoci().slice(0,5);
-    const colors=["#818cf8","#10b981","#f59e0b","#f472b6","#ef4444"];
-    const ctxL=document.getElementById("chartLinee");
-    if(ctxL){
-      chartInstances.linee=new Chart(ctxL,{
-        type:"line",
-        data:{labels:MESE_LABELS,datasets:top5.map((s,i)=>({label:s.nome,data:s.m,borderColor:colors[i],backgroundColor:colors[i]+"22",borderWidth:2,pointRadius:5,tension:.3,fill:true}))},
-        options:{responsive:true,plugins:{legend:{labels:{color:"#fff"}}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}},y:{ticks:{color:"rgba(255,255,255,.5)"},grid:{color:"rgba(255,255,255,.05)"}}}}
-      });
-    }
-    const top10=sortedSoci().filter(s=>!s.uscito).slice(0,10);
-    const ctxS=document.getElementById("chartScuderie");
-    if(ctxS){
-      chartInstances.scuderie=new Chart(ctxS,{
-        type:"bar",
-        data:{labels:top10.map(s=>s.nome.split(" ")[0]),datasets:[{label:"Punti",data:top10.map(s=>s.punti),backgroundColor:"#818cf8cc",borderRadius:8}]},
-        options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"}},y:{ticks:{color:"rgba(255,255,255,.4)"}}}}
-      });
-    }
-  },100);
-}
-
-// ── TAB BACHECA ──────────────────────────────────────────────
-const ALBO = [
-  {mese:"Marzo",    socio:"Valentina",    squadra:"Inarrivabili", avatar:"VA", scColore:"#f59e0b", emoji:"🥇"},
-  {mese:"Aprile",   socio:"Gabriel",      squadra:"Invincibili",     avatar:"GA", scColore:"#6366f1", emoji:"🥇"},
-  {mese:"Maggio",   socio:"Angelo Greco", squadra:"Inarrivabili", avatar:"AG", scColore:"#f59e0b", emoji:"🥇"},
-  {mese:"Giugno",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
-];
-let ALBO_PAGE = 2;
-
+// ── TAB BACHECA: TITOLI INDIVIDUALI SENZA ALCUN RIFERIMENTO SQUADRE ──
 function renderBacheca(){
-  const entry = ALBO[ALBO_PAGE];
-  const hasPrev = ALBO_PAGE > 0; const hasNext = ALBO_PAGE < ALBO.length - 1;
-  return`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between">
-        <button onclick="alboNav(-1)" ${!hasPrev?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">‹</button>
-        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fbbf24">${entry.mese.toUpperCase()}</div></div>
-        <button onclick="alboNav(1)" ${!hasNext?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">›</button>
-      </div>
-      <div style="margin-top:16px;text-align:center">
-        ${entry.socio ? `🏆 Socio: <strong>${entry.socio}</strong><br>👥 Squadra: ${entry.squadra}` : "⏳ Mese in corso..."}
-      </div>
-    </div>`;
-}
-function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(ALBO.length-1,ALBO_PAGE+dir));renderTab();}
-
-// ── TAB REGOLAMENTO ──────────────────────────────────────────
-const REGOLE_DEFAULT = [
-  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi!"},
-  {cat:"✅ Bonus", testo:"Presenza in sede, evento o riunione → +50 pt"},
-  {cat:"❌ Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt"}
-];
-function renderRegolamento(){
-  return REGOLE_DEFAULT.map(r=>`<div class="card"><div style="font-size:11px;color:var(--purple);font-weight:700">${r.cat}</div><div style="font-size:13px;margin-top:4px">${r.testo}</div></div>`).join("");
-}
-
-// ── TAB TUTORIAL ─────────────────────────────────────────────
-function renderTutorial(){return `<div style="text-align:center;padding:20px;opacity:.5">🎬 Sezione Tutorial multimediale attiva.</div>`;}
-
-// ── TAB LOG - INTERBLOCCATO 100% SE NON ADMIN ────────────────
-function renderLog(){
-  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
-  
-  const avvisoAdmin = STATE.isAdmin 
-    ? `<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
-        🗑️ Modalità Admin attiva: Premi <strong>Annulla</strong> su un'azione per rimuoverla e stornare i punti automaticamente.
-       </div>`
-    : `<div style="background:rgba(129,140,248,.07);border:1px solid rgba(129,140,248,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
-        📋 Registro delle attività globale. Le modifiche sono riservate agli amministratori.
-       </div>`;
+  const cl=sortedSoci();
+  const withTrend=STATE.soci.map(s=>{
+    const valid=s.m.filter(v=>v!==null);
+    const trend=valid.length>1?valid[valid.length-1]-valid[valid.length-2]:0;
+    return{...s,trend};
+  });
+  const topTrend=withTrend.sort((a,b)=>b.trend-a.trend)[0];
 
   return `
-    ${avvisoAdmin}
-    ${STATE.log.map(l=>{
-      const bottoneAnnulla = STATE.isAdmin 
-        ? `<button onclick="rimuoviDalLog(${l.id})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
-        : ``;
-
-      return `
-      <div class="log-item" style="align-items:center">
-        <div style="width:38px;height:38px;border-radius:9px;background:${l.delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${l.delta>0?"✅":"❌"}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13px">${l.socio}</div>
-          <div style="font-size:11px;opacity:.5;margin-top:2px">${l.azione}</div>
-          ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${l.nota}</div>`:""}
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${l.delta>0?"+":""}${l.delta}</div>
-          <div style="font-size:9px;opacity:.4">${l.data}</div>
-          ${bottoneAnnulla}
-        </div>
-      </div>`;
-    }).join("")}`;
+    <div style="background:var(--panel-bg); border:1px solid var(--border); border-radius:20px; padding:20px; margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--gold); text-align:center; margin-bottom:14px;">🏅 ALBO D'ORO & ECCELLENZE INDIVIDUALI</div>
+      
+      <div class="card" style="border-left:4px solid var(--gold);">
+        🏆 **LEADER ASSOLUTO:** ${cl[0]?.nome || '—'} (${cl[0]?.punti || 0} Punti Totatli)
+      </div>
+      <div class="card" style="border-left:4px solid var(--purple);">
+        📈 **MIGLIOR TREND MENSILE:** ${topTrend?.nome || '—'} (${topTrend?.trend > 0 ? '+' : ''}${topTrend?.trend || 0} pt rispetto a ieri)
+      </div>
+    </div>
+    
+    <div style="font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--purple); margin-bottom:8px;">🎖️ TROFEI ATTIVI DA CONQUISTARE</div>
+    <div class="trofeo-grid">
+      ${TROFEI.map(tr=>{
+        const earners=STATE.soci.filter(s=>tr.check(s));
+        return `<div class="trofeo-card">
+          <div style="font-size:28px">${tr.emoji}</div>
+          <div style="font-weight:800; font-size:13px; color:var(--gold); margin-top:4px">${tr.nome}</div>
+          <div style="font-size:10px; opacity:0.6; margin-top:2px">${tr.desc}</div>
+          <div style="font-size:10px; color:var(--green); font-weight:800; margin-top:6px;">Conquistato da: ${earners.length>0 ? earners.map(x=>x.nome).join(", ") : 'Nessuno'}</div>
+        </div>`;
+      }).join("")}
+    </div>
+  `;
 }
 
-function rimuoviDalLog(logId){
-  if(!STATE.isAdmin) {
-    showToast("Azione non autorizzata. Loggati come Admin.", true);
-    return;
-  }
-  const entry=STATE.log.find(l=>l.id===logId);
-  if(!entry) return;
-  if(!confirm(`Annullare "${entry.azione}" (${entry.delta>0?"+":""}${entry.delta}pt) per ${entry.socio}?`)) return;
-  
-  const socio=STATE.soci.find(s=>s.nome===entry.socio);
-  if(socio){
-    STATE.soci=STATE.soci.map(s=>{
-      if(s.nome!==entry.socio) return s;
-      const nuoviM=[...s.m];
-      nuoviM[3]=(nuoviM[3]||0)-entry.delta; 
-      return{...s,m:nuoviM};
-    });
-    const aggiornato=STATE.soci.find(s=>s.nome===entry.socio);
-    fbSaveExtra(aggiornato.id,3,aggiornato.m[3]);
-  }
-  STATE.log=STATE.log.filter(l=>l.id!==logId);
-  fbSaveLog();
-  showToast("Punteggio stornato con successo! ✅");
-  render();
+// ── TAB REGOLAMENTO: COMPLETO DI TUTTE LE SEZIONI ORIGINARIE ──
+function renderRegolamento(){
+  return `<div style="display:flex; flex-direction:column; gap:10px;">
+    <div class="card" style="background:rgba(99,102,241,.05); border-color:rgba(99,102,241,0.2)">
+      📜 **Linee Guida Ufficiali:** Contatta la presidenza CFP per proporre modifiche o varianti regolamentari.
+    </div>
+    ${REGOLE_COMPLETE.map(r=>`
+      <div class="card">
+        <div style="font-size:11px; color:var(--purple); font-weight:900; text-transform:uppercase;">${r.cat}</div>
+        <div style="font-size:13px; margin-top:4px; opacity:0.85; line-height:1.5">${r.testo}</div>
+      </div>
+    `).join("")}
+  </div>`;
 }
 
-// ── TAB ASSEGNA - RIPRISTINATO COMPLETO CON SCROLL BAR INTERNE ──
+// ── TAB TUTORIAL: VIDEO PLAYER INCORPORATO FUNZIONANTE ────────
+function renderTutorial(){
+  return `
+    <div style="text-align:center; margin-bottom:16px;">
+      <div style="font-family:'Bebas Neue',sans-serif; font-size:24px; color:var(--pink);">🎬 VIDEO TUTORIAL MULTIMEDIALE</div>
+      <div style="font-size:12px; opacity:0.5;">Guida rapida visuale alle logiche ed ai punteggi del FantaSocio</div>
+    </div>
+    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:16px; border:1px solid var(--border); background:#000;">
+      <iframe src="https://www.youtube.com/embed/SmFlxIyacb8" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen></iframe>
+    </div>
+  `;
+}
+
+function renderLog(){
+  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;padding:40px">Registro log vuoto.</div>`;
+  return `${STATE.log.map(l=>{
+    return `<div class="log-item" style="align-items:center;">
+      <div style="flex:1; min-width:0;">
+        <div style="font-weight:800;font-size:14px">${l.socio}</div>
+        <div style="font-size:12px;opacity:0.6;">${l.azione} ${l.nota?` [📝 ${l.nota}]`:''}</div>
+      </div>
+      <div style="text-align:right; flex-shrink:0;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?'var(--green)':'var(--red)'}">${l.delta>0?'+':''}${l.delta}</div>
+      </div>
+    </div>`;
+  }).join("")}`;
+}
+
+// ── TAB ASSEGNA - GAMIFICATION LAYOUT A DUE COLONNE ──────────
 function renderAssegna(){
-  if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Pannello riservato agli amministratori. Accedi dal Logo.</div>`;
+  if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Pannello riservato agli amministratori.</div>`;
+  const opts=[...STATE.soci].filter(s=>!s.uscito).sort((a,b)=>a.nome.localeCompare(b.nome)).map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`).join("");
 
-  const opts=[...STATE.soci]
-    .filter(s=>!s.uscito)
-    .sort((a,b)=>a.nome.localeCompare(b.nome))
-    .map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`)
-    .join("");
-
-  const aBtn=(a,tipo)=>{
+  const renderActionGameCard=(a, tipo)=>{
     const isSel=STATE.selAzione===a.id;
-    const cls=isSel?(tipo==="bonus"?"azione-btn sel-bonus":"azione-btn sel-malus"):"azione-btn";
-    const color=tipo==="bonus"?"#10b981":"#ef4444";
+    const cls=isSel?(tipo==="bonus"?"action-game-card sel-bonus":"action-game-card sel-malus"):"action-game-card";
     return `<button class="${cls}" onclick="selAzione('${a.id}')">
-      <span>${a.emoji} ${a.label}</span>
-      <span style="font-size:12px;font-weight:900;color:${color};flex-shrink:0">${a.pts>0?"+":""}${a.custom?"var":a.pts}pt</span>
-    </button>`;
+        <span class="action-game-card-lbl">${a.emoji} ${a.label}</span>
+        <span class="action-game-card-pts" style="color:${tipo==="bonus"?"var(--green)":"var(--red)"}">${a.pts>0?"+":""}${a.custom?"var":a.pts}PT</span>
+      </button>`;
   };
 
   const selA=STATE.selAzione?[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione):null;
   const socioSel=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
+  const previewBlock=selA&&socioSel?`<div class="preview-box" style="margin-top:10px;"><span style="opacity:.65">Pronto a dare </span><span style="font-weight:900;color:${selA.pts>0?"var(--green)":"var(--red)"}">${selA.pts} PT</span><span style="opacity:.65"> a </span><span style="font-weight:900;color:var(--purple);">${socioSel.nome}</span></div>`:"";
 
-  const customBlock=selA?.custom?`
-    <div style="margin-top:10px;">
-      <label class="form-lbl">${STATE.selAzione==="b14"?"IMPORTO € DONATI":"MINUTI DI RITARDO"}</label>
-      <input type="number" min="1" value="${STATE.customVal}" oninput="STATE.customVal=Math.max(1,parseInt(this.value)||1)" style="margin-bottom:4px"/>
-      <div style="font-size:13px;color:#818cf8;margin-bottom:12px;font-weight:800">= ${selA.pts*(STATE.customVal||1)} punti</div>
-    </div>`:"";
-
-  const previewBlock=selA&&socioSel?`
-    <div class="preview-box">
-      <span style="opacity:.65">Stai assegnando </span>
-      <span style="font-weight:900;color:${selA.pts>0?"#10b981":"#ef4444"}">${selA.custom?selA.pts*(STATE.customVal||1):selA.pts} pt</span>
-      <span style="opacity:.65"> a </span>
-      <span style="font-weight:900">${socioSel.nome}</span>
-    </div>`:"";
-
-  return `<div class="form-box">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:10px">ASSEGNA PUNTI</div>
-    
-    <div style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(5,150,105,.08));border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
-      <div style="font-size:20px">📅</div>
-      <div>
-        <div style="font-size:10px;opacity:.6;letter-spacing:2px">MESE ATTIVO</div>
-        <div style="font-weight:900;font-size:15px;color:#10b981">GIUGNO 2026</div>
-      </div>
-    </div>
-
-    <label class="form-lbl">SOCIO</label>
-    <select onchange="STATE.selSocio=this.value;render()" style="margin-bottom:12px">
-      <option value="">— Scegli un socio —</option>
-      ${opts}
-    </select>
-
-    <label class="form-lbl">✅ BONUS</label>
-    <div style="margin-bottom:12px; max-height:220px; overflow-y:auto; padding-right:4px; border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px;">
-      ${BONUS.map(a=>aBtn(a,"bonus")).join("")}
-    </div>
-
-    <label class="form-lbl">❌ MALUS</label>
-    <div style="margin-bottom:12px; max-height:220px; overflow-y:auto; padding-right:4px; border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px;">
-      ${MALUS.map(a=>aBtn(a,"malus")).join("")}
-    </div>
-
-    <div style="border:1px solid rgba(251,191,36,.25);border-radius:14px;padding:14px;margin-bottom:12px;background:rgba(251,191,36,.05)">
-      <div style="font-size:11px;color:#fbbf24;font-weight:800;letter-spacing:2px;margin-bottom:10px">✏️ PUNTEGGIO PERSONALIZZATO</div>
-      <div style="display:flex;gap:8px;align-items:flex-end">
-        <div style="flex:1">
-          <label class="form-lbl">DESCRIZIONE</label>
-          <input type="text" id="customDesc" placeholder="Es. Organizzato evento speciale…"/>
+  return `<div class="admin-grid-layout">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div class="form-box">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--purple);margin-bottom:12px">PLANCIA DI INVIO</div>
+          <label class="form-lbl">🎯 SOCIO BERSAGLIO</label>
+          <select id="socioSelectField" onchange="STATE.selSocio=this.value; renderTab();"><option value="">— Seleziona —</option>${opts}</select>
+          <script>document.getElementById('socioSelectField').value="${STATE.selSocio}";<\/script>
+          <label class="form-lbl" style="margin-top:14px;">📝 INSERISCI NOTA</label>
+          <input type="text" placeholder="Note facoltative…" value="${STATE.nota}" oninput="STATE.nota=this.value" style="margin-bottom:12px"/>
+          ${previewBlock}
+          <button class="btn-primary" onclick="assegna()" style="margin-top:8px;">🚀 Registra Attività</button>
         </div>
-        <div style="width:90px">
-          <label class="form-lbl">PUNTI</label>
-          <input type="number" id="customPts" placeholder="es. 25" style="text-align:center"/>
+        <div class="form-box console-box">
+          <div style="font-size:11px;color:var(--gold);font-weight:900;letter-spacing:1px;margin-bottom:8px">✏️ VALORE FUORI LISTA</div>
+          <input type="text" id="customDesc" placeholder="Descrizione attività…" style="margin-bottom:6px; font-size:12px!important;"/>
+          <input type="number" id="customPts" placeholder="Punti" style="margin-bottom:10px; text-align:center; font-size:12px!important;"/>
+          <button onclick="assegnaPersonalizzato()" style="background:linear-gradient(135deg,#b45309,#d97706);color:#fff;border:none;border-radius:10px;padding:9px;font-weight:900;font-size:11px;cursor:pointer;width:100%;">Inietta Extra Punti</button>
         </div>
       </div>
-      <button onclick="assegnaPersonalizzato()" style="margin-top:10px;background:linear-gradient(135deg,#b45309,#d97706);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:800;font-size:13px;cursor:pointer;width:100%;font-family:inherit">✏️ Assegna punteggio personalizzato</button>
-    </div>
-
-    ${customBlock}
-    <label class="form-lbl">NOTA (opzionale)</label>
-    <input type="text" placeholder="Es. presente all'evento di sabato…" value="${STATE.nota}" oninput="STATE.nota=this.value" style="margin-bottom:14px"/>
-    ${previewBlock}
-    <button class="btn-primary" onclick="assegna()">🚀 Conferma Assegnazione</button>
-  </div>`;
+      <div class="form-box">
+        <div class="actions-panel-title" style="color:var(--green)"><span>🟢 TABELLA LIVE ABILITÀ (BONUS)</span></div>
+        <div class="actions-game-grid">${BONUS.map(a=>renderActionGameCard(a,"bonus")).join("")}</div>
+        <div class="actions-panel-title" style="color:var(--red); margin-top:24px;"><span>🔴 REPERTORIO DELLE DETRAZIONI (MALUS)</span></div>
+        <div class="actions-game-grid">${MALUS.map(a=>renderActionGameCard(a,"malus")).join("")}</div>
+      </div>
+    </div>`;
 }
 
-function selAzione(id){STATE.selAzione=STATE.selAzione===id?null:id;render();}
+function selAzione(id){STATE.selAzione=STATE.selAzione===id?null:id; renderTab();}
 
 function assegnaPersonalizzato(){
-  if(!STATE.selSocio)return showToast("Scegli prima un socio!",true);
-  const desc=document.getElementById("customDesc")?.value.trim();
-  const pts=parseInt(document.getElementById("customPts")?.value);
-  if(!desc)return showToast("Inserisci una descrizione!",true);
-  if(isNaN(pts)||pts===0)return showToast("Inserisci un valore valido!",true);
-  if(!STATE.isAdmin) return showToast("Azione non autorizzata.", true);
-
+  if(!STATE.selSocio) return showToast("Scegli prima un socio!",true);
+  const desc=document.getElementById("customDesc")?.value.trim(); const pts=parseInt(document.getElementById("customPts")?.value);
+  if(!desc || isNaN(pts) || pts===0) return showToast("Compila i campi!",true);
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  STATE.soci=STATE.soci.map(s=>{
-    if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+pts; return{...s,m:nuoviM};
-  });
+  STATE.soci=STATE.soci.map(s=>{ if(s.id!==socio.id)return s; const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+pts; return{...s,m:nuoviM}; });
   STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
-  const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
-  showToast("Assegnato con successo!");
-  render();
+  window._fb.set(window._fb.ref(window._fb.db,"extra/m3/"+socio.id), STATE.soci.find(s=>s.id===socio.id).m[3]);
+  window._fb.set(window._fb.ref(window._fb.db,"log"), STATE.log);
+  showToast("Inserito!"); render();
 }
 
 function assegna(){
   if(!STATE.selSocio||!STATE.selAzione)return showToast("Seleziona socio e azione!",true);
-  if(!STATE.isAdmin) return showToast("Non autorizzato", true);
-
   const azione=[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione);
-  const delta=azione.custom?azione.pts*(STATE.customVal||1):azione.pts;
-  const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
-  
-  STATE.soci=STATE.soci.map(s=>{
-    if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+delta; return{...s,m:nuoviM};
-  });
+  const delta=azione.pts; const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
+  STATE.soci=STATE.soci.map(s=>{ if(s.id!==socio.id)return s; const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+delta; return{...s,m:nuoviM}; });
   STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
-  const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
-  showToast("Assegnazione completata!");
-  STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
-  render();
+  window._fb.set(window._fb.ref(window._fb.db,"extra/m3/"+socio.id), STATE.soci.find(s=>s.id===socio.id).m[3]);
+  window._fb.set(window._fb.ref(window._fb.db,"log"), STATE.log);
+  showToast("Push completato!"); STATE.selAzione=null;STATE.nota=""; render();
 }
 
-// ── STRUTTURE SECONDARIE DI COMPLEMENTO ──────────────────────
-function renderSoci(){return `<div class="form-box">Pannello gestione scuderie abilitato in modalità Admin.</div>`;}
-let CERCA_QUERY="";
 function renderCerca(){
-  const query=CERCA_QUERY.toLowerCase();
-  const risultati=sortedSoci().filter(s=>s.nome.toLowerCase().includes(query));
-  return`<div class="cerca-wrap"><input class="cerca-input" type="text" placeholder="Cerca socio..." oninput="CERCA_QUERY=this.value;renderTab()"/></div>
-  ${risultati.map(s=>`<div class="card" onclick="apriProfilo(${s.id})">${s.nome} (${ptTotali(s)} pt)</div>`).join("")}`;
+  const query=CERCA_QUERY.toLowerCase(); const risultati=sortedSoci().filter(s=>s.nome.toLowerCase().includes(query));
+  return`<div class="cerca-wrap" style="margin-bottom:12px;"><input class="cerca-input" type="text" placeholder="Digita il nome del socio da cercare…" oninput="CERCA_QUERY=this.value;renderTab()"/></div>
+  ${risultati.map(s=>`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer;">${s.nome} (${ptTotali(s)} pt)</div>`).join("")}`;
 }
+let CERCA_QUERY="";
 
 function aggiornaCountdown(){
-  const ora=new Date(); const pross=new Date(); pross.setDate(ora.getDate()+(pross.getDay()===0?1:8-pross.getDay())); pross.setHours(0,0,0,0);
-  const diff=pross-ora;
+  const ora=new Date(); const pross=new Date(); pross.setDate(ora.getDate()+(pross.getDay()===0?1:8-pross.getDay())); pross.setHours(0,0,0,0); const diff=pross-ora;
   const dg=document.getElementById("cdGiorni"); const dh=document.getElementById("cdOre"); const dm=document.getElementById("cdMin");
   if(dg) dg.textContent=String(Math.floor(diff/86400000)).padStart(2,"0");
   if(dh) dh.textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,"0");
   if(dm) dm.textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
 }
 
-// ── RECOVERY & SINCRO REALTIME FIREBASE ──────────────────────
-window.addEventListener("firebase-ready",()=>{
-  fbReady=true; const{db,ref,onValue}=window._fb;
-  onValue(ref(db,"extra"),snap=>{
-    const ext=snap.val()||{};
-    STATE.soci=SOCI_DEFAULT.map(s=>{
-      const nm=[...s.m]; 
-      for(let i=0; i<6; i++){
-        if(ext["m"+i] && ext["m"+i][s.id]!==undefined) {
-          const dataMese = ext["m"+i][s.id];
-          nm[i] = (dataMese && typeof dataMese === 'object') ? dataMese.value : dataMese;
+function showAppRoot() {
+  const loader = document.getElementById("loadingScreen"); const appRoot = document.getElementById("appRoot");
+  if(loader) loader.style.display = "none"; if(appRoot) appRoot.style.display = "block";
+  render();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SINCRO ENGINE REALTIME ANTI-BLOCCO RECOVERY
+// ═══════════════════════════════════════════════════════════
+window.addEventListener("firebase-ready", () => {
+  fbReady = true; const { db, ref, onValue } = window._fb;
+
+  setTimeout(() => { showAppRoot(); }, 2000);
+
+  onValue(ref(db, "extra"), snap => {
+    try {
+      const ext = snap.val() || {};
+      STATE.soci = SOCI_DEFAULT.map(s => {
+        const nm = [...s.m];
+        for (let i = 0; i < 6; i++) {
+          if (ext["m" + i] && ext["m" + i][s.id] !== undefined) {
+            const dm = ext["m" + i][s.id];
+            nm[i] = (dm && typeof dm === 'object') ? (dm.value || 0) : dm;
+          }
         }
-      } 
-      return{...s,m:nm};
-    });
-    document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();
-  });
-  onValue(ref(db,"log"),snap=>{
-    const logData = snap.val();
-    STATE.log = logData ? (logData.data ? logData.data : (Array.isArray(logData)?logData:[])) : [];
-    render();
-  });
-  aggiornaCountdown(); setInterval(aggiornaCountdown,60000);
+        return { ...s, m: nm };
+      });
+      showAppRoot();
+    } catch (ex) { showAppRoot(); }
+  }, err => { showAppRoot(); });
+
+  onValue(ref(db, "log"), snap => {
+    try {
+      const ld = snap.val(); STATE.log = ld ? (ld.data ? ld.data : (Array.isArray(ld) ? ld : [])) : []; render();
+    } catch (e) { render(); }
+  }, err => { render(); });
+
+  aggiornaCountdown(); setInterval(aggiornaCountdown, 60000);
 });
-function apriLocale(){document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();}
+
+function apriLocale(){ showAppRoot(); }
 
 let clickCount=0;
 document.addEventListener("click",e=>{

@@ -320,7 +320,7 @@ function normalizeMonthIndex(value,fallback=ACTIVE_MONTH_INDEX){
   return Number.isInteger(idx)&&idx>=0&&idx<MESE_LABELS.length?idx:fallback;
 }
 
-const BONUS = [
+const BONUS_DEFAULT = [
   {id:"b1", label:"Presenza in sede / evento / riunione",       pts:50,  emoji:"🏠"},
   {id:"b2", label:"Delegato per un giorno",                      pts:30,  emoji:"🎖️"},
   {id:"b3", label:"Post sui social spontaneo",                  pts:10,  emoji:"📣"},
@@ -335,13 +335,13 @@ const BONUS = [
   {id:"b11",label:"Arrivato in orario (10 min tolleranza)",     pts:10,  emoji:"⏰"},
   {id:"b12",label:"Articolo per il blog",                       pts:50,  emoji:"✍️"},
   {id:"b13",label:"Audio per il podcast",                       pts:50,  emoji:"🎙️"},
-  {id:"b14",label:"Donazione (1€ = 1pt)",                       pts:1,   emoji:"💶",custom:true},
+  {id:"b14",label:"Donazione (1€ = 1pt)",                       pts:1,   emoji:"💶",custom:true,customLabel:"IMPORTO € DONATI"},
   {id:"b15",label:"5x1000 destinato all'associazione",          pts:50,  emoji:"📋"},
 ];
-const MALUS = [
+const MALUS_DEFAULT = [
   {id:"m1", label:"Dici 'ci sono' e sparisci senza avvisare",   pts:-30, emoji:"👻"},
   {id:"m2", label:"Leggi e non rispondi per ore",               pts:-20, emoji:"👀"},
-  {id:"m3", label:"Ritardo (inserisci minuti)",                  pts:-1,  emoji:"⏱️",custom:true},
+  {id:"m3", label:"Ritardo (inserisci minuti)",                  pts:-1,  emoji:"⏱️",custom:true,customLabel:"MINUTI DI RITARDO"},
   {id:"m4", label:"Domanda già risposta nel messaggio prima",   pts:-10, emoji:"🤦"},
   {id:"m5", label:"Hai citato il FantaSocio",                   pts:-10, emoji:"🤫"},
   {id:"m6", label:"Lamentarsi senza proporre soluzione",        pts:-15, emoji:"😤"},
@@ -350,6 +350,8 @@ const MALUS = [
   {id:"m9", label:"Parolacce offensive",                        pts:-15, emoji:"🤬"},
   {id:"m10",label:"Bestemmie",                                   pts:-25, emoji:"⛪"},
 ];
+let BONUS = cloneAzioni(BONUS_DEFAULT,"bonus");
+let MALUS = cloneAzioni(MALUS_DEFAULT,"malus");
 
 const TROFEI = [
   {id:"t1", emoji:"👑",nome:"Leggenda",     desc:"Supera 800 punti totali",     check:s=>ptTotali(s)>=800},
@@ -378,11 +380,60 @@ let adminRoleUnsub=null;
 let DB_PUNTEGGI_MENSILI={};
 let DB_SOCI=null;
 let SOCIO_EDIT_ID=null;
+let LOG_FILTER={query:"",mese:"all",tipo:"all"};
+let AZIONE_EDIT=null;
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════════════════════
 function ptTotali(s){return s.m.reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
+
+function normalizeAzione(raw={},tipo="bonus",fallbackId=""){
+  const isBonus=tipo==="bonus";
+  const absPts=Math.max(1,Math.abs(Number(raw.pts)||1));
+  const cleanId=String(raw.id||fallbackId||`${isBonus?"b":"m"}${Date.now()}`).replace(/[^A-Za-z0-9_-]/g,"");
+  return {
+    id:cleanId||`${isBonus?"b":"m"}${Date.now()}`,
+    label:String(raw.label||"Nuova azione").trim(),
+    pts:isBonus?absPts:-absPts,
+    emoji:String(raw.emoji||"⭐").trim().slice(0,4),
+    custom:raw.custom===true,
+    customLabel:String(raw.customLabel||"VALORE").trim(),
+    disabilitata:raw.disabilitata===true,
+    order:Number(raw.order)||0
+  };
+}
+
+function cloneAzioni(list,tipo){
+  return (list||[]).map((a,i)=>normalizeAzione({...a,order:a.order??i},tipo,a.id));
+}
+
+function azioniFromDb(raw,tipo,defaults){
+  const source=raw
+    ? (Array.isArray(raw)?raw:Object.values(raw))
+    : defaults;
+  const list=cloneAzioni(source,tipo).sort((a,b)=>(a.order||0)-(b.order||0));
+  return list.length?list:cloneAzioni(defaults,tipo);
+}
+
+function cleanAzioneForDb(a,tipo,index=0){
+  const clean=normalizeAzione({...a,order:index},tipo,a.id);
+  return {
+    id:clean.id,
+    label:clean.label,
+    pts:clean.pts,
+    emoji:clean.emoji,
+    custom:clean.custom,
+    customLabel:clean.customLabel,
+    disabilitata:clean.disabilitata,
+    order:index
+  };
+}
+
+function azioniAttive(tipo){
+  const list=tipo==="bonus"?BONUS:MALUS;
+  return list.filter(a=>!a.disabilitata);
+}
 
 function nextJoinMonthIndex(){
   return Math.min(ACTIVE_MONTH_INDEX+1,MESE_LABELS.length-1);
@@ -582,6 +633,25 @@ async function fbSaveSociList(list){
   }
 }
 
+async function fbSaveAzioniConfig(bonusList=BONUS,malusList=MALUS){
+  if(!fbReady || !STATE.isAdmin){
+    showToast("Accesso admin richiesto.",true);
+    return false;
+  }
+  const{db,ref,set}=window._fb;
+  try{
+    await set(ref(db,"azioni"),{
+      bonus:bonusList.map((a,i)=>cleanAzioneForDb(a,"bonus",i)),
+      malus:malusList.map((a,i)=>cleanAzioneForDb(a,"malus",i))
+    });
+    return true;
+  }catch(err){
+    console.error(err);
+    showToast("Non posso salvare bonus/malus: aggiorna le regole Firebase.",true);
+    return false;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════════════════════════
@@ -622,7 +692,7 @@ function logout(){
 
 function getTabs(){
   const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
-  if(STATE.isAdmin)t.push("➕ Assegna","💾 Backup","👥 Soci");
+  if(STATE.isAdmin)t.push("➕ Assegna","⚙️ Azioni","💾 Backup","👥 Soci");
   return t;
 }
 
@@ -668,6 +738,7 @@ function renderTab(){
   else if(label.includes("Regolamento"))el.innerHTML=renderRegolamento();
   else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();
   else if(label.includes("Assegna"))el.innerHTML=renderAssegna();
+  else if(label.includes("Azioni"))el.innerHTML=renderAzioni();
   else if(label.includes("Backup"))el.innerHTML=renderBackup();
   else if(label.includes("Soci"))el.innerHTML=renderSoci();
   else if(label.includes("Log"))el.innerHTML=renderLog();
@@ -997,16 +1068,30 @@ const REGOLAMENTO = [
     testo:"La missione non è la competizione in sé, ma la crescita individuale e collettiva tramite collaborazione, coesione e spirito di gruppo. In casi particolari si potrà fare un sondaggio per assegnare punti extra, modificare una regola o aggiungerne una nuova."
   }
 ];
+function formatAzioneRegolamento(a){
+  const word=Math.abs(a.pts)===1?"punto":"punti";
+  const pts=a.custom
+    ? `${a.pts>0?"+":""}${a.pts} ${word} per ${String(a.customLabel||"valore").toLowerCase()}`
+    : `${a.pts>0?"+":""}${a.pts} punti`;
+  return `${a.label}: ${pts}.`;
+}
 function renderRegolamento(){
-  return REGOLAMENTO.map(r=>`<div class="card">
+  return REGOLAMENTO.map(r=>{
+    const items=r.cat.includes("bonus")
+      ? azioniAttive("bonus").map(formatAzioneRegolamento)
+      : r.cat.includes("malus")
+        ? azioniAttive("malus").map(formatAzioneRegolamento)
+        : r.items;
+    return `<div class="card">
     <div style="font-size:12px;color:var(--purple);font-weight:900;letter-spacing:1px;margin-bottom:6px">${r.cat}</div>
-    ${r.testo?`<div style="font-size:13px;line-height:1.55;opacity:.82;margin-bottom:${r.items?.length?"8px":"0"}">${esc(r.testo)}</div>`:""}
-    ${r.items?.length?`<div style="display:flex;flex-direction:column;gap:7px">${r.items.map(item=>`
+    ${r.testo?`<div style="font-size:13px;line-height:1.55;opacity:.82;margin-bottom:${items?.length?"8px":"0"}">${esc(r.testo)}</div>`:""}
+    ${items?.length?`<div style="display:flex;flex-direction:column;gap:7px">${items.map(item=>`
       <div style="display:flex;gap:8px;font-size:12px;line-height:1.45;opacity:.78">
         <span style="color:#818cf8;font-weight:900">•</span>
         <span>${esc(item)}</span>
       </div>`).join("")}</div>`:""}
-  </div>`).join("");
+  </div>`;
+  }).join("");
 }
 
 // ── TAB TUTORIAL ─────────────────────────────────────────────
@@ -1019,11 +1104,69 @@ function renderTutorial(){
 }
 
 // ── TAB LOG - INTERBLOCCATO 100% SE NON ADMIN ────────────────
-function renderLog(){
+function visibleLogEntries(){
   const hiddenNames=new Set(STATE.soci.filter(s=>s.nascosto).map(s=>s.nome));
-  const visibleLog=STATE.isAdmin?STATE.log:STATE.log.filter(l=>!hiddenNames.has(l.socio));
+  return STATE.isAdmin?STATE.log:STATE.log.filter(l=>!hiddenNames.has(l.socio));
+}
+
+function filteredLogEntries(visibleLog=visibleLogEntries()){
+  const query=LOG_FILTER.query.trim().toLowerCase();
+  return visibleLog.filter(l=>{
+    const delta=Number(l.delta)||0;
+    const meseIdx=normalizeMonthIndex(l.meseIdx);
+    const matchesQuery=!query||[l.socio,l.azione,l.nota,l.data].some(v=>String(v||"").toLowerCase().includes(query));
+    const matchesMonth=LOG_FILTER.mese==="all"||meseIdx===Number(LOG_FILTER.mese);
+    const matchesType=LOG_FILTER.tipo==="all"||(LOG_FILTER.tipo==="bonus"&&delta>0)||(LOG_FILTER.tipo==="malus"&&delta<0);
+    return matchesQuery&&matchesMonth&&matchesType;
+  });
+}
+
+function renderLogItem(l){
+  const logId=Number(l.id);
+  const delta=Number(l.delta)||0;
+  const meseIdx=normalizeMonthIndex(l.meseIdx);
+  const bottoneAnnulla = STATE.isAdmin && Number.isFinite(logId)
+    ? `<button onclick="rimuoviDalLog(${logId})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
+    : ``;
+
+  return `
+  <div class="log-item" style="align-items:center">
+    <div style="width:38px;height:38px;border-radius:9px;background:${delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${delta>0?"✅":"❌"}</div>
+    <div style="flex:1;min-width:0">
+      <div style="font-weight:800;font-size:13px">${esc(l.socio)}</div>
+      <div style="font-size:11px;opacity:.5;margin-top:2px">${esc(l.azione)}</div>
+      <div style="font-size:10px;opacity:.35;margin-top:2px">📅 ${MESE_LABELS[meseIdx]}</div>
+      ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${esc(l.nota)}</div>`:""}
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${delta>0?"+":""}${delta}</div>
+      <div style="font-size:9px;opacity:.4">${esc(l.data)}</div>
+      ${bottoneAnnulla}
+    </div>
+  </div>`;
+}
+
+function renderLogResultsHtml(filteredLog){
+  return filteredLog.length
+    ? filteredLog.map(renderLogItem).join("")
+    : `<div style="text-align:center;opacity:.35;margin-top:40px"><div style="font-size:42px">🔎</div><p style="margin-top:10px">Nessun log trovato con questi filtri.</p></div>`;
+}
+
+function aggiornaLogFiltrato(){
+  const visibleLog=visibleLogEntries();
+  const filteredLog=filteredLogEntries(visibleLog);
+  const count=document.getElementById("logCount");
+  const results=document.getElementById("logResults");
+  if(count) count.textContent=`${filteredLog.length} risultati su ${visibleLog.length}`;
+  if(results) results.innerHTML=renderLogResultsHtml(filteredLog);
+}
+
+function renderLog(){
+  const visibleLog=visibleLogEntries();
   if(!visibleLog.length) return `<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
-  
+  const filteredLog=filteredLogEntries(visibleLog);
+  const meseOptions=`<option value="all">Tutti i mesi</option>`+MESE_LABELS.map((m,i)=>`<option value="${i}" ${String(LOG_FILTER.mese)===String(i)?"selected":""}>${m}</option>`).join("");
+
   const avvisoAdmin = STATE.isAdmin 
     ? `<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
         🗑️ Modalità Admin attiva: Premi <strong>Annulla</strong> su un'azione per rimuoverla e stornare i punti automaticamente.
@@ -1034,30 +1177,32 @@ function renderLog(){
 
   return `
     ${avvisoAdmin}
-    ${visibleLog.map(l=>{
-      const logId=Number(l.id);
-      const delta=Number(l.delta)||0;
-      const meseIdx=normalizeMonthIndex(l.meseIdx);
-      const bottoneAnnulla = STATE.isAdmin && Number.isFinite(logId)
-        ? `<button onclick="rimuoviDalLog(${logId})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
-        : ``;
+    <div class="form-box" style="margin-bottom:14px;padding:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#818cf8">FILTRA LOG</div>
+          <div id="logCount" style="font-size:11px;opacity:.45">${filteredLog.length} risultati su ${visibleLog.length}</div>
+        </div>
+        <button onclick="resetLogFiltri()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 10px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">Reset</button>
+      </div>
+      <input type="text" value="${esc(LOG_FILTER.query)}" placeholder="Cerca socio, azione o nota..." oninput="LOG_FILTER.query=this.value;aggiornaLogFiltrato()" style="margin-bottom:10px"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <select onchange="LOG_FILTER.mese=this.value;aggiornaLogFiltrato()">
+          ${meseOptions}
+        </select>
+        <select onchange="LOG_FILTER.tipo=this.value;aggiornaLogFiltrato()">
+          <option value="all" ${LOG_FILTER.tipo==="all"?"selected":""}>Bonus e malus</option>
+          <option value="bonus" ${LOG_FILTER.tipo==="bonus"?"selected":""}>Solo bonus</option>
+          <option value="malus" ${LOG_FILTER.tipo==="malus"?"selected":""}>Solo malus</option>
+        </select>
+      </div>
+    </div>
+    <div id="logResults">${renderLogResultsHtml(filteredLog)}</div>`;
+}
 
-      return `
-      <div class="log-item" style="align-items:center">
-        <div style="width:38px;height:38px;border-radius:9px;background:${delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${delta>0?"✅":"❌"}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13px">${esc(l.socio)}</div>
-          <div style="font-size:11px;opacity:.5;margin-top:2px">${esc(l.azione)}</div>
-          <div style="font-size:10px;opacity:.35;margin-top:2px">📅 ${MESE_LABELS[meseIdx]}</div>
-          ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${esc(l.nota)}</div>`:""}
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${delta>0?"+":""}${delta}</div>
-          <div style="font-size:9px;opacity:.4">${esc(l.data)}</div>
-          ${bottoneAnnulla}
-        </div>
-      </div>`;
-    }).join("")}`;
+function resetLogFiltri(){
+  LOG_FILTER={query:"",mese:"all",tipo:"all"};
+  renderTab();
 }
 
 function rimuoviDalLog(logId){
@@ -1109,12 +1254,13 @@ function renderAssegna(){
     </button>`;
   };
 
-  const selA=STATE.selAzione?[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione):null;
+  const azioniDisponibili=[...azioniAttive("bonus"),...azioniAttive("malus")];
+  const selA=STATE.selAzione?azioniDisponibili.find(a=>a.id===STATE.selAzione):null;
   const socioSel=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
 
   const customBlock=selA?.custom?`
     <div style="margin-top:10px;">
-      <label class="form-lbl">${STATE.selAzione==="b14"?"IMPORTO € DONATI":"MINUTI DI RITARDO"}</label>
+      <label class="form-lbl">${esc(selA.customLabel||"VALORE")}</label>
       <input type="number" min="1" value="${STATE.customVal}" oninput="STATE.customVal=Math.max(1,parseInt(this.value)||1)" style="margin-bottom:4px"/>
       <div style="font-size:13px;color:#818cf8;margin-bottom:12px;font-weight:800">= ${selA.pts*(STATE.customVal||1)} punti</div>
     </div>`:"";
@@ -1146,12 +1292,12 @@ function renderAssegna(){
 
     <label class="form-lbl">✅ BONUS</label>
     <div style="margin-bottom:12px; max-height:220px; overflow-y:auto; padding-right:4px; border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px;">
-      ${BONUS.map(a=>aBtn(a,"bonus")).join("")}
+      ${azioniAttive("bonus").map(a=>aBtn(a,"bonus")).join("")||`<div style="font-size:12px;opacity:.45;padding:8px">Nessun bonus attivo.</div>`}
     </div>
 
     <label class="form-lbl">❌ MALUS</label>
     <div style="margin-bottom:12px; max-height:220px; overflow-y:auto; padding-right:4px; border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px;">
-      ${MALUS.map(a=>aBtn(a,"malus")).join("")}
+      ${azioniAttive("malus").map(a=>aBtn(a,"malus")).join("")||`<div style="font-size:12px;opacity:.45;padding:8px">Nessun malus attivo.</div>`}
     </div>
 
     <div style="border:1px solid rgba(251,191,36,.25);border-radius:14px;padding:14px;margin-bottom:12px;background:rgba(251,191,36,.05)">
@@ -1203,7 +1349,8 @@ function assegna(){
   if(!STATE.selSocio||!STATE.selAzione)return showToast("Seleziona socio e azione!",true);
   if(!STATE.isAdmin) return showToast("Non autorizzato", true);
 
-  const azione=[...BONUS,...MALUS].find(a=>a.id===STATE.selAzione);
+  const azione=[...azioniAttive("bonus"),...azioniAttive("malus")].find(a=>a.id===STATE.selAzione);
+  if(!azione)return showToast("Azione non disponibile.",true);
   const delta=azione.custom?azione.pts*(STATE.customVal||1):azione.pts;
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
   
@@ -1216,6 +1363,181 @@ function assegna(){
   fbSavePunteggioAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
   showToast("Assegnazione completata!");
   STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
+  render();
+}
+
+// ── TAB AZIONI - BONUS/MALUS MODIFICABILI ───────────────────
+function getAzioneEditing(){
+  if(!AZIONE_EDIT)return null;
+  const list=AZIONE_EDIT.tipo==="bonus"?BONUS:MALUS;
+  const azione=list.find(a=>a.id===AZIONE_EDIT.id);
+  return azione?{tipo:AZIONE_EDIT.tipo,azione}:null;
+}
+
+function renderAzioni(){
+  if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Azioni riservate agli amministratori.</div>`;
+  const editing=getAzioneEditing();
+  const action=editing?.azione||{label:"",emoji:"⭐",pts:10,custom:false,customLabel:"VALORE"};
+  const tipo=editing?.tipo||"bonus";
+  const listBox=(list,tipoLista,titolo,colore)=>`
+    <div class="form-box" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:${colore}">${titolo}</div>
+        <div style="font-size:11px;opacity:.45">${list.filter(a=>!a.disabilitata).length} attive / ${list.length}</div>
+      </div>
+      ${list.map(a=>{
+        const muted=a.disabilitata?"opacity:.48;filter:grayscale(.8)":"";
+        return `<div class="card" style="${muted};padding:12px;margin-bottom:8px">
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="font-size:22px;width:28px;text-align:center">${esc(a.emoji)}</div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+                <div style="font-weight:900;font-size:13px">${esc(a.label)}</div>
+                ${a.custom?`<span class="badge" style="background:rgba(129,140,248,.14);color:#c7d2fe;border-color:rgba(129,140,248,.3)">Variabile</span>`:""}
+                ${a.disabilitata?`<span class="badge" style="background:rgba(148,163,184,.12);color:#cbd5e1;border-color:rgba(148,163,184,.25)">Disattiva</span>`:""}
+              </div>
+              <div style="font-size:11px;opacity:.5;margin-top:4px">${a.custom?`${a.pts>0?"+":""}${a.pts} per ${esc(String(a.customLabel||"valore").toLowerCase())}`:`${a.pts>0?"+":""}${a.pts} punti`}</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+                <button onclick="modificaAzione('${tipoLista}','${a.id}')" style="background:rgba(129,140,248,.16);border:1px solid rgba(129,140,248,.3);color:#c7d2fe;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">✏️ Modifica</button>
+                <button onclick="toggleAzione('${tipoLista}','${a.id}')" style="background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.24);color:#cbd5e1;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">${a.disabilitata?"👁️ Riattiva":"🙈 Disattiva"}</button>
+              </div>
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:${a.pts>=0?"#10b981":"#ef4444"};letter-spacing:1px;flex-shrink:0">${a.pts>0?"+":""}${a.custom?"var":a.pts}</div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`;
+
+  return `<div class="form-box" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8">${editing?"MODIFICA AZIONE":"NUOVA AZIONE"}</div>
+        <div style="font-size:11px;opacity:.45;margin-top:2px">${editing?`ID ${editing.azione.id}`:"Bonus o malus personalizzato"}</div>
+      </div>
+      ${editing?`<button onclick="annullaModificaAzione()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">Nuova</button>`:""}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 88px;gap:10px;margin-bottom:10px">
+      <div>
+        <label class="form-lbl">TIPO</label>
+        <select id="azioneTipo">
+          <option value="bonus" ${tipo==="bonus"?"selected":""}>Bonus</option>
+          <option value="malus" ${tipo==="malus"?"selected":""}>Malus</option>
+        </select>
+      </div>
+      <div>
+        <label class="form-lbl">EMOJI</label>
+        <input type="text" id="azioneEmoji" value="${esc(action.emoji)}" placeholder="⭐" maxlength="4" style="text-align:center"/>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      <label class="form-lbl">DESCRIZIONE</label>
+      <input type="text" id="azioneLabel" value="${esc(action.label)}" placeholder="Es. Ha aiutato durante un evento"/>
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:10px;align-items:end">
+      <div>
+        <label class="form-lbl">PUNTI</label>
+        <input type="number" id="azionePts" min="1" value="${Math.abs(Number(action.pts)||1)}" style="text-align:center"/>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:800;cursor:pointer">
+        <input type="checkbox" id="azioneCustom" ${action.custom?"checked":""} style="width:auto!important"> Valore variabile
+      </label>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-lbl">ETICHETTA VALORE VARIABILE</label>
+      <input type="text" id="azioneCustomLabel" value="${esc(action.customLabel||"VALORE")}" placeholder="Es. MINUTI DI RITARDO"/>
+    </div>
+    <button class="btn-primary" onclick="salvaAzione()">${editing?"💾 Salva azione":"➕ Aggiungi azione"}</button>
+    <button onclick="ripristinaAzioniDefault()" style="margin-top:10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5;border-radius:10px;padding:10px 14px;font-size:12px;font-weight:800;cursor:pointer;width:100%;font-family:inherit">Ripristina bonus/malus originali</button>
+  </div>
+  ${listBox(BONUS,"bonus","✅ BONUS","#10b981")}
+  ${listBox(MALUS,"malus","❌ MALUS","#ef4444")}`;
+}
+
+function annullaModificaAzione(){
+  AZIONE_EDIT=null;
+  renderTab();
+}
+
+function modificaAzione(tipo,id){
+  AZIONE_EDIT={tipo,id};
+  renderTab();
+}
+
+async function salvaAzione(){
+  if(!STATE.isAdmin)return showToast("Azione riservata agli amministratori.",true);
+  const editing=getAzioneEditing();
+  const tipo=document.getElementById("azioneTipo")?.value==="malus"?"malus":"bonus";
+  const label=document.getElementById("azioneLabel")?.value.trim();
+  const emoji=document.getElementById("azioneEmoji")?.value.trim()||"⭐";
+  const pts=Math.abs(parseInt(document.getElementById("azionePts")?.value)||0);
+  const custom=document.getElementById("azioneCustom")?.checked===true;
+  const customLabel=document.getElementById("azioneCustomLabel")?.value.trim()||"VALORE";
+  if(!label)return showToast("Inserisci una descrizione.",true);
+  if(!pts)return showToast("Inserisci un punteggio valido.",true);
+
+  const id=editing?.azione.id||`${tipo[0]}${Date.now()}`;
+  const nuovo=normalizeAzione({id,label,emoji,pts,custom,customLabel,disabilitata:editing?.azione.disabilitata===true},tipo,id);
+  let nextBonus=BONUS.map((a,i)=>cleanAzioneForDb(a,"bonus",i));
+  let nextMalus=MALUS.map((a,i)=>cleanAzioneForDb(a,"malus",i));
+
+  if(editing){
+    nextBonus=nextBonus.filter(a=>a.id!==editing.azione.id);
+    nextMalus=nextMalus.filter(a=>a.id!==editing.azione.id);
+  }
+  if(tipo==="bonus")nextBonus.push(nuovo);
+  else nextMalus.push(nuovo);
+
+  const oldBonus=BONUS;
+  const oldMalus=MALUS;
+  BONUS=cloneAzioni(nextBonus,"bonus");
+  MALUS=cloneAzioni(nextMalus,"malus");
+  const ok=await fbSaveAzioniConfig(BONUS,MALUS);
+  if(!ok){
+    BONUS=oldBonus;
+    MALUS=oldMalus;
+    renderTab();
+    return;
+  }
+  AZIONE_EDIT=null;
+  showToast(editing?"Azione aggiornata ✅":"Azione aggiunta ✅");
+  render();
+}
+
+async function toggleAzione(tipo,id){
+  if(!STATE.isAdmin)return showToast("Azione riservata agli amministratori.",true);
+  const oldBonus=BONUS;
+  const oldMalus=MALUS;
+  if(tipo==="bonus")BONUS=BONUS.map(a=>a.id===id?{...a,disabilitata:!a.disabilitata}:a);
+  else MALUS=MALUS.map(a=>a.id===id?{...a,disabilitata:!a.disabilitata}:a);
+  if(STATE.selAzione===id)STATE.selAzione=null;
+  const ok=await fbSaveAzioniConfig(BONUS,MALUS);
+  if(!ok){
+    BONUS=oldBonus;
+    MALUS=oldMalus;
+    renderTab();
+    return;
+  }
+  showToast("Azioni aggiornate ✅");
+  render();
+}
+
+async function ripristinaAzioniDefault(){
+  if(!STATE.isAdmin)return showToast("Azione riservata agli amministratori.",true);
+  if(!confirm("Ripristinare bonus e malus originali?"))return;
+  const oldBonus=BONUS;
+  const oldMalus=MALUS;
+  BONUS=cloneAzioni(BONUS_DEFAULT,"bonus");
+  MALUS=cloneAzioni(MALUS_DEFAULT,"malus");
+  STATE.selAzione=null;
+  const ok=await fbSaveAzioniConfig(BONUS,MALUS);
+  if(!ok){
+    BONUS=oldBonus;
+    MALUS=oldMalus;
+    renderTab();
+    return;
+  }
+  AZIONE_EDIT=null;
+  showToast("Bonus/malus ripristinati ✅");
   render();
 }
 
@@ -1250,6 +1572,7 @@ function scaricaBackup(){
     mesi:MESE_LABELS,
     bonus:BONUS,
     malus:MALUS,
+    azioni:{bonus:BONUS,malus:MALUS},
     soci:STATE.soci,
     log:STATE.log,
     punteggiMensili:DB_PUNTEGGI_MENSILI
@@ -1470,6 +1793,17 @@ window.addEventListener("firebase-ready",()=>{
     console.warn(err);
     DB_SOCI=null;
     rebuildSociFromDb();
+  });
+  onValue(ref(db,"azioni"),snap=>{
+    const cfg=snap.val();
+    BONUS=azioniFromDb(cfg?.bonus,"bonus",BONUS_DEFAULT);
+    MALUS=azioniFromDb(cfg?.malus,"malus",MALUS_DEFAULT);
+    render();
+  },err=>{
+    console.warn(err);
+    BONUS=cloneAzioni(BONUS_DEFAULT,"bonus");
+    MALUS=cloneAzioni(MALUS_DEFAULT,"malus");
+    render();
   });
   onValue(ref(db,"log"),snap=>{
     const logData = snap.val();

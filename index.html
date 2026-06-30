@@ -220,7 +220,7 @@ select option{background:#12121e;color:#fff}
     </div>
     <div class="countdown-box" id="countdownBox">
       <div>
-        <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:4px">⏰ PROSSIMO LUNEDÌ</div>
+        <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:4px">⏰ PROSSIMO RESET</div>
         <div style="display:flex;gap:12px;align-items:flex-end">
           <div><div class="countdown-num" id="cdGiorni">—</div><div class="countdown-lbl">GIORNI</div></div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--purple);margin-bottom:4px">:</div>
@@ -228,6 +228,7 @@ select option{background:#12121e;color:#fff}
           <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--purple);margin-bottom:4px">:</div>
           <div><div class="countdown-num" id="cdMin">—</div><div class="countdown-lbl">MIN</div></div>
         </div>
+        <div id="cdTarget" style="font-size:10px;opacity:.45;letter-spacing:1px;margin-top:6px">—</div>
       </div>
       <div style="margin-left:auto;text-align:right">
         <div style="font-size:10px;opacity:.5;letter-spacing:1px">MESE ATTIVO</div>
@@ -278,10 +279,35 @@ const GAME_YEAR = 2026;
 const GAME_START_MONTH = 2; // Marzo, usando i mesi JavaScript: gennaio = 0.
 const ACTIVE_MONTH_INDEX = getActiveMonthIndex();
 
-function getActiveMonthIndex(){
-  const now=new Date();
-  const rawIndex=(now.getFullYear()-GAME_YEAR)*12+now.getMonth()-GAME_START_MONTH;
-  return Math.max(0,Math.min(MESE_LABELS.length-1,rawIndex));
+function firstMondayOfMonth(year,month){
+  const d=new Date(year,month,1);
+  const diff=(8-d.getDay())%7;
+  d.setDate(1+diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function getActiveMonthIndex(date=new Date()){
+  const now=new Date(date);
+  let idx=0;
+  for(let i=0;i<MESE_LABELS.length;i++){
+    const start=firstMondayOfMonth(GAME_YEAR,GAME_START_MONTH+i);
+    if(now>=start) idx=i;
+  }
+  return Math.max(0,Math.min(MESE_LABELS.length-1,idx));
+}
+
+function getNextResetDate(date=new Date()){
+  const now=new Date(date);
+  for(let i=0;i<MESE_LABELS.length;i++){
+    const start=firstMondayOfMonth(GAME_YEAR,GAME_START_MONTH+i);
+    if(start>now) return start;
+  }
+  return firstMondayOfMonth(GAME_YEAR+1,GAME_START_MONTH);
+}
+
+function formatResetDate(date){
+  return date.toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"long"});
 }
 
 function activeMonthLabel(upper=false){
@@ -349,12 +375,98 @@ let STATE = {
 let fbReady=false;
 let chartInstances={};
 let adminRoleUnsub=null;
-let DB_EXTRA={};
+let DB_PUNTEGGI_MENSILI={};
+let DB_SOCI=null;
+let SOCIO_EDIT_ID=null;
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════════════════════
 function ptTotali(s){return s.m.reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
+
+function nextJoinMonthIndex(){
+  return Math.min(ACTIVE_MONTH_INDEX+1,MESE_LABELS.length-1);
+}
+
+function normalizeMesi(m=[]){
+  const out=[];
+  for(let i=0;i<MESE_LABELS.length;i++){
+    const raw=Array.isArray(m)?m[i]:(m&&typeof m==="object"?m[i]??m[String(i)]:undefined);
+    out[i]=raw===null?null:(raw===undefined||raw===""?0:Number(raw)||0);
+  }
+  return out;
+}
+
+function normalizeAvatar(value,nome=""){
+  const clean=String(value||"").trim().toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,3);
+  if(clean)return clean;
+  const initials=String(nome||"").trim().split(/\s+/).filter(Boolean).map(p=>p[0]).join("").toUpperCase().slice(0,2);
+  return initials||"?";
+}
+
+function normalizeSocio(raw={},fallbackId=0){
+  const nome=String(raw.nome||"Nuovo socio").trim();
+  const id=Number(raw.id??fallbackId);
+  return {
+    id,
+    nome,
+    avatar:normalizeAvatar(raw.avatar,nome),
+    m:normalizeMesi(raw.m),
+    extra:Number(raw.extra)||0,
+    uscito:raw.uscito===true,
+    nascosto:raw.nascosto===true
+  };
+}
+
+function parseSociDb(raw){
+  if(!raw)return null;
+  const entries=Array.isArray(raw)
+    ? raw.map((value,index)=>[String(index),value]).filter(([,value])=>value)
+    : Object.entries(raw).filter(([,value])=>value);
+  const list=entries
+    .map(([key,value])=>normalizeSocio(value,key))
+    .filter(s=>Number.isFinite(s.id)&&s.id>0&&s.nome)
+    .sort((a,b)=>a.id-b.id);
+  return list.length?list:null;
+}
+
+function cleanSocioForDb(s){
+  const clean=normalizeSocio(s,s.id);
+  return {
+    id:clean.id,
+    nome:clean.nome,
+    avatar:clean.avatar,
+    m:clean.m,
+    extra:clean.extra,
+    uscito:clean.uscito,
+    nascosto:clean.nascosto
+  };
+}
+
+function baseSoci(){
+  return (DB_SOCI&&DB_SOCI.length?DB_SOCI:SOCI_DEFAULT).map(s=>cleanSocioForDb(s));
+}
+
+function sociPerClassifiche(){
+  return STATE.isAdmin?STATE.soci:STATE.soci.filter(s=>!s.nascosto);
+}
+
+function rebuildSociFromDb(){
+  const ext=DB_PUNTEGGI_MENSILI||{};
+  STATE.soci=baseSoci().map(s=>{
+    const nm=[...s.m];
+    for(let i=0;i<MESE_LABELS.length;i++){
+      if(ext["m"+i]&&ext["m"+i][s.id]!==undefined){
+        const dataMese=ext["m"+i][s.id];
+        nm[i]=(dataMese&&typeof dataMese==="object")?dataMese.value:dataMese;
+      }
+    }
+    return {...s,m:nm};
+  });
+  document.getElementById("loadingScreen").style.display="none";
+  document.getElementById("appRoot").style.display="block";
+  render();
+}
 
 function esc(value){
   return String(value??"").replace(/[&<>"']/g,ch=>({
@@ -378,7 +490,7 @@ function titolo(pts){
 }
 
 function sortedSoci(){
-  return[...STATE.soci].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{
+  return[...sociPerClassifiche()].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{
     if(a.uscito&&!b.uscito)return 1;
     if(!a.uscito&&b.uscito)return -1;
     return b.punti-a.punti;
@@ -413,11 +525,6 @@ function setAdminMode(isAdmin){
 // ═══════════════════════════════════════════════════════════
 //  FIREBASE WRITERS - PROTETTI DA FIREBASE AUTH E RULES
 // ═══════════════════════════════════════════════════════════
-function fbSaveExtra(socioId,meseIdx,val){
-  if(!fbReady || !STATE.isAdmin) return;
-  const{db,ref,set}=window._fb;
-  set(ref(db,"extra/m"+meseIdx+"/"+socioId), val);
-}
 function fbSaveLog(){
   if(!fbReady || !STATE.isAdmin) return;
   const{db,ref,set}=window._fb;
@@ -425,15 +532,34 @@ function fbSaveLog(){
     data: STATE.log
   });
 }
-function fbSaveScoreAndLog(socioId,meseIdx,val){
+function fbSavePunteggioAndLog(socioId,meseIdx,val){
   if(!fbReady || !STATE.isAdmin) return;
   const{db,ref,update}=window._fb;
   update(ref(db), {
+    // Nodo storico mantenuto per compatibilita: contiene i punteggi mensili salvati dall'admin.
     ["extra/m"+meseIdx+"/"+socioId]: val,
     log: {
       data: STATE.log
     }
   });
+}
+
+async function fbSaveSociList(list){
+  if(!fbReady || !STATE.isAdmin){
+    showToast("Accesso admin richiesto.",true);
+    return false;
+  }
+  const{db,ref,set}=window._fb;
+  const data={};
+  list.map(cleanSocioForDb).sort((a,b)=>a.id-b.id).forEach(s=>{data[s.id]=s;});
+  try{
+    await set(ref(db,"soci"),data);
+    return true;
+  }catch(err){
+    console.error(err);
+    showToast("Non posso salvare i soci: aggiorna le regole Firebase.",true);
+    return false;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -490,9 +616,10 @@ function render(){
 
 function renderKPI(){
   const cl=sortedSoci();
+  const sociVisibili=sociPerClassifiche();
   const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
   document.getElementById("kpiGrid").innerHTML=[
-    {icon:"👥",val:STATE.soci.filter(s=>!s.uscito).length, label:"SOCI"},
+    {icon:"👥",val:sociVisibili.filter(s=>!s.uscito).length, label:"SOCI"},
     {icon:"🥇",val:cl[0]?.nome?.split(" ")[0]||"-",        label:"LEADER"},
     {icon:"⭐",val:cl[0]?.punti??0,                        label:"TOP PT"},
     {icon:"📊",val:media,                                   label:"MEDIA PT"},
@@ -530,7 +657,7 @@ function renderTab(){
 // ── CLASSIFICA GENERALIZZATA ────────────────────────────────
 function renderClassifica(){
   const cl=sortedSoci();
-  const maxM=Math.max(...STATE.soci.flatMap(s=>s.m).filter(v=>v!==null),1);
+  const maxM=Math.max(...sociPerClassifiche().flatMap(s=>s.m).filter(v=>v!==null),1);
   return cl.map((s,i)=>{
     const t=titolo(s.punti);
     const bars=s.m.map((mv,mi)=>{
@@ -667,7 +794,7 @@ const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
 function renderMesi(){
   const mi=STATE.meseView;
   const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===ACTIVE_MONTH_INDEX?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
-  const classMese=[...STATE.soci].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
+  const classMese=[...sociPerClassifiche()].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
   const max=Math.max(...classMese.map(s=>s.punti),1);
   const rows=classMese.map((s,i)=>{
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer">
@@ -834,7 +961,9 @@ function renderTutorial(){
 
 // ── TAB LOG - INTERBLOCCATO 100% SE NON ADMIN ────────────────
 function renderLog(){
-  if(!STATE.log.length) return `<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
+  const hiddenNames=new Set(STATE.soci.filter(s=>s.nascosto).map(s=>s.nome));
+  const visibleLog=STATE.isAdmin?STATE.log:STATE.log.filter(l=>!hiddenNames.has(l.socio));
+  if(!visibleLog.length) return `<div style="text-align:center;opacity:.3;margin-top:60px"><div style="font-size:48px">📋</div><p style="margin-top:12px">Nessuna azione registrata ancora.</p></div>`;
   
   const avvisoAdmin = STATE.isAdmin 
     ? `<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:14px;padding:12px 15px;margin-bottom:14px;font-size:12px;opacity:.8">
@@ -846,7 +975,7 @@ function renderLog(){
 
   return `
     ${avvisoAdmin}
-    ${STATE.log.map(l=>{
+    ${visibleLog.map(l=>{
       const logId=Number(l.id);
       const delta=Number(l.delta)||0;
       const meseIdx=normalizeMonthIndex(l.meseIdx);
@@ -895,7 +1024,7 @@ function rimuoviDalLog(logId){
     aggiornato=STATE.soci.find(s=>s.nome===entry.socio);
   }
   STATE.log=STATE.log.filter(l=>Number(l.id)!==Number(logId));
-  if(aggiornato) fbSaveScoreAndLog(aggiornato.id,meseIdx,aggiornato.m[meseIdx]);
+  if(aggiornato) fbSavePunteggioAndLog(aggiornato.id,meseIdx,aggiornato.m[meseIdx]);
   else fbSaveLog();
   showToast("Punteggio stornato con successo! ✅");
   render();
@@ -906,7 +1035,7 @@ function renderAssegna(){
   if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Pannello riservato agli amministratori. Accedi dal Logo.</div>`;
 
   const opts=[...STATE.soci]
-    .filter(s=>!s.uscito)
+    .filter(s=>!s.uscito&&!s.nascosto)
     .sort((a,b)=>a.nome.localeCompare(b.nome))
     .map(s=>`<option value="${s.id}">${esc(s.nome)} (${ptTotali(s)}pt)</option>`)
     .join("");
@@ -1006,7 +1135,7 @@ function assegnaPersonalizzato(){
   });
   STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveScoreAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
+  fbSavePunteggioAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
   showToast("Assegnato con successo!");
   render();
 }
@@ -1025,7 +1154,7 @@ function assegna(){
   });
   STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveScoreAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
+  fbSavePunteggioAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
   showToast("Assegnazione completata!");
   STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
   render();
@@ -1064,7 +1193,7 @@ function scaricaBackup(){
     malus:MALUS,
     soci:STATE.soci,
     log:STATE.log,
-    extra:DB_EXTRA
+    punteggiMensili:DB_PUNTEGGI_MENSILI
   };
   downloadJson(`fantasocio-backup-${stamp}.json`,backup);
   showToast("Backup scaricato ✅");
@@ -1072,6 +1201,42 @@ function scaricaBackup(){
 
 function renderSoci(){
   if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Elenco soci riservato agli amministratori.</div>`;
+  const editing=SOCIO_EDIT_ID!==null?STATE.soci.find(s=>s.id===SOCIO_EDIT_ID):null;
+  const startIdx=nextJoinMonthIndex();
+  const startOptions=MESE_LABELS.map((m,i)=>`<option value="${i}" ${i===startIdx?"selected":""}>${m}</option>`).join("");
+  const form=`<div class="form-box" style="margin-bottom:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px">
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8">${editing?"MODIFICA SOCIO":"NUOVO SOCIO"}</div>
+        <div style="font-size:11px;opacity:.45;margin-top:2px">${editing?`ID ${editing.id}`:`ID automatico · da ${MESE_LABELS[startIdx]}`}</div>
+      </div>
+      ${editing?`<button onclick="annullaModificaSocio()" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">Nuovo</button>`:""}
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 92px;gap:10px;margin-bottom:10px">
+      <div>
+        <label class="form-lbl">NOME</label>
+        <input type="text" id="socioNome" value="${esc(editing?.nome||"")}" placeholder="Es. Mario Rossi"/>
+      </div>
+      <div>
+        <label class="form-lbl">AVATAR</label>
+        <input type="text" id="socioAvatar" value="${esc(editing?.avatar||"")}" placeholder="MR" maxlength="3" style="text-align:center;text-transform:uppercase"/>
+      </div>
+    </div>
+    ${editing?"":`<div style="margin-bottom:10px">
+      <label class="form-lbl">INIZIA DA</label>
+      <select id="socioStart">${startOptions}</select>
+    </div>`}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0 14px">
+      <label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:800;cursor:pointer">
+        <input type="checkbox" id="socioUscito" ${editing?.uscito?"checked":""} style="width:auto!important"> Uscito
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;font-size:13px;font-weight:800;cursor:pointer">
+        <input type="checkbox" id="socioNascosto" ${editing?.nascosto?"checked":""} style="width:auto!important"> Nascosto
+      </label>
+    </div>
+    <button class="btn-primary" onclick="salvaSocio()">${editing?"💾 Salva modifiche":"➕ Aggiungi socio"}</button>
+  </div>`;
+
   const rows=[...STATE.soci]
     .sort((a,b)=>a.nome.localeCompare(b.nome))
     .map(s=>{
@@ -1098,6 +1263,11 @@ function renderSoci(){
             </div>
             <div style="font-size:11px;opacity:.5;margin-top:3px">ID ${s.id}</div>
             <div style="display:flex;gap:6px;overflow-x:auto;padding-top:10px;scrollbar-width:none">${mesi}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+              <button onclick="modificaSocio(${s.id})" style="background:rgba(129,140,248,.16);border:1px solid rgba(129,140,248,.3);color:#c7d2fe;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">✏️ Modifica</button>
+              <button onclick="toggleSocioFlag(${s.id},'uscito')" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">${s.uscito?"↩️ Riattiva":"🚪 Uscito"}</button>
+              <button onclick="toggleSocioFlag(${s.id},'nascosto')" style="background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.24);color:#cbd5e1;border-radius:8px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">${s.nascosto?"👁️ Mostra":"🙈 Nascondi"}</button>
+            </div>
           </div>
           <div style="text-align:right;flex-shrink:0">
             <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#818cf8;letter-spacing:1px">${ptTotali(s)}</div>
@@ -1107,7 +1277,7 @@ function renderSoci(){
       </div>`;
     }).join("");
 
-  return `<div class="form-box" style="margin-bottom:14px">
+  return `${form}<div class="form-box" style="margin-bottom:14px">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:12px">SOCI</div>
     <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 14px">
       <div class="kpi"><div class="kpi-val">${STATE.soci.length}</div><div class="kpi-lbl">TOTALI</div></div>
@@ -1115,6 +1285,78 @@ function renderSoci(){
       <div class="kpi"><div class="kpi-val">${STATE.soci.filter(s=>s.uscito).length}</div><div class="kpi-lbl">USCITI</div></div>
     </div>
   </div>${rows}`;
+}
+
+function annullaModificaSocio(){
+  SOCIO_EDIT_ID=null;
+  renderTab();
+}
+
+function modificaSocio(id){
+  SOCIO_EDIT_ID=Number(id);
+  renderTab();
+}
+
+function buildNewSocioMonths(startIdx){
+  return MESE_LABELS.map((_,i)=>i<startIdx?null:0);
+}
+
+async function salvaSocio(){
+  if(!STATE.isAdmin)return showToast("Azione riservata agli amministratori.",true);
+  const nome=document.getElementById("socioNome")?.value.trim();
+  const avatar=normalizeAvatar(document.getElementById("socioAvatar")?.value,nome);
+  const uscito=document.getElementById("socioUscito")?.checked===true;
+  const nascosto=document.getElementById("socioNascosto")?.checked===true;
+  if(!nome)return showToast("Inserisci il nome del socio.",true);
+
+  const editing=SOCIO_EDIT_ID!==null?STATE.soci.find(s=>s.id===SOCIO_EDIT_ID):null;
+  const duplicate=STATE.soci.some(s=>s.id!==(editing?.id??0)&&s.nome.toLowerCase()===nome.toLowerCase());
+  if(duplicate)return showToast("Esiste già un socio con questo nome.",true);
+
+  const previousSoci=STATE.soci;
+  const previousLog=STATE.log;
+  let updated;
+  let updatedLog=STATE.log;
+
+  if(editing){
+    updated=STATE.soci.map(s=>s.id===editing.id?{...s,nome,avatar,uscito,nascosto}:s);
+    if(editing.nome!==nome){
+      updatedLog=STATE.log.map(l=>l.socio===editing.nome?{...l,socio:nome}:l);
+    }
+  }else{
+    const start=normalizeMonthIndex(document.getElementById("socioStart")?.value,nextJoinMonthIndex());
+    const nextId=Math.max(0,...STATE.soci.map(s=>Number(s.id)||0))+1;
+    updated=[...STATE.soci,{id:nextId,nome,avatar,m:buildNewSocioMonths(start),extra:0,uscito,nascosto}];
+  }
+
+  STATE.log=updatedLog;
+  const ok=await fbSaveSociList(updated);
+  if(!ok){
+    STATE.soci=previousSoci;
+    STATE.log=previousLog;
+    renderTab();
+    return;
+  }
+
+  DB_SOCI=updated.map(cleanSocioForDb);
+  STATE.soci=updated.map(cleanSocioForDb);
+  if(updatedLog!==previousLog)fbSaveLog();
+  SOCIO_EDIT_ID=null;
+  showToast(editing?"Socio aggiornato ✅":"Socio aggiunto ✅");
+  render();
+}
+
+async function toggleSocioFlag(id,field){
+  if(!STATE.isAdmin)return showToast("Azione riservata agli amministratori.",true);
+  const allowed=["uscito","nascosto"];
+  if(!allowed.includes(field))return;
+  const updated=STATE.soci.map(s=>s.id===Number(id)?{...s,[field]:!s[field]}:s);
+  const ok=await fbSaveSociList(updated);
+  if(!ok)return;
+  DB_SOCI=updated.map(cleanSocioForDb);
+  STATE.soci=updated.map(cleanSocioForDb);
+  showToast("Archivio soci aggiornato ✅");
+  render();
 }
 let CERCA_QUERY="";
 function renderCerca(){
@@ -1125,12 +1367,13 @@ function renderCerca(){
 }
 
 function aggiornaCountdown(){
-  const ora=new Date(); const pross=new Date(); pross.setDate(ora.getDate()+(pross.getDay()===0?1:8-pross.getDay())); pross.setHours(0,0,0,0);
+  const ora=new Date(); const pross=getNextResetDate(ora);
   const diff=pross-ora;
-  const dg=document.getElementById("cdGiorni"); const dh=document.getElementById("cdOre"); const dm=document.getElementById("cdMin");
+  const dg=document.getElementById("cdGiorni"); const dh=document.getElementById("cdOre"); const dm=document.getElementById("cdMin"); const dt=document.getElementById("cdTarget");
   if(dg) dg.textContent=String(Math.floor(diff/86400000)).padStart(2,"0");
   if(dh) dh.textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,"0");
   if(dm) dm.textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
+  if(dt) dt.textContent=`Reset mensile: ${formatResetDate(pross)}`;
 }
 
 // ── RECOVERY & SINCRO REALTIME FIREBASE ──────────────────────
@@ -1158,18 +1401,16 @@ window.addEventListener("firebase-ready",()=>{
   });
   onValue(ref(db,"extra"),snap=>{
     const ext=snap.val()||{};
-    DB_EXTRA=ext;
-    STATE.soci=SOCI_DEFAULT.map(s=>{
-      const nm=[...s.m]; 
-      for(let i=0; i<6; i++){
-        if(ext["m"+i] && ext["m"+i][s.id]!==undefined) {
-          const dataMese = ext["m"+i][s.id];
-          nm[i] = (dataMese && typeof dataMese === 'object') ? dataMese.value : dataMese;
-        }
-      } 
-      return{...s,m:nm};
-    });
-    document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();
+    DB_PUNTEGGI_MENSILI=ext;
+    rebuildSociFromDb();
+  });
+  onValue(ref(db,"soci"),snap=>{
+    DB_SOCI=parseSociDb(snap.val());
+    rebuildSociFromDb();
+  },err=>{
+    console.warn(err);
+    DB_SOCI=null;
+    rebuildSociFromDb();
   });
   onValue(ref(db,"log"),snap=>{
     const logData = snap.val();

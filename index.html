@@ -187,6 +187,7 @@ select option{background:#12121e;color:#fff}
     <div style="font-size:40px;margin-bottom:12px">🔐</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:6px">AREA ADMIN</div>
     <div style="font-size:13px;opacity:.5;margin-bottom:22px">Accedi con l'account admin Firebase</div>
+    <div style="font-size:10px;opacity:.35;letter-spacing:1px;margin-bottom:12px">LOGIN FIREBASE · v2</div>
     <input type="text" id="emailInput" placeholder="Email admin…" autocomplete="username" style="margin-bottom:10px"/>
     <input type="password" id="pwdInput" placeholder="Password admin…" onkeydown="if(event.key==='Enter')checkPwd()"/>
     <button class="btn-primary" style="margin-top:10px" onclick="checkPwd()">Entra</button>
@@ -380,6 +381,7 @@ let STATE = {
 let fbReady=false;
 let chartInstances={};
 let adminRoleUnsub=null;
+let DB_EXTRA={};
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
@@ -430,6 +432,18 @@ function showToast(msg,err=false){
   setTimeout(()=>t.style.display="none",3000);
 }
 
+function downloadJson(filename,data){
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 function setAdminMode(isAdmin){
   STATE.isAdmin=isAdmin;
   document.getElementById("adminBar").style.display=isAdmin?"flex":"none";
@@ -438,7 +452,7 @@ function setAdminMode(isAdmin){
 }
 
 // ═══════════════════════════════════════════════════════════
-//  FIREBASE WRITERS - PROTETTI CON TOKEN STRUTTURATO
+//  FIREBASE WRITERS - PROTETTI DA FIREBASE AUTH E RULES
 // ═══════════════════════════════════════════════════════════
 function fbSaveExtra(socioId,meseIdx,val){
   if(!fbReady || !STATE.isAdmin) return;
@@ -503,7 +517,7 @@ function logout(){
 
 function getTabs(){
   const t=["🏆 Classifica","📅 Mesi","📊 Grafici","🏅 Bacheca","📜 Regolamento","🎬 Tutorial","📋 Log","🔍 Cerca"];
-  if(STATE.isAdmin)t.push("➕ Assegna","👥 Soci");
+  if(STATE.isAdmin)t.push("➕ Assegna","💾 Backup","👥 Soci");
   return t;
 }
 
@@ -548,6 +562,7 @@ function renderTab(){
   else if(label.includes("Regolamento"))el.innerHTML=renderRegolamento();
   else if(label.includes("Tutorial"))el.innerHTML=renderTutorial();
   else if(label.includes("Assegna"))el.innerHTML=renderAssegna();
+  else if(label.includes("Backup"))el.innerHTML=renderBackup();
   else if(label.includes("Soci"))el.innerHTML=renderSoci();
   else if(label.includes("Log"))el.innerHTML=renderLog();
   else if(label.includes("Cerca"))el.innerHTML=renderCerca();
@@ -991,6 +1006,45 @@ function assegna(){
 }
 
 // ── STRUTTURE SECONDARIE DI COMPLEMENTO ──────────────────────
+function renderBackup(){
+  if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Backup riservato agli amministratori.</div>`;
+  const ultimoLog=STATE.log[0]?.data||"—";
+  return `<div class="form-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:14px">BACKUP DATI</div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 14px">
+      <div class="kpi"><div class="kpi-val">${STATE.soci.length}</div><div class="kpi-lbl">SOCI</div></div>
+      <div class="kpi"><div class="kpi-val">${STATE.log.length}</div><div class="kpi-lbl">LOG</div></div>
+      <div class="kpi"><div class="kpi-val" style="font-size:18px">${MESE_LABELS[ACTIVE_MONTH_INDEX]}</div><div class="kpi-lbl">MESE</div></div>
+    </div>
+    <div class="preview-box" style="margin-bottom:14px">
+      <div style="font-size:11px;opacity:.55;letter-spacing:2px;margin-bottom:4px">ULTIMO LOG</div>
+      <div style="font-weight:800">${esc(ultimoLog)}</div>
+    </div>
+    <button class="btn-primary" onclick="scaricaBackup()">💾 Scarica backup JSON</button>
+  </div>`;
+}
+
+function scaricaBackup(){
+  if(!STATE.isAdmin) return showToast("Backup riservato agli amministratori.",true);
+  const now=new Date();
+  const stamp=now.toISOString().slice(0,19).replace(/[:T]/g,"-");
+  const backup={
+    exportedAt:now.toISOString(),
+    app:"FantaSocio",
+    activeMonth:{index:ACTIVE_MONTH_INDEX,label:activeMonthLabel()},
+    mesi:MESE_LABELS,
+    scuderie:SCUDERIE,
+    bonus:BONUS,
+    malus:MALUS,
+    missioni:MISSIONI,
+    soci:STATE.soci,
+    log:STATE.log,
+    extra:DB_EXTRA
+  };
+  downloadJson(`fantasocio-backup-${stamp}.json`,backup);
+  showToast("Backup scaricato ✅");
+}
+
 function renderSoci(){return `<div class="form-box">Pannello gestione scuderie abilitato in modalità Admin.</div>`;}
 let CERCA_QUERY="";
 function renderCerca(){
@@ -1034,6 +1088,7 @@ window.addEventListener("firebase-ready",()=>{
   });
   onValue(ref(db,"extra"),snap=>{
     const ext=snap.val()||{};
+    DB_EXTRA=ext;
     STATE.soci=SOCI_DEFAULT.map(s=>{
       const nm=[...s.m]; 
       for(let i=0; i<6; i++){

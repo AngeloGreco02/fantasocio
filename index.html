@@ -9,7 +9,8 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   const firebaseConfig = {
     apiKey:         "AIzaSyCRxqfYdQPZABGt3eWDvhzyRyaJrsipJlA",
     authDomain:        "fantasocio.firebaseapp.com",
@@ -21,7 +22,8 @@
   };
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-  window._fb = { db, ref, set, onValue };
+  const auth = getAuth(app);
+  window._fb = { db, ref, set, onValue, update, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
   window.dispatchEvent(new Event("firebase-ready"));
 </script>
 
@@ -99,7 +101,7 @@ html,body{min-height:100vh;background:var(--bg);color:#fff;font-family:'Nunito',
 /* FORM */
 .form-box{background:rgba(255,255,255,.04);border:1px solid rgba(129,140,248,.16);border-radius:20px;padding:20px}
 .form-lbl{font-size:10px;opacity:.5;letter-spacing:2px;display:block;margin-bottom:6px}
-select,input[type=text],input[type=number],input[type=password]{
+select,input[type=text],input[type=email],input[type=number],input[type=password]{
   background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important;
   border-radius:10px!important;color:#fff!important;padding:10px 13px!important;
   width:100%!important;font-size:14px!important;outline:none!important;font-family:inherit!important;box-sizing:border-box!important}
@@ -184,10 +186,11 @@ select option{background:#12121e;color:#fff}
   <div class="lock-box">
     <div style="font-size:40px;margin-bottom:12px">🔐</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;margin-bottom:6px">AREA ADMIN</div>
-    <div style="font-size:13px;opacity:.5;margin-bottom:22px">Inserisci la password per modificare i dati</div>
+    <div style="font-size:13px;opacity:.5;margin-bottom:22px">Accedi con l'account admin Firebase</div>
+    <input type="text" id="emailInput" placeholder="Email admin…" autocomplete="username" style="margin-bottom:10px"/>
     <input type="password" id="pwdInput" placeholder="Password admin…" onkeydown="if(event.key==='Enter')checkPwd()"/>
     <button class="btn-primary" style="margin-top:10px" onclick="checkPwd()">Entra</button>
-    <div id="pwdErr" style="color:#ef4444;font-size:12px;margin-top:10px;display:none">❌ Password errata</div>
+    <div id="pwdErr" style="color:#ef4444;font-size:12px;margin-top:10px;display:none">❌ Accesso non riuscito</div>
     <button onclick="document.getElementById('lockOverlay').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;margin-top:14px;font-size:13px">Annulla</button>
   </div>
 </div>
@@ -201,7 +204,7 @@ select option{background:#12121e;color:#fff}
       🎮 Benvenuto nel FantaSocio!<br>
       Guadagna punti partecipando alle attività CFP.<br>
       Ogni socio gioca per sé — vinca il migliore! 🏆<br>
-      <span style="color:#fbbf24;font-weight:800">Mese attivo: Giugno 2026</span>
+      <span style="color:#fbbf24;font-weight:800">Mese attivo: <span data-active-month>...</span></span>
     </div>
     <button onclick="chiudiWelcome()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:14px;color:#fff;padding:14px 32px;font-weight:900;font-size:16px;cursor:pointer;font-family:inherit;width:100%;letter-spacing:1px">INIZIA 🚀</button>
     <div style="font-size:11px;opacity:.35;margin-top:12px">Triplica click sul titolo per accedere come admin</div>
@@ -243,7 +246,7 @@ select option{background:#12121e;color:#fff}
       </div>
       <div style="margin-left:auto;text-align:right">
         <div style="font-size:10px;opacity:.5;letter-spacing:1px">MESE ATTIVO</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#10b981;letter-spacing:1px">GIUGNO 2026</div>
+        <div data-active-month="upper" style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:#10b981;letter-spacing:1px">...</div>
         <div style="font-size:10px;opacity:.4">Classifica individuale</div>
       </div>
     </div>
@@ -255,10 +258,8 @@ select option{background:#12121e;color:#fff}
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  CONFIGURAZIONE TOKEN DI SICUREZZA E BASE
+//  CONFIGURAZIONE BASE
 // ═══════════════════════════════════════════════════════════
-const ADMIN_PASSWORD = "cfp2024admin";
-const AUTH_TOKEN = "cfp2024admin_secret_token_2026"; // Token richiesto lato server dalle regole di Firebase
 
 const SCUDERIE = [
   {id:1,nome:"Inarrestabili", capitano:"Denise",      colore:"#10b981",emoji:"⚡",bg:"linear-gradient(135deg,#064e3b,#065f46)"},
@@ -294,6 +295,25 @@ const SOCI_DEFAULT = [
 ];
 
 const MESE_LABELS  = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto"];
+const GAME_YEAR = 2026;
+const GAME_START_MONTH = 2; // Marzo, usando i mesi JavaScript: gennaio = 0.
+const ACTIVE_MONTH_INDEX = getActiveMonthIndex();
+
+function getActiveMonthIndex(){
+  const now=new Date();
+  const rawIndex=(now.getFullYear()-GAME_YEAR)*12+now.getMonth()-GAME_START_MONTH;
+  return Math.max(0,Math.min(MESE_LABELS.length-1,rawIndex));
+}
+
+function activeMonthLabel(upper=false){
+  const label=`${MESE_LABELS[ACTIVE_MONTH_INDEX]} ${GAME_YEAR}`;
+  return upper?label.toUpperCase():label;
+}
+
+function normalizeMonthIndex(value,fallback=ACTIVE_MONTH_INDEX){
+  const idx=Number(value);
+  return Number.isInteger(idx)&&idx>=0&&idx<MESE_LABELS.length?idx:fallback;
+}
 
 const BONUS = [
   {id:"b1", label:"Presenza in sede / evento / riunione",       pts:50,  emoji:"🏠"},
@@ -354,16 +374,29 @@ const MEDAGLIE = ["🥇","🥈","🥉"];
 //  STATE
 // ═══════════════════════════════════════════════════════════
 let STATE = {
-  soci:SOCI_DEFAULT,log:[],isAdmin:false,tab:0,meseView:3,
+  soci:SOCI_DEFAULT,log:[],isAdmin:false,tab:0,meseView:ACTIVE_MONTH_INDEX,
   selAzione:null,selSocio:"",customVal:1,nota:"",
 };
 let fbReady=false;
 let chartInstances={};
+let adminRoleUnsub=null;
 
 // ═══════════════════════════════════════════════════════════
 //  HELPERS
 // ═══════════════════════════════════════════════════════════
 function ptTotali(s){return s.m.reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
+
+function esc(value){
+  return String(value??"").replace(/[&<>"']/g,ch=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[ch]));
+}
+
+function renderActiveMonthLabels(){
+  document.querySelectorAll("[data-active-month]").forEach(el=>{
+    el.textContent=activeMonthLabel(el.dataset.activeMonth==="upper");
+  });
+}
 
 function titolo(pts){
   if(pts>=800)return{label:"Leggenda",emoji:"👑",color:"#fbbf24"};
@@ -397,45 +430,75 @@ function showToast(msg,err=false){
   setTimeout(()=>t.style.display="none",3000);
 }
 
+function setAdminMode(isAdmin){
+  STATE.isAdmin=isAdmin;
+  document.getElementById("adminBar").style.display=isAdmin?"flex":"none";
+  if(!isAdmin&&STATE.tab>=getTabs().length) STATE.tab=0;
+  render();
+}
+
 // ═══════════════════════════════════════════════════════════
 //  FIREBASE WRITERS - PROTETTI CON TOKEN STRUTTURATO
 // ═══════════════════════════════════════════════════════════
 function fbSaveExtra(socioId,meseIdx,val){
   if(!fbReady || !STATE.isAdmin) return;
   const{db,ref,set}=window._fb;
-  set(ref(db,"extra/m"+meseIdx+"/"+socioId), {
-    value: val,
-    auth_token: AUTH_TOKEN
-  });
+  set(ref(db,"extra/m"+meseIdx+"/"+socioId), val);
 }
 function fbSaveLog(){
   if(!fbReady || !STATE.isAdmin) return;
   const{db,ref,set}=window._fb;
   set(ref(db,"log"), {
-    data: STATE.log,
-    auth_token: AUTH_TOKEN
+    data: STATE.log
+  });
+}
+function fbSaveScoreAndLog(socioId,meseIdx,val){
+  if(!fbReady || !STATE.isAdmin) return;
+  const{db,ref,update}=window._fb;
+  update(ref(db), {
+    ["extra/m"+meseIdx+"/"+socioId]: val,
+    log: {
+      data: STATE.log
+    }
   });
 }
 
 // ═══════════════════════════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════════════════════════
-function checkPwd(){
-  const v=document.getElementById("pwdInput").value;
-  if(v===ADMIN_PASSWORD){
-    STATE.isAdmin=true;
-    document.getElementById("lockOverlay").style.display="none";
-    document.getElementById("adminBar").style.display="flex";
-    render();showToast("Benvenuto Admin! 🔓");
-  }else{
-    document.getElementById("pwdErr").style.display="block";
+async function checkPwd(){
+  const email=document.getElementById("emailInput").value.trim();
+  const password=document.getElementById("pwdInput").value;
+  const err=document.getElementById("pwdErr");
+  if(!email||!password){
+    err.textContent="❌ Inserisci email e password";
+    err.style.display="block";
+    return;
+  }
+  if(!window._fb?.auth){
+    err.textContent="❌ Firebase non è ancora pronto";
+    err.style.display="block";
+    return;
+  }
+  try{
+    await window._fb.signInWithEmailAndPassword(window._fb.auth,email,password);
+    err.style.display="none";
+    document.getElementById("pwdInput").value="";
+  }catch(e){
+    err.textContent="❌ Accesso non riuscito";
+    err.style.display="block";
     document.getElementById("pwdInput").value="";
   }
 }
 function logout(){
-  STATE.isAdmin=false;
-  document.getElementById("adminBar").style.display="none";
-  render();showToast("Uscito 🔒");
+  if(window._fb?.auth){
+    window._fb.signOut(window._fb.auth);
+  }else{
+    STATE.isAdmin=false;
+    document.getElementById("adminBar").style.display="none";
+    render();
+  }
+  showToast("Uscito 🔒");
 }
 
 function getTabs(){
@@ -448,6 +511,7 @@ function getTabs(){
 //  LIFECYCLE CORE RENDERING
 // ═══════════════════════════════════════════════════════════
 function render(){
+  renderActiveMonthLabels();
   renderKPI();renderTabs();renderTab();
 }
 
@@ -533,7 +597,9 @@ function apriProfilo(id){
   const trofeiGuadagnati=TROFEI.filter(tr=>tr.check(s));
   const logSocio=STATE.log.filter(l=>l.socio===s.nome).slice(0,8);
   const migliore=Math.max(...s.m.filter(v => v !== null));
-  const trend=s.m.length>1?(s.m[3]>s.m[2]?"📈 In crescita questo mese":"📉 In calo rispetto al mese scorso"):"—";
+  const meseAttivo=s.m[ACTIVE_MONTH_INDEX]??0;
+  const mesePrecedente=ACTIVE_MONTH_INDEX>0?(s.m[ACTIVE_MONTH_INDEX-1]??0):null;
+  const trend=mesePrecedente===null?"📍 Primo mese in classifica":(meseAttivo>mesePrecedente?"📈 In crescita questo mese":"📉 In calo rispetto al mese scorso");
 
   const overlay=document.getElementById("profiloOverlay");
   overlay.style.display="block";
@@ -608,11 +674,14 @@ function apriProfilo(id){
     ${logSocio.length>0?`
     <div style="margin-bottom:14px">
       <div style="font-size:11px;opacity:.5;letter-spacing:2px;margin-bottom:10px">📋 ULTIME AZIONI REGISTRATE</div>
-      ${logSocio.map(l=>`
+      ${logSocio.map(l=>{
+        const delta=Number(l.delta)||0;
+        return `
         <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 13px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:12px;opacity:.7">${l.azione}</span>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${l.delta>0?"#10b981":"#ef4444"}">${l.delta>0?"+":""}${l.delta}</span>
-        </div>`).join("")}
+          <span style="font-size:12px;opacity:.7">${esc(l.azione)}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${delta>0?"#10b981":"#ef4444"}">${delta>0?"+":""}${delta}</span>
+        </div>`;
+      }).join("")}
     </div>`:""}
   </div>`;
 }
@@ -624,7 +693,7 @@ const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
 
 function renderMesi(){
   const mi=STATE.meseView;
-  const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===3?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
+  const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===ACTIVE_MONTH_INDEX?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
   const classMese=[...STATE.soci].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
   const max=Math.max(...classMese.map(s=>s.punti),1);
   const rows=classMese.map((s,i)=>{
@@ -737,21 +806,25 @@ function renderLog(){
   return `
     ${avvisoAdmin}
     ${STATE.log.map(l=>{
-      const bottoneAnnulla = STATE.isAdmin 
-        ? `<button onclick="rimuoviDalLog(${l.id})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
+      const logId=Number(l.id);
+      const delta=Number(l.delta)||0;
+      const meseIdx=normalizeMonthIndex(l.meseIdx);
+      const bottoneAnnulla = STATE.isAdmin && Number.isFinite(logId)
+        ? `<button onclick="rimuoviDalLog(${logId})" style="background:rgba(239,68,68,.18);border:1px solid rgba(239,68,68,.3);border-radius:7px;color:#ef4444;padding:3px 9px;font-size:10px;font-weight:800;cursor:pointer">✕ Annulla</button>`
         : ``;
 
       return `
       <div class="log-item" style="align-items:center">
-        <div style="width:38px;height:38px;border-radius:9px;background:${l.delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${l.delta>0?"✅":"❌"}</div>
+        <div style="width:38px;height:38px;border-radius:9px;background:${delta>0?"rgba(16,185,129,.18)":"rgba(220,38,38,.18)"};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">${delta>0?"✅":"❌"}</div>
         <div style="flex:1;min-width:0">
-          <div style="font-weight:800;font-size:13px">${l.socio}</div>
-          <div style="font-size:11px;opacity:.5;margin-top:2px">${l.azione}</div>
-          ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${l.nota}</div>`:""}
+          <div style="font-weight:800;font-size:13px">${esc(l.socio)}</div>
+          <div style="font-size:11px;opacity:.5;margin-top:2px">${esc(l.azione)}</div>
+          <div style="font-size:10px;opacity:.35;margin-top:2px">📅 ${MESE_LABELS[meseIdx]}</div>
+          ${l.nota?`<div style="font-size:11px;opacity:.4;font-style:italic;margin-top:2px">📝 ${esc(l.nota)}</div>`:""}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${l.delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${l.delta>0?"+":""}${l.delta}</div>
-          <div style="font-size:9px;opacity:.4">${l.data}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${delta>0?"#10b981":"#ef4444"};letter-spacing:1px">${delta>0?"+":""}${delta}</div>
+          <div style="font-size:9px;opacity:.4">${esc(l.data)}</div>
           ${bottoneAnnulla}
         </div>
       </div>`;
@@ -763,23 +836,26 @@ function rimuoviDalLog(logId){
     showToast("Azione non autorizzata. Loggati come Admin.", true);
     return;
   }
-  const entry=STATE.log.find(l=>l.id===logId);
+  const entry=STATE.log.find(l=>Number(l.id)===Number(logId));
   if(!entry) return;
-  if(!confirm(`Annullare "${entry.azione}" (${entry.delta>0?"+":""}${entry.delta}pt) per ${entry.socio}?`)) return;
+  const delta=Number(entry.delta)||0;
+  const meseIdx=normalizeMonthIndex(entry.meseIdx);
+  if(!confirm(`Annullare "${entry.azione}" (${delta>0?"+":""}${delta}pt) per ${entry.socio}?`)) return;
   
   const socio=STATE.soci.find(s=>s.nome===entry.socio);
+  let aggiornato=null;
   if(socio){
     STATE.soci=STATE.soci.map(s=>{
       if(s.nome!==entry.socio) return s;
       const nuoviM=[...s.m];
-      nuoviM[3]=(nuoviM[3]||0)-entry.delta; 
+      nuoviM[meseIdx]=(nuoviM[meseIdx]||0)-delta;
       return{...s,m:nuoviM};
     });
-    const aggiornato=STATE.soci.find(s=>s.nome===entry.socio);
-    fbSaveExtra(aggiornato.id,3,aggiornato.m[3]);
+    aggiornato=STATE.soci.find(s=>s.nome===entry.socio);
   }
-  STATE.log=STATE.log.filter(l=>l.id!==logId);
-  fbSaveLog();
+  STATE.log=STATE.log.filter(l=>Number(l.id)!==Number(logId));
+  if(aggiornato) fbSaveScoreAndLog(aggiornato.id,meseIdx,aggiornato.m[meseIdx]);
+  else fbSaveLog();
   showToast("Punteggio stornato con successo! ✅");
   render();
 }
@@ -791,7 +867,7 @@ function renderAssegna(){
   const opts=[...STATE.soci]
     .filter(s=>!s.uscito)
     .sort((a,b)=>a.nome.localeCompare(b.nome))
-    .map(s=>`<option value="${s.id}">${s.nome} (${ptTotali(s)}pt)</option>`)
+    .map(s=>`<option value="${s.id}">${esc(s.nome)} (${ptTotali(s)}pt)</option>`)
     .join("");
 
   const aBtn=(a,tipo)=>{
@@ -819,7 +895,7 @@ function renderAssegna(){
       <span style="opacity:.65">Stai assegnando </span>
       <span style="font-weight:900;color:${selA.pts>0?"#10b981":"#ef4444"}">${selA.custom?selA.pts*(STATE.customVal||1):selA.pts} pt</span>
       <span style="opacity:.65"> a </span>
-      <span style="font-weight:900">${socioSel.nome}</span>
+      <span style="font-weight:900">${esc(socioSel.nome)}</span>
     </div>`:"";
 
   return `<div class="form-box">
@@ -829,7 +905,7 @@ function renderAssegna(){
       <div style="font-size:20px">📅</div>
       <div>
         <div style="font-size:10px;opacity:.6;letter-spacing:2px">MESE ATTIVO</div>
-        <div style="font-weight:900;font-size:15px;color:#10b981">GIUGNO 2026</div>
+        <div style="font-weight:900;font-size:15px;color:#10b981">${activeMonthLabel(true)}</div>
       </div>
     </div>
 
@@ -866,7 +942,7 @@ function renderAssegna(){
 
     ${customBlock}
     <label class="form-lbl">NOTA (opzionale)</label>
-    <input type="text" placeholder="Es. presente all'evento di sabato…" value="${STATE.nota}" oninput="STATE.nota=this.value" style="margin-bottom:14px"/>
+    <input type="text" placeholder="Es. presente all'evento di sabato…" value="${esc(STATE.nota)}" oninput="STATE.nota=this.value" style="margin-bottom:14px"/>
     ${previewBlock}
     <button class="btn-primary" onclick="assegna()">🚀 Conferma Assegnazione</button>
   </div>`;
@@ -885,12 +961,11 @@ function assegnaPersonalizzato(){
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
   STATE.soci=STATE.soci.map(s=>{
     if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+pts; return{...s,m:nuoviM};
+    const nuoviM=[...s.m]; nuoviM[ACTIVE_MONTH_INDEX]=(nuoviM[ACTIVE_MONTH_INDEX]||0)+pts; return{...s,m:nuoviM};
   });
-  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
+  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
+  fbSaveScoreAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
   showToast("Assegnato con successo!");
   render();
 }
@@ -905,12 +980,11 @@ function assegna(){
   
   STATE.soci=STATE.soci.map(s=>{
     if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[3]=(nuoviM[3]||0)+delta; return{...s,m:nuoviM};
+    const nuoviM=[...s.m]; nuoviM[ACTIVE_MONTH_INDEX]=(nuoviM[ACTIVE_MONTH_INDEX]||0)+delta; return{...s,m:nuoviM};
   });
-  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
+  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSaveExtra(socio.id,3,aggiornato.m[3]);
-  fbSaveLog();
+  fbSaveScoreAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
   showToast("Assegnazione completata!");
   STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
   render();
@@ -937,7 +1011,27 @@ function aggiornaCountdown(){
 
 // ── RECOVERY & SINCRO REALTIME FIREBASE ──────────────────────
 window.addEventListener("firebase-ready",()=>{
-  fbReady=true; const{db,ref,onValue}=window._fb;
+  fbReady=true; const{db,ref,onValue,auth,onAuthStateChanged}=window._fb;
+  onAuthStateChanged(auth,user=>{
+    if(adminRoleUnsub){
+      adminRoleUnsub();
+      adminRoleUnsub=null;
+    }
+    if(!user){
+      setAdminMode(false);
+      return;
+    }
+    adminRoleUnsub=onValue(ref(db,"admins/"+user.uid),snap=>{
+      const isAdmin=snap.val()===true;
+      setAdminMode(isAdmin);
+      if(isAdmin){
+        document.getElementById("lockOverlay").style.display="none";
+        showToast("Benvenuto Admin! 🔓");
+      }else{
+        showToast("Account non autorizzato come Admin",true);
+      }
+    });
+  });
   onValue(ref(db,"extra"),snap=>{
     const ext=snap.val()||{};
     STATE.soci=SOCI_DEFAULT.map(s=>{
@@ -960,6 +1054,11 @@ window.addEventListener("firebase-ready",()=>{
   aggiornaCountdown(); setInterval(aggiornaCountdown,60000);
 });
 function apriLocale(){document.getElementById("loadingScreen").style.display="none"; document.getElementById("appRoot").style.display="block"; render();}
+
+function chiudiWelcome(){
+  const overlay=document.getElementById("welcomeOverlay");
+  if(overlay) overlay.style.display="none";
+}
 
 let clickCount=0;
 document.addEventListener("click",e=>{

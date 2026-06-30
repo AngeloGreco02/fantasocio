@@ -497,6 +497,26 @@ function sortedSoci(){
   });
 }
 
+function classificaMese(mi){
+  return [...sociPerClassifiche()]
+    .filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined)
+    .filter(s=>!(s.uscito&&mi>=ACTIVE_MONTH_INDEX))
+    .map(s=>({...s,punti:s.m[mi]??0}))
+    .sort((a,b)=>b.punti-a.punti);
+}
+
+function vincitoreMese(mi){
+  const classifica=classificaMese(mi);
+  if(!classifica.some(s=>s.punti!==0))return null;
+  return classifica.length?classifica[0]:null;
+}
+
+function statoMese(mi){
+  if(mi<ACTIVE_MONTH_INDEX)return "chiuso";
+  if(mi===ACTIVE_MONTH_INDEX)return "attivo";
+  return "futuro";
+}
+
 function showToast(msg,err=false){
   const t=document.getElementById("toast");
   t.textContent=msg;t.style.background=err?"#dc2626":"#059669";t.style.display="block";
@@ -789,12 +809,16 @@ function apriProfilo(id){
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
 
 // ── TAB MESI ─────────────────────────────────────────────────
-const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
-
 function renderMesi(){
   const mi=STATE.meseView;
+  const status=statoMese(mi);
+  const winner=status==="futuro"?null:vincitoreMese(mi);
+  const honorLabel=status==="chiuso"?"⭐ SOCIO DEL MESE":status==="attivo"?"⭐ LEADER PROVVISORIO":"📅 MESE NON INIZIATO";
+  const honorText=winner
+    ? `${esc(winner.nome)} · ${winner.punti>0?"+":""}${winner.punti} pt`
+    : status==="futuro"?"Si aprirà al reset mensile":"Nessun dato";
   const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===ACTIVE_MONTH_INDEX?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
-  const classMese=[...sociPerClassifiche()].filter(s=>s.m[mi]!==null&&s.m[mi]!==undefined).filter(s=>!(s.uscito&&mi>=3)).map(s=>({...s,punti:s.m[mi]??0})).sort((a,b)=>b.punti-a.punti);
+  const classMese=status==="futuro"?[]:classificaMese(mi);
   const max=Math.max(...classMese.map(s=>s.punti),1);
   const rows=classMese.map((s,i)=>{
     return`<div class="card" onclick="apriProfilo(${s.id})" style="cursor:pointer">
@@ -808,12 +832,12 @@ function renderMesi(){
         <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${s.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px;flex-shrink:0">${s.punti>0?"+":""}${s.punti}</div>
       </div>
     </div>`;
-  }).join("");
+  }).join("") || `<div style="text-align:center;opacity:.35;margin-top:40px"><div style="font-size:38px">📅</div><p style="margin-top:10px">Mese non ancora iniziato.</p></div>`;
   return`<div class="seg">${segBtns}</div>
     <div class="honor-grid" style="grid-template-columns:1fr">
       <div class="honor-box" style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25)">
-        <div style="font-size:10px;opacity:.55;letter-spacing:1px">⭐ SOCIO DEL MESE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${SOCIO_MESE[mi]||"⏳ In corso…"}</div>
+        <div style="font-size:10px;opacity:.55;letter-spacing:1px">${honorLabel}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${honorText}</div>
       </div>
     </div>${rows}`;
 }
@@ -850,29 +874,64 @@ function initGrafici(){
 }
 
 // ── TAB BACHECA ──────────────────────────────────────────────
-const ALBO = [
-  {mese:"Marzo",    socio:"Valentina",    avatar:"VA", emoji:"🥇"},
-  {mese:"Aprile",   socio:"Gabriel",      avatar:"GA", emoji:"🥇"},
-  {mese:"Maggio",   socio:"Angelo Greco", avatar:"AG", emoji:"🥇"},
-  {mese:"Giugno",   socio:null, avatar:"?", emoji:"⏳"},
-];
-let ALBO_PAGE = 2;
+let ALBO_PAGE = ACTIVE_MONTH_INDEX;
 
 function renderBacheca(){
-  const entry = ALBO[ALBO_PAGE];
-  const hasPrev = ALBO_PAGE > 0; const hasNext = ALBO_PAGE < ALBO.length - 1;
+  const mi=ALBO_PAGE;
+  const status=statoMese(mi);
+  const winner=status==="futuro"?null:vincitoreMese(mi);
+  const top3=status==="futuro"?[]:classificaMese(mi).slice(0,3);
+  const hasPrev=mi>0;
+  const hasNext=mi<MESE_LABELS.length-1;
+  const label=status==="chiuso"?"VINCITORE UFFICIALE":status==="attivo"?"LEADER PROVVISORIO":"MESE NON INIZIATO";
+  const descr=status==="chiuso"
+    ?"Questo mese è chiuso: il risultato segue i punti registrati."
+    : status==="attivo"
+      ?"Il vincitore diventerà ufficiale al prossimo reset mensile."
+      :"La classifica verrà popolata quando inizierà il mese.";
+
+  const hero=winner?`
+    <div style="margin-top:18px;text-align:center">
+      <div class="ava" style="width:72px;height:72px;font-size:22px;margin:0 auto 10px;background:rgba(251,191,36,.18);border:3px solid rgba(251,191,36,.55)">${esc(winner.avatar)}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#fbbf24">${esc(winner.nome)}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${winner.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px;margin-top:2px">${winner.punti>0?"+":""}${winner.punti} pt</div>
+    </div>`:`
+    <div style="margin-top:18px;text-align:center;padding:18px;border:1px dashed rgba(255,255,255,.14);border-radius:16px;opacity:.62">
+      <div style="font-size:34px;margin-bottom:6px">⏳</div>
+      <div style="font-weight:900">Nessun vincitore ancora</div>
+    </div>`;
+
+  const podio=top3.length?`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px">
+      ${top3.map((s,i)=>`
+        <div style="background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 8px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">${MEDAGLIE[i]}</div>
+          <div style="font-weight:900;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.nome)}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${s.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px">${s.punti>0?"+":""}${s.punti}</div>
+        </div>`).join("")}
+    </div>`:"";
+
+  const meseBtns=MESE_LABELS.map((mese,i)=>`
+    <button onclick="setAlboPage(${i})" class="seg-btn${i===mi?" on":""}" style="${i===ACTIVE_MONTH_INDEX?"border-left:2px solid rgba(251,191,36,.4);":""}">${mese.slice(0,3)}</button>
+  `).join("");
+
   return`<div style="background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <button onclick="alboNav(-1)" ${!hasPrev?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">‹</button>
-        <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fbbf24">${entry.mese.toUpperCase()}</div></div>
+        <div style="text-align:center">
+          <div style="font-size:10px;opacity:.5;letter-spacing:2px">${label}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:#fbbf24">${MESE_LABELS[mi].toUpperCase()}</div>
+        </div>
         <button onclick="alboNav(1)" ${!hasNext?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">›</button>
       </div>
-      <div style="margin-top:16px;text-align:center">
-        ${entry.socio ? `🏆 Socio del mese: <strong>${entry.socio}</strong>` : "⏳ Mese in corso..."}
-      </div>
-    </div>`;
+      ${hero}
+      ${podio}
+      <div style="font-size:11px;opacity:.5;line-height:1.45;text-align:center;margin-top:14px">${descr}</div>
+    </div>
+    <div class="seg">${meseBtns}</div>`;
 }
-function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(ALBO.length-1,ALBO_PAGE+dir));renderTab();}
+function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(MESE_LABELS.length-1,ALBO_PAGE+dir));renderTab();}
+function setAlboPage(i){ALBO_PAGE=Math.max(0,Math.min(MESE_LABELS.length-1,i));renderTab();}
 
 // ── TAB REGOLAMENTO ──────────────────────────────────────────
 const REGOLAMENTO = [

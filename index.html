@@ -83,14 +83,6 @@ html,body{min-height:100vh;background:var(--bg);color:#fff;font-family:'Nunito',
 .mini-bar{width:20px;border-radius:3px;transition:height .4s}
 .mini-lbl{font-size:8px;opacity:.4}
 
-/* SCUDERIA */
-.sc-card{border-radius:20px;overflow:hidden;margin-bottom:14px;border:1px solid}
-.sc-head{padding:15px 18px;display:flex;align-items:center;gap:13px}
-.sc-name{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px}
-.sc-body{padding:0 18px 14px;display:flex;flex-wrap:wrap;gap:7px}
-.sc-member{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border-radius:30px;padding:5px 11px 5px 6px;font-size:12px;font-weight:700;cursor:pointer;transition:background .2s}
-.sc-member:hover{background:rgba(255,255,255,.12)}
-
 /* MESI */
 .seg{display:flex;gap:5px;background:rgba(0,0,0,.3);border-radius:12px;padding:4px;margin-bottom:14px}
 .seg-btn{flex:1;border:none;background:transparent;color:rgba(255,255,255,.4);font-weight:800;font-size:12px;padding:8px 4px;cursor:pointer;border-radius:99px;transition:all .2s;font-family:inherit}
@@ -134,12 +126,6 @@ select option{background:#12121e;color:#fff}
 .stat-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
 .stat-lbl{font-size:9px;opacity:.5;letter-spacing:1px;margin-top:2px}
 
-/* MISSIONI */
-.missione-card{border-radius:16px;padding:14px 16px;margin-bottom:10px;border:1px solid;display:flex;align-items:center;gap:14px;transition:transform .2s}
-.missione-card:hover{transform:translateY(-2px)}
-.missione-prog{height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;margin-top:8px}
-.missione-fill{height:100%;border-radius:99px;transition:width .8s ease}
-
 /* BACHECA */
 .trofeo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .trofeo-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 10px;text-align:center;transition:transform .2s}
@@ -161,8 +147,6 @@ select option{background:#12121e;color:#fff}
 .countdown-box{background:linear-gradient(135deg,rgba(129,140,248,.15),rgba(139,92,246,.08));border:1px solid rgba(129,140,248,.25);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
 .countdown-num{font-family:"Bebas Neue",sans-serif;font-size:32px;color:var(--purple);letter-spacing:2px;min-width:36px;text-align:center}
 .countdown-lbl{font-size:9px;opacity:.5;letter-spacing:2px;text-align:center;margin-top:2px}
-/* STORICO SCUDERIE */
-.storico-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px 16px;margin-bottom:10px}
 /* WELCOME */
 .welcome-overlay{position:fixed;inset:0;background:rgba(7,7,14,.98);z-index:800;display:flex;align-items:center;justify-content:center;animation:fadeUp .4s ease}
 /* LIVELLO NOTIFICA */
@@ -262,37 +246,31 @@ select option{background:#12121e;color:#fff}
 //  CONFIGURAZIONE BASE
 // ═══════════════════════════════════════════════════════════
 
-const SCUDERIE = [
-  {id:1,nome:"Inarrestabili", capitano:"Denise",      colore:"#10b981",emoji:"⚡",bg:"linear-gradient(135deg,#064e3b,#065f46)"},
-  {id:2,nome:"Inarrivabili",   capitano:"Angelo Greco",colore:"#f59e0b",emoji:"🦅",bg:"linear-gradient(135deg,#78350f,#92400e)"},
-  {id:3,nome:"Invincibili",    capitano:"Gabriel",     colore:"#6366f1",emoji:"🔥",bg:"linear-gradient(135deg,#1e1b4b,#312e81)"},
-];
-
 const SOCI_DEFAULT = [
-  {id:1, nome:"Denise",           avatar:"DE",sc:1,cap:true, m:[110,215,215, 0,0,0], extra:0},
-  {id:9, nome:"Angelo",      avatar:"AG",sc:2,cap:true, m:[695,225,485, 0,0,0], extra:0},
-  {id:15,nome:"Gabriel",           avatar:"GA",sc:3,cap:true, m:[695,370,355, 0,0,0], extra:0},
-  {id:13,nome:"Lorenzo",           avatar:"LO",sc:1,cap:false,m:[50,-20,0,    0,0,0], extra:0},
-  {id:2, nome:"Antonella",         avatar:"AN",sc:1,cap:false,m:[20,10,7,     0,0,0], extra:0},
-  {id:8, nome:"Marco L.",          avatar:"ML",sc:1,cap:false,m:[0,0,-30,     null,null,null], extra:0, uscito:true, nascosto:true},
-  {id:23,nome:"Martina",           avatar:"MA",sc:1,cap:false,m:[null,null,57, 0,0,0], extra:0},
-  {id:10,nome:"F. Giardina",avatar:"FG",sc:1,cap:false,m:[-25,0,60,    0,0,0], extra:0},
-  {id:20,nome:"Ivan",              avatar:"IV",sc:1,cap:false,m:[170,0,35,    0,0,0], extra:0},
-  {id:19,nome:"Monica",            avatar:"MO",sc:1,cap:false,m:[30,0,-20,    0,0,0], extra:0},
-  {id:14,nome:"Luigi",              avatar:"LU",sc:2,cap:false,m:[250,175,142, 0,0,0], extra:0},
-  {id:11,nome:"Valentina",         avatar:"VA",sc:2,cap:false,m:[700,115,115, 0,0,0], extra:0},
-  {id:17,nome:"F. Pio",     avatar:"FP",sc:2,cap:false,m:[195,-5,35,   0,0,0], extra:0},
-  {id:7, nome:"Frizzo",            avatar:"FR",sc:2,cap:false,m:[-10,-20,-20, 0,0,0], extra:0},
-  {id:12,nome:"Jessica",           avatar:"JE",sc:2,cap:false,m:[200,65,30,   0,0,0], extra:0},
-  {id:22,nome:"Greta",              avatar:"GR",sc:2,cap:false,m:[0,-20,0,     0,0,0], extra:0},
-  {id:18,nome:"Annarosa",          avatar:"AR",sc:2,cap:false,m:[250,70,15,   0,0,0], extra:0},
-  {id:21,nome:"Arianna",           avatar:"AI",sc:3,cap:false,m:[-20,-20,-20, 0,0,0], extra:0},
-  {id:5, nome:"Rosa",              avatar:"RO",sc:3,cap:false,m:[50,10,0,     0,0,0], extra:0},
-  {id:16,nome:"Mirella",           avatar:"MI",sc:3,cap:false,m:[250,0,30,    0,0,0], extra:0},
-  {id:6, nome:"Danilo",            avatar:"DA",sc:3,cap:false,m:[265,60,10,   0,0,0], extra:0},
-  {id:24,nome:"Maria",              avatar:"MA",sc:3,cap:false,m:[null,null,null,0,0,0], extra:0},
-  {id:4, nome:"Giorgia",           avatar:"GG",sc:3,cap:false,m:[345,65,100,  0,0,0], extra:0},
-  {id:3, nome:"Giovanni",          avatar:"GI",sc:3,cap:false,m:[300,40,50,   0,0,0], extra:0},
+  {id:1, nome:"Denise",           avatar:"DE", m:[110,215,215, 0,0,0], extra:0},
+  {id:9, nome:"Angelo",      avatar:"AG", m:[695,225,485, 0,0,0], extra:0},
+  {id:15,nome:"Gabriel",           avatar:"GA", m:[695,370,355, 0,0,0], extra:0},
+  {id:13,nome:"Lorenzo",           avatar:"LO",m:[50,-20,0,    0,0,0], extra:0},
+  {id:2, nome:"Antonella",         avatar:"AN",m:[20,10,7,     0,0,0], extra:0},
+  {id:8, nome:"Marco L.",          avatar:"ML",m:[0,0,-30,     null,null,null], extra:0, uscito:true, nascosto:true},
+  {id:23,nome:"Martina",           avatar:"MA",m:[null,null,57, 0,0,0], extra:0},
+  {id:10,nome:"F. Giardina",avatar:"FG",m:[-25,0,60,    0,0,0], extra:0},
+  {id:20,nome:"Ivan",              avatar:"IV",m:[170,0,35,    0,0,0], extra:0},
+  {id:19,nome:"Monica",            avatar:"MO",m:[30,0,-20,    0,0,0], extra:0},
+  {id:14,nome:"Luigi",              avatar:"LU",m:[250,175,142, 0,0,0], extra:0},
+  {id:11,nome:"Valentina",         avatar:"VA",m:[700,115,115, 0,0,0], extra:0},
+  {id:17,nome:"F. Pio",     avatar:"FP",m:[195,-5,35,   0,0,0], extra:0},
+  {id:7, nome:"Frizzo",            avatar:"FR",m:[-10,-20,-20, 0,0,0], extra:0},
+  {id:12,nome:"Jessica",           avatar:"JE",m:[200,65,30,   0,0,0], extra:0},
+  {id:22,nome:"Greta",              avatar:"GR",m:[0,-20,0,     0,0,0], extra:0},
+  {id:18,nome:"Annarosa",          avatar:"AR",m:[250,70,15,   0,0,0], extra:0},
+  {id:21,nome:"Arianna",           avatar:"AI",m:[-20,-20,-20, 0,0,0], extra:0},
+  {id:5, nome:"Rosa",              avatar:"RO",m:[50,10,0,     0,0,0], extra:0},
+  {id:16,nome:"Mirella",           avatar:"MI",m:[250,0,30,    0,0,0], extra:0},
+  {id:6, nome:"Danilo",            avatar:"DA",m:[265,60,10,   0,0,0], extra:0},
+  {id:24,nome:"Maria",              avatar:"MA",m:[null,null,null,0,0,0], extra:0},
+  {id:4, nome:"Giorgia",           avatar:"GG",m:[345,65,100,  0,0,0], extra:0},
+  {id:3, nome:"Giovanni",          avatar:"GI",m:[300,40,50,   0,0,0], extra:0},
 ];
 
 const MESE_LABELS  = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto"];
@@ -345,16 +323,6 @@ const MALUS = [
   {id:"m8", label:"Messaggi di gruppo per una sola persona",    pts:-5,  emoji:"💬"},
   {id:"m9", label:"Parolacce offensive",                        pts:-15, emoji:"🤬"},
   {id:"m10",label:"Bestemmie",                                   pts:-25, emoji:"⛪"},
-  {id:"m11",label:"Barare nel resoconto settimanale",            pts:-100,emoji:"🃏"},
-];
-
-const MISSIONI = [
-  {id:"ms1",emoji:"🏠",titolo:"Presenza costante",   desc:"Partecipa a 3 eventi questo mese",    target:3,  tipo:"eventi",   pts:30},
-  {id:"ms2",emoji:"📣",titolo:"Social star",          desc:"Condividi 5 post sui social",          target:5,  tipo:"social",   pts:25},
-  {id:"ms3",emoji:"🌟",titolo:"Recruiter",            desc:"Porta 1 nuovo iscritto",               target:1,  tipo:"recruiter",pts:150},
-  {id:"ms4",emoji:"✍️",titolo:"Blogger",              desc:"Scrivi 2 articoli per il blog",        target:2,  tipo:"blog",      pts:60},
-  {id:"ms5",emoji:"🧹",titolo:"Custode della sede",  desc:"Pulisci o allestisci la sede 2 volte", target:2,  tipo:"pulizie",  pts:60},
-  {id:"ms6",emoji:"⏰",titolo:"Puntualità perfetta",  desc:"Sii in orario 5 volte",                 target:5,  tipo:"orario",   pts:30},
 ];
 
 const TROFEI = [
@@ -409,21 +377,12 @@ function titolo(pts){
   return            {label:"Zero",    emoji:"😶",color:"#64748b"};
 }
 
-function getSC(id){return SCUDERIE.find(s=>s.id===id)||{};}
 function sortedSoci(){
   return[...STATE.soci].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{
     if(a.uscito&&!b.uscito)return 1;
     if(!a.uscito&&b.uscito)return -1;
     return b.punti-a.punti;
   });
-}
-
-function scuderiePunti(){
-  return SCUDERIE.map(sc=>({
-    ...sc,
-    punteggio:STATE.soci.filter(s=>s.sc===sc.id).reduce((a,s)=>a+ptTotali(s),0),
-    membri:[...STATE.soci].filter(s=>s.sc===sc.id&&!s.uscito).map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>b.punti-a.punti),
-  })).sort((a,b)=>b.punteggio-a.punteggio);
 }
 
 function showToast(msg,err=false){
@@ -605,7 +564,7 @@ function renderClassifica(){
 function apriProfilo(id){
   const s=STATE.soci.find(x=>x.id===id);
   if(!s)return;
-  const sc=getSC(s.sc);const t=titolo(ptTotali(s));
+  const t=titolo(ptTotali(s));
   const pts=ptTotali(s);
   const cl=sortedSoci();
   const pos=cl.findIndex(x=>x.id===id)+1;
@@ -703,7 +662,6 @@ function apriProfilo(id){
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
 
 // ── TAB MESI ─────────────────────────────────────────────────
-const SQUADRA_MESE = ["Inarrivabili","Invincibili","Inarrivabili","","",""];
 const SOCIO_MESE   = ["Valentina","Gabriel","Angelo Greco","","",""];
 
 function renderMesi(){
@@ -725,11 +683,7 @@ function renderMesi(){
     </div>`;
   }).join("");
   return`<div class="seg">${segBtns}</div>
-    <div class="honor-grid">
-      <div class="honor-box" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25)">
-        <div style="font-size:10px;opacity:.55;letter-spacing:1px">🏆 SQUADRA DEL MESE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);margin-top:4px">${SQUADRA_MESE[mi]||"⏳ In corso…"}</div>
-      </div>
+    <div class="honor-grid" style="grid-template-columns:1fr">
       <div class="honor-box" style="background:rgba(244,114,182,.1);border:1px solid rgba(244,114,182,.25)">
         <div style="font-size:10px;opacity:.55;letter-spacing:1px">⭐ SOCIO DEL MESE</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--pink);margin-top:4px">${SOCIO_MESE[mi]||"⏳ In corso…"}</div>
@@ -741,7 +695,7 @@ function setMese(i){STATE.meseView=i;render();}
 // ── TAB GRAFICI ──────────────────────────────────────────────
 function renderGrafici(){
   return`<div class="chart-container"><div class="chart-title">📊 TOP 5 ANDAMENTO MENSILE</div><canvas id="chartLinee" height="220"></canvas></div>
-  <div class="chart-container"><div class="chart-title">🏅 TOP 10 CLASSIFICA</div><canvas id="chartScuderie" height="180"></canvas></div>`;
+  <div class="chart-container"><div class="chart-title">🏅 TOP 10 CLASSIFICA</div><canvas id="chartTop10" height="180"></canvas></div>`;
 }
 
 function initGrafici(){
@@ -757,9 +711,9 @@ function initGrafici(){
       });
     }
     const top10=sortedSoci().filter(s=>!s.uscito).slice(0,10);
-    const ctxS=document.getElementById("chartScuderie");
+    const ctxS=document.getElementById("chartTop10");
     if(ctxS){
-      chartInstances.scuderie=new Chart(ctxS,{
+      chartInstances.top10=new Chart(ctxS,{
         type:"bar",
         data:{labels:top10.map(s=>s.nome.split(" ")[0]),datasets:[{label:"Punti",data:top10.map(s=>s.punti),backgroundColor:"#818cf8cc",borderRadius:8}]},
         options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"}},y:{ticks:{color:"rgba(255,255,255,.4)"}}}}
@@ -770,10 +724,10 @@ function initGrafici(){
 
 // ── TAB BACHECA ──────────────────────────────────────────────
 const ALBO = [
-  {mese:"Marzo",    socio:"Valentina",    squadra:"Inarrivabili", avatar:"VA", scColore:"#f59e0b", emoji:"🥇"},
-  {mese:"Aprile",   socio:"Gabriel",      squadra:"Invincibili",     avatar:"GA", scColore:"#6366f1", emoji:"🥇"},
-  {mese:"Maggio",   socio:"Angelo Greco", squadra:"Inarrivabili", avatar:"AG", scColore:"#f59e0b", emoji:"🥇"},
-  {mese:"Giugno",   socio:null, squadra:null, avatar:"?", scColore:"#374151", emoji:"⏳"},
+  {mese:"Marzo",    socio:"Valentina",    avatar:"VA", emoji:"🥇"},
+  {mese:"Aprile",   socio:"Gabriel",      avatar:"GA", emoji:"🥇"},
+  {mese:"Maggio",   socio:"Angelo Greco", avatar:"AG", emoji:"🥇"},
+  {mese:"Giugno",   socio:null, avatar:"?", emoji:"⏳"},
 ];
 let ALBO_PAGE = 2;
 
@@ -787,24 +741,96 @@ function renderBacheca(){
         <button onclick="alboNav(1)" ${!hasNext?"disabled":""} style="padding:6px 12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:6px;cursor:pointer">›</button>
       </div>
       <div style="margin-top:16px;text-align:center">
-        ${entry.socio ? `🏆 Socio: <strong>${entry.socio}</strong><br>👥 Squadra: ${entry.squadra}` : "⏳ Mese in corso..."}
+        ${entry.socio ? `🏆 Socio del mese: <strong>${entry.socio}</strong>` : "⏳ Mese in corso..."}
       </div>
     </div>`;
 }
 function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(ALBO.length-1,ALBO_PAGE+dir));renderTab();}
 
 // ── TAB REGOLAMENTO ──────────────────────────────────────────
-const REGOLE_DEFAULT = [
-  {cat:"🎮 Come funziona", testo:"Si gioca a punti (bonus e malus). L'obiettivo è fare cose utili divertendosi!"},
-  {cat:"✅ Bonus", testo:"Presenza in sede, evento o riunione → +50 pt"},
-  {cat:"❌ Malus", testo:"Dici 'ci sono' e sparisci senza avvisare → -30 pt"}
+const REGOLAMENTO = [
+  {
+    cat:"🎮 Come funziona",
+    testo:"La vita associativa diventa un gioco a punti: bonus e malus servono a rendere più visibile la partecipazione e a divertirsi facendo cose utili.",
+    items:[
+      "Ci saranno classifiche settimanali per vedere l'andamento.",
+      "Ci saranno classifiche mensili per nominare il socio del mese.",
+      "Ci saranno classifiche annuali per eleggere il socio dell'anno.",
+      "La classifica mensile si apre ogni primo lunedì del mese.",
+      "Chi entra in associazione durante il mese inizia a giocare dal mese successivo.",
+      "Le regole possono essere cambiate o aggiunte tramite votazione a maggioranza."
+    ]
+  },
+  {
+    cat:"✅ Come fare punti (bonus)",
+    items:[
+      "Vieni in sede, agli eventi o partecipi alle riunioni: +50 punti.",
+      "Diventi delegato/a per un giorno e partecipi a un'iniziativa per conto dell'associazione: +30 punti.",
+      "Condividi o posti un post sui social di tua spontanea volontà: +10 punti.",
+      "Condividi un successo, un insuccesso, un'esperienza, un ricordo o qualcosa che arricchisce l'associazione sul gruppo condivisioni: +10 punti.",
+      "Condividi un evento o un post/link sul gruppo condivisioni: +5 punti.",
+      "Porti qualcuno che si iscrive all'associazione: +100 punti.",
+      "Porti una persona a partecipare a una singola attività: +25 punti.",
+      "Ricordi un compleanno o fai un complimento sincero: +10 punti.",
+      "Offri un passaggio per andare a un'attività dell'associazione: +20 punti.",
+      "Gestisci bene una situazione trovando rapidamente una soluzione: +30 punti.",
+      "Pulisci o allestisci la sede: +50 punti.",
+      "Arrivi in orario a un'attività dell'associazione, con tolleranza di 10 minuti: +10 punti.",
+      "Scrivi un articolo per il blog: +50 punti.",
+      "Registri un audio per il podcast: +50 punti.",
+      "Effettui una donazione: ogni euro donato vale +1 punto.",
+      "Destini il 5x1000 all'associazione e consegni ricevuta o dichiarazione firmata: +50 punti una tantum."
+    ]
+  },
+  {
+    cat:"❌ Come perdere punti (malus)",
+    items:[
+      "Dici 'ci sono' e poi sparisci senza avvisare: -30 punti.",
+      "Leggi un messaggio e non rispondi per ore: -20 punti.",
+      "Arrivi in ritardo oltre la tolleranza di 10 minuti: -1 punto per ogni minuto.",
+      "Fai una domanda la cui risposta era in un messaggio o file mandato pochi minuti prima: -10 punti.",
+      "Citi il FantaSocio direttamente o indirettamente: -10 punti.",
+      "Ti lamenti senza un valido motivo e senza proporre una soluzione: -15 punti.",
+      "Sei presente ma stai continuamente al telefono o ti fai i fatti tuoi: -20 punti.",
+      "Intasi la chat di gruppo con messaggi rivolti a una sola persona senza usare la chat privata: -5 punti a messaggio.",
+      "Usi parolacce per offendere: -15 punti.",
+      "Usi bestemmie: -25 punti."
+    ]
+  },
+  {
+    cat:"🏆 Cosa si vince",
+    items:[
+      "Gloria personale.",
+      "Nomina di socio del mese per chi ottiene più punti nel mese.",
+      "Nomina di socio dell'anno per chi totalizza più punti durante l'anno.",
+      "Il socio del mese decide l'attività ludica del mese successivo, scegliendo qualcosa di realistico, fattibile e poco dispendioso."
+    ]
+  },
+  {
+    cat:"🤝 Spirito del gioco",
+    testo:"La missione non è la competizione in sé, ma la crescita individuale e collettiva tramite collaborazione, coesione e spirito di gruppo. In casi particolari si potrà fare un sondaggio per assegnare punti extra, modificare una regola o aggiungerne una nuova."
+  }
 ];
 function renderRegolamento(){
-  return REGOLE_DEFAULT.map(r=>`<div class="card"><div style="font-size:11px;color:var(--purple);font-weight:700">${r.cat}</div><div style="font-size:13px;margin-top:4px">${r.testo}</div></div>`).join("");
+  return REGOLAMENTO.map(r=>`<div class="card">
+    <div style="font-size:12px;color:var(--purple);font-weight:900;letter-spacing:1px;margin-bottom:6px">${r.cat}</div>
+    ${r.testo?`<div style="font-size:13px;line-height:1.55;opacity:.82;margin-bottom:${r.items?.length?"8px":"0"}">${esc(r.testo)}</div>`:""}
+    ${r.items?.length?`<div style="display:flex;flex-direction:column;gap:7px">${r.items.map(item=>`
+      <div style="display:flex;gap:8px;font-size:12px;line-height:1.45;opacity:.78">
+        <span style="color:#818cf8;font-weight:900">•</span>
+        <span>${esc(item)}</span>
+      </div>`).join("")}</div>`:""}
+  </div>`).join("");
 }
 
 // ── TAB TUTORIAL ─────────────────────────────────────────────
-function renderTutorial(){return `<div style="text-align:center;padding:20px;opacity:.5">🎬 Sezione Tutorial multimediale attiva.</div>`;}
+function renderTutorial(){
+  return `<div class="form-box">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:14px">TUTORIAL</div>
+    <video controls playsinline preload="metadata" style="width:100%;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:#000;display:block" src="FantaSocio__Tutorial.mp4"></video>
+    <div style="font-size:12px;opacity:.45;margin-top:10px;text-align:center">Guarda il video introduttivo del FantaSocio.</div>
+  </div>`;
+}
 
 // ── TAB LOG - INTERBLOCCATO 100% SE NON ADMIN ────────────────
 function renderLog(){
@@ -1031,12 +1057,11 @@ function scaricaBackup(){
   const backup={
     exportedAt:now.toISOString(),
     app:"FantaSocio",
+    mode:"individuale",
     activeMonth:{index:ACTIVE_MONTH_INDEX,label:activeMonthLabel()},
     mesi:MESE_LABELS,
-    scuderie:SCUDERIE,
     bonus:BONUS,
     malus:MALUS,
-    missioni:MISSIONI,
     soci:STATE.soci,
     log:STATE.log,
     extra:DB_EXTRA
@@ -1045,7 +1070,52 @@ function scaricaBackup(){
   showToast("Backup scaricato ✅");
 }
 
-function renderSoci(){return `<div class="form-box">Pannello gestione scuderie abilitato in modalità Admin.</div>`;}
+function renderSoci(){
+  if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Elenco soci riservato agli amministratori.</div>`;
+  const rows=[...STATE.soci]
+    .sort((a,b)=>a.nome.localeCompare(b.nome))
+    .map(s=>{
+      const mesi=s.m.map((v,i)=>{
+        const isActive=i===ACTIVE_MONTH_INDEX;
+        const shown=v===null?"—":(v>0?`+${v}`:String(v));
+        const color=v===null?"rgba(255,255,255,.35)":v>=0?"#10b981":"#ef4444";
+        return `<div style="background:${isActive?"rgba(129,140,248,.16)":"rgba(255,255,255,.045)"};border:1px solid ${isActive?"rgba(129,140,248,.35)":"rgba(255,255,255,.07)"};border-radius:10px;padding:7px 6px;text-align:center;min-width:54px">
+          <div style="font-size:9px;opacity:.45;letter-spacing:1px">${MESE_LABELS[i].slice(0,3).toUpperCase()}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;color:${color};letter-spacing:1px">${shown}</div>
+        </div>`;
+      }).join("");
+      const badges=[
+        s.uscito?`<span class="badge" style="background:rgba(239,68,68,.14);color:#ef4444;border-color:rgba(239,68,68,.3)">Uscito</span>`:`<span class="badge" style="background:rgba(16,185,129,.14);color:#10b981;border-color:rgba(16,185,129,.3)">Attivo</span>`,
+        s.nascosto?`<span class="badge" style="background:rgba(148,163,184,.12);color:#94a3b8;border-color:rgba(148,163,184,.25)">Nascosto</span>`:""
+      ].join("");
+      return `<div class="card" style="${s.uscito?"opacity:.58;filter:grayscale(.7)":""}">
+        <div style="display:flex;align-items:flex-start;gap:12px">
+          <div class="ava" style="width:42px;height:42px;font-size:12px;background:rgba(129,140,248,.2);border:2px solid rgba(129,140,248,.45)">${esc(s.avatar)}</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap">
+              <div style="font-weight:900;font-size:14px">${esc(s.nome)}</div>
+              ${badges}
+            </div>
+            <div style="font-size:11px;opacity:.5;margin-top:3px">ID ${s.id}</div>
+            <div style="display:flex;gap:6px;overflow-x:auto;padding-top:10px;scrollbar-width:none">${mesi}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:#818cf8;letter-spacing:1px">${ptTotali(s)}</div>
+            <div style="font-size:9px;opacity:.35;letter-spacing:1px">TOT</div>
+          </div>
+        </div>
+      </div>`;
+    }).join("");
+
+  return `<div class="form-box" style="margin-bottom:14px">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:12px">SOCI</div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin:0 0 14px">
+      <div class="kpi"><div class="kpi-val">${STATE.soci.length}</div><div class="kpi-lbl">TOTALI</div></div>
+      <div class="kpi"><div class="kpi-val">${STATE.soci.filter(s=>!s.uscito).length}</div><div class="kpi-lbl">ATTIVI</div></div>
+      <div class="kpi"><div class="kpi-val">${STATE.soci.filter(s=>s.uscito).length}</div><div class="kpi-lbl">USCITI</div></div>
+    </div>
+  </div>${rows}`;
+}
 let CERCA_QUERY="";
 function renderCerca(){
   const query=CERCA_QUERY.toLowerCase();

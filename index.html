@@ -373,7 +373,7 @@ const MEDAGLIE = ["🥇","🥈","🥉"];
 // ═══════════════════════════════════════════════════════════
 let STATE = {
   soci:SOCI_DEFAULT,log:[],isAdmin:false,tab:0,meseView:ACTIVE_MONTH_INDEX,
-  selAzione:null,selSocio:"",customVal:1,nota:"",
+  selAzione:null,selSocio:"",assignMonth:ACTIVE_MONTH_INDEX,customVal:1,nota:"",
 };
 let fbReady=false;
 let chartInstances={};
@@ -1239,6 +1239,11 @@ function rimuoviDalLog(logId){
 function renderAssegna(){
   if(!STATE.isAdmin) return `<div style="text-align:center;padding:40px;opacity:.5;">🔒 Pannello riservato agli amministratori. Accedi dal Logo.</div>`;
 
+  const meseAssegnazione=normalizeMonthIndex(STATE.assignMonth);
+  const meseOptions=MESE_LABELS
+    .map((mese,i)=>i<=ACTIVE_MONTH_INDEX?`<option value="${i}" ${i===meseAssegnazione?"selected":""}>${mese} ${GAME_YEAR}${i===ACTIVE_MONTH_INDEX?" · attivo":""}</option>`:"")
+    .join("");
+
   const opts=[...STATE.soci]
     .filter(s=>!s.uscito&&!s.nascosto)
     .sort((a,b)=>a.nome.localeCompare(b.nome))
@@ -1272,6 +1277,8 @@ function renderAssegna(){
       <span style="font-weight:900;color:${selA.pts>0?"#10b981":"#ef4444"}">${selA.custom?selA.pts*(STATE.customVal||1):selA.pts} pt</span>
       <span style="opacity:.65"> a </span>
       <span style="font-weight:900">${esc(socioSel.nome)}</span>
+      <span style="opacity:.65"> per </span>
+      <span style="font-weight:900;color:#fbbf24">${MESE_LABELS[meseAssegnazione]}</span>
     </div>`:"";
 
   return `<div class="form-box">
@@ -1279,9 +1286,11 @@ function renderAssegna(){
     
     <div style="background:linear-gradient(135deg,rgba(16,185,129,.15),rgba(5,150,105,.08));border:1px solid rgba(16,185,129,.3);border-radius:12px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
       <div style="font-size:20px">📅</div>
-      <div>
-        <div style="font-size:10px;opacity:.6;letter-spacing:2px">MESE ATTIVO</div>
-        <div style="font-weight:900;font-size:15px;color:#10b981">${activeMonthLabel(true)}</div>
+      <div style="flex:1">
+        <label class="form-lbl" style="margin-bottom:5px">MESE DI ASSEGNAZIONE</label>
+        <select onchange="STATE.assignMonth=parseInt(this.value);render()" style="border-color:rgba(16,185,129,.35)!important">
+          ${meseOptions}
+        </select>
       </div>
     </div>
 
@@ -1335,13 +1344,14 @@ function assegnaPersonalizzato(){
   if(!STATE.isAdmin) return showToast("Azione non autorizzata.", true);
 
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
+  const meseIdx=normalizeMonthIndex(STATE.assignMonth);
   STATE.soci=STATE.soci.map(s=>{
     if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[ACTIVE_MONTH_INDEX]=(nuoviM[ACTIVE_MONTH_INDEX]||0)+pts; return{...s,m:nuoviM};
+    const nuoviM=[...s.m]; nuoviM[meseIdx]=(nuoviM[meseIdx]||0)+pts; return{...s,m:nuoviM};
   });
-  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
+  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx,socio:socio.nome,azione:"✏️ "+desc,delta:pts,nota:""},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSavePunteggioAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
+  fbSavePunteggioAndLog(socio.id,meseIdx,aggiornato.m[meseIdx]);
   showToast("Assegnato con successo!");
   render();
 }
@@ -1354,14 +1364,15 @@ function assegna(){
   if(!azione)return showToast("Azione non disponibile.",true);
   const delta=azione.custom?azione.pts*(STATE.customVal||1):azione.pts;
   const socio=STATE.soci.find(s=>s.id===parseInt(STATE.selSocio));
+  const meseIdx=normalizeMonthIndex(STATE.assignMonth);
   
   STATE.soci=STATE.soci.map(s=>{
     if(s.id!==socio.id)return s;
-    const nuoviM=[...s.m]; nuoviM[ACTIVE_MONTH_INDEX]=(nuoviM[ACTIVE_MONTH_INDEX]||0)+delta; return{...s,m:nuoviM};
+    const nuoviM=[...s.m]; nuoviM[meseIdx]=(nuoviM[meseIdx]||0)+delta; return{...s,m:nuoviM};
   });
-  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx:ACTIVE_MONTH_INDEX,socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
+  STATE.log=[{id:Date.now(),data:new Date().toLocaleDateString("it-IT"),meseIdx,socio:socio.nome,azione:azione.label,delta,nota:STATE.nota},...STATE.log];
   const aggiornato=STATE.soci.find(s=>s.id===socio.id);
-  fbSavePunteggioAndLog(socio.id,ACTIVE_MONTH_INDEX,aggiornato.m[ACTIVE_MONTH_INDEX]);
+  fbSavePunteggioAndLog(socio.id,meseIdx,aggiornato.m[meseIdx]);
   showToast("Assegnazione completata!");
   STATE.selAzione=null;STATE.nota="";STATE.customVal=1;
   render();

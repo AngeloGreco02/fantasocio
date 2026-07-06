@@ -278,6 +278,9 @@ const SOCI_DEFAULT = [
 const MESE_LABELS  = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto"];
 const GAME_YEAR = 2026;
 const GAME_START_MONTH = 2; // Marzo, usando i mesi JavaScript: gennaio = 0.
+const RINUNCE_TITOLO = {
+  3:{socio:"Gabriel",nota:"Gabriel rinuncia al titolo e lo cede al secondo classificato."}
+};
 const ACTIVE_MONTH_INDEX = getActiveMonthIndex();
 
 function firstMondayOfMonth(year,month){
@@ -557,10 +560,21 @@ function classificaMese(mi){
     .sort((a,b)=>b.punti-a.punti);
 }
 
+function rinunciaTitoloMese(mi){
+  const config=RINUNCE_TITOLO[mi];
+  if(!config)return null;
+  const classifica=classificaMese(mi);
+  const rinunciante=classifica[0];
+  const beneficiario=classifica[1];
+  if(!rinunciante||!beneficiario||rinunciante.nome.toLowerCase()!==config.socio.toLowerCase())return null;
+  return {rinunciante,beneficiario,nota:config.nota};
+}
+
 function vincitoreMese(mi){
   const classifica=classificaMese(mi);
   if(!classifica.some(s=>s.punti!==0))return null;
-  return classifica.length?classifica[0]:null;
+  const rinuncia=rinunciaTitoloMese(mi);
+  return rinuncia?.beneficiario||(classifica.length?classifica[0]:null);
 }
 
 function statoMese(mi){
@@ -884,10 +898,11 @@ function chiudiProfilo(){document.getElementById("profiloOverlay").style.display
 function renderMesi(){
   const mi=STATE.meseView;
   const status=statoMese(mi);
+  const rinuncia=status==="chiuso"?rinunciaTitoloMese(mi):null;
   const winner=status==="futuro"?null:vincitoreMese(mi);
   const honorLabel=status==="chiuso"?"⭐ SOCIO DEL MESE":status==="attivo"?"⭐ LEADER PROVVISORIO":"📅 MESE NON INIZIATO";
   const honorText=winner
-    ? `${esc(winner.nome)} · ${winner.punti>0?"+":""}${winner.punti} pt`
+    ? `${esc(winner.nome)} · ${winner.punti>0?"+":""}${winner.punti} pt${rinuncia?` · titolo ceduto da ${esc(rinuncia.rinunciante.nome)}`:""}`
     : status==="futuro"?"Si aprirà al reset mensile":"Nessun dato";
   const segBtns=`<div style="display:flex;gap:4px;width:100%">${MESE_LABELS.map((l,i)=>`<button class="seg-btn${mi===i?" on":""}" onclick="setMese(${i})" style="${i===ACTIVE_MONTH_INDEX?"border-left:2px solid rgba(251,191,36,.4);":""}">${l.slice(0,3)}</button>`).join("")}</div>`;
   const classMese=status==="futuro"?[]:classificaMese(mi);
@@ -951,13 +966,16 @@ let ALBO_PAGE = ACTIVE_MONTH_INDEX;
 function renderBacheca(){
   const mi=ALBO_PAGE;
   const status=statoMese(mi);
+  const rinuncia=status==="chiuso"?rinunciaTitoloMese(mi):null;
   const winner=status==="futuro"?null:vincitoreMese(mi);
   const top3=status==="futuro"?[]:classificaMese(mi).slice(0,3);
   const hasPrev=mi>0;
   const hasNext=mi<MESE_LABELS.length-1;
-  const label=status==="chiuso"?"VINCITORE UFFICIALE":status==="attivo"?"LEADER PROVVISORIO":"MESE NON INIZIATO";
-  const descr=status==="chiuso"
-    ?"Questo mese è chiuso: il risultato segue i punti registrati."
+  const label=status==="chiuso"?(rinuncia?"SOCIO DEL MESE · TITOLO CEDUTO":"VINCITORE UFFICIALE"):status==="attivo"?"LEADER PROVVISORIO":"MESE NON INIZIATO";
+  const descr=rinuncia
+    ?`${esc(rinuncia.rinunciante.nome)} resta primo nella classifica punti, ma rinuncia al titolo e lo cede a ${esc(rinuncia.beneficiario.nome)}.`
+    : status==="chiuso"
+      ?"Questo mese è chiuso: il risultato segue i punti registrati."
     : status==="attivo"
       ?"Il vincitore diventerà ufficiale al prossimo reset mensile."
       :"La classifica verrà popolata quando inizierà il mese.";
@@ -967,6 +985,7 @@ function renderBacheca(){
       <div class="ava" style="width:72px;height:72px;font-size:22px;margin:0 auto 10px;background:rgba(251,191,36,.18);border:3px solid rgba(251,191,36,.55)">${esc(winner.avatar)}</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#fbbf24">${esc(winner.nome)}</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${winner.punti>=0?"#10b981":"#ef4444"};letter-spacing:1px;margin-top:2px">${winner.punti>0?"+":""}${winner.punti} pt</div>
+      ${rinuncia?`<div style="display:inline-block;margin-top:8px;padding:5px 10px;border-radius:99px;background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.3);color:#c7d2fe;font-size:10px;font-weight:900;letter-spacing:1px">TITOLO CEDUTO DA ${esc(rinuncia.rinunciante.nome).toUpperCase()}</div>`:""}
     </div>`:`
     <div style="margin-top:18px;text-align:center;padding:18px;border:1px dashed rgba(255,255,255,.14);border-radius:16px;opacity:.62">
       <div style="font-size:34px;margin-bottom:6px">⏳</div>

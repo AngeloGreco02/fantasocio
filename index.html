@@ -1,100 +1,3 @@
-
-Claude ha terminato la risposta
-Ha pensato per 5s
-Leggo prima il documento del regolamento, poi sistemo tutto!
-
-Eseguiti 4 comandi
-Il video è 31MB — troppo grande per incorporarlo nel file HTML (diventerebbe inutilizzabile). La soluzione migliore è caricarlo su YouTube o Google Drive e inserire il link. Nel frattempo aggiungo il tab Tutorial con un placeholder:
-
-Eseguito un comando, file letto
-Fatto! Ecco le tre modifiche:
-
-✅ Dropdown soci — niente più gruppi per scuderia, lista alfabetica pulita
-
-📜 Regolamento aggiornato — ho usato esattamente il testo del tuo documento, diviso in categorie: Come funziona, Bonus, Malus, Premi, Classifiche. Zero riferimenti alle scuderie.
-
-🎬 Tab Tutorial — aggiunto con guida rapida di ogni sezione. Per il video (31MB è troppo grande per l'HTML), fai così:
-
-Carica FantaSocio_Tutorial.mp4 su YouTube (anche come "non in elenco" se vuoi solo il link) oppure Google Drive
-Copia il link embed (YouTube: https://www.youtube.com/embed/ID_VIDEO)
-Mandamelo e lo inserisco in un secondo nell'app 😊
-Carica su GitHub!
-
-
-Fantasocio
-Codice·HTML 
-<iframe width="1740" height="979" src="https://www.youtube.com/embed/SmFlxIyacb8" title="FantaSocio  Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-Eseguito un comando, file letto
-Fatto! Il video è stato inserito. Carica su GitHub e nel tab 🎬 Tutorial apparirà direttamente il video YouTube incorporato, pronto da guardare! 🎬
-
-
-Fantasocio
-Codice·HTML 
-Togli le missioni
-
-Remove Missioni tab
-Togli le missioni
-
-Presented file
-Fatto! Tab 🎯 Missioni rimosso. Carica su GitHub! 🚀
-
-
-Fantasocio
-Codice·HTML 
-
-<!DOCTYPE html> <html lang="it"> <head> <meta charset="UTF-8"/> <meta name="viewport" content="width=device-width, initial-scale=1.0"/> <title>FantaSocio · CFP</title> <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet
-
-pasted
-
-È finito il nuovo mese agosto aggiungi il mese di settembre e metti tutti a zero
-
-Inoltre metti un comando per l'amministratore per poter fare questa operazione direttamente in applicazione quindi salvare la classifica e aggiungere il nuovo mese
-
-Ha pensato per 32s
-Questo è un file molto più avanzato! Lo salvo e aggiungo Settembre + il comando admin per avanzare mese direttamente dall'app.
-
-Eseguiti 4 comandi, file creato
-continua
-
-Presented file
-Ecco il file aggiornato! Ecco tutto quello che ho fatto:
-
-📅 Settembre aggiunto
-Tutti i soci hanno ora m:[Mar,Apr,Mag,Giu,Lug,Ago,Set] con Settembre a 0. Marco L. ha null per tutti i mesi da Giugno in poi.
-
-⚙️ Nuovo tab "Avanza Mese" (solo admin)
-Questo è il comando che chiedevi — dal tab trovi:
-
-Riepilogo mese corrente con il vincitore e la top 5
-Pulsante "Chiudi Agosto → Avanza a Settembre" — con un click imposta Settembre come mese attivo e salva su Firebase. I dati precedenti restano intatti.
-Override manuale — puoi forzare qualsiasi mese cliccando sui pulsanti mese
-Reset override — per tornare al calendario automatico
-Come funziona tecnicamente:
-
-Il mese attivo viene salvato in Firebase sotto configMese/meseAttivoOverride
-Tutti i soci connessi vedono il cambio in tempo reale
-I punti di ogni mese sono separati su Firebase (extra/m0, extra/m1... extra/m6)
-⚠️ Passaggio importante su Firebase:
-Per far funzionare il login admin devi creare un utente in Firebase Auth:
-
-Firebase Console → Authentication → Aggiungi utente
-Inserisci email e password admin
-Poi in Realtime Database aggiungi: admins/{UID} = true
-Carica su GitHub! 🚀
-
-
-Fantasocio
-Codice·HTML 
-
-Vuoi ricevere una notifica quando Claude risponde?
-Scrivi un messaggio…
-
-
-Claude è un’IA e può commettere errori. Si prega di verificare sempre le risposte.
-
-
-Fantasocio · HTML
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -103,7 +6,7 @@ Fantasocio · HTML
 <title>FantaSocio · CFP</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
- 
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -123,7 +26,7 @@ Fantasocio · HTML
   window._fb = { db, ref, set, onValue, update, auth, signInWithEmailAndPassword, signOut, onAuthStateChanged };
   window.dispatchEvent(new Event("firebase-ready"));
 </script>
- 
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#07070e;--card:rgba(255,255,255,.05);--border:rgba(255,255,255,.08);--gold:#fbbf24;--pink:#f472b6;--purple:#818cf8;--green:#10b981;--red:#ef4444;}
@@ -203,16 +106,18 @@ select option{background:#12121e;color:#fff}
 .level-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:24px;padding:28px 36px;text-align:center;box-shadow:0 20px 60px rgba(124,58,237,.5);animation:levelUp .5s ease}
 /* AVANZA MESE */
 .avanza-box{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(244,114,182,.06));border:2px solid rgba(251,191,36,.3);border-radius:20px;padding:22px;margin-bottom:16px}
+.tutorial-video{width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:#000;margin-bottom:20px}
+.tutorial-video iframe{display:block;width:100%;height:100%;border:0}
 @media(max-width:420px){.logo{font-size:40px}.kpi-grid{grid-template-columns:repeat(2,1fr)}.trofeo-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
- 
+
 <div class="admin-bar" id="adminBar" style="display:none">
   <span><span style="width:8px;height:8px;border-radius:50%;background:#10b981;margin-right:6px;display:inline-block"></span>Modalità Admin attiva</span>
   <button onclick="logout()" style="background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3);color:#ef4444;border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;cursor:pointer">🔒 Esci</button>
 </div>
- 
+
 <div class="lock-overlay" id="lockOverlay" style="display:none">
   <div class="lock-box">
     <div style="font-size:40px;margin-bottom:12px">🔐</div>
@@ -225,7 +130,7 @@ select option{background:#12121e;color:#fff}
     <button onclick="document.getElementById('lockOverlay').style.display='none'" style="background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;margin-top:14px;font-size:13px">Annulla</button>
   </div>
 </div>
- 
+
 <div id="welcomeOverlay" style="display:none" class="welcome-overlay">
   <div style="max-width:360px;width:90%;text-align:center;padding:20px">
     <div style="font-size:60px;margin-bottom:16px;animation:pulse 2s infinite">🏆</div>
@@ -241,22 +146,22 @@ select option{background:#12121e;color:#fff}
     <div style="font-size:11px;opacity:.35;margin-top:12px">Triplo click sul titolo per accedere come admin</div>
   </div>
 </div>
- 
+
 <div id="levelToast" style="display:none" class="level-toast">
   <div style="font-size:48px;margin-bottom:8px">🎊</div>
   <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px">NUOVO LIVELLO!</div>
   <div id="levelToastText" style="font-size:16px;margin-top:6px;opacity:.85"></div>
 </div>
- 
+
 <div id="profiloOverlay" style="display:none" class="profilo-overlay"></div>
 <div class="toast" id="toast" style="display:none"></div>
- 
+
 <div id="loadingScreen" style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px">
   <div class="spinner"></div>
   <div style="opacity:.4;font-size:13px;letter-spacing:1px">CONNESSIONE IN CORSO…</div>
   <button onclick="apriLocale()" style="margin-top:8px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:rgba(255,255,255,.4);padding:8px 18px;font-size:12px;cursor:pointer;font-family:inherit">Apri senza connessione</button>
 </div>
- 
+
 <div id="appRoot" style="display:none">
   <div class="wrap">
     <div style="text-align:center;margin-bottom:16px;animation:fadeUp .5s ease">
@@ -286,17 +191,17 @@ select option{background:#12121e;color:#fff}
     <div id="tabContent"></div>
   </div>
 </div>
- 
+
 <script>
 // ═══════════════════════════════════════════════════════════
 //  CONFIG — Settembre aggiunto, m arrays estesi a 7 elementi
 // ═══════════════════════════════════════════════════════════
- 
+
 // MESE_LABELS ora include Settembre (index 6)
 const MESE_LABELS_DEFAULT = ["Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre"];
 const GAME_YEAR = 2026;
 const GAME_START_MONTH = 2; // Marzo = JS month 2
- 
+
 // SOCI_DEFAULT — m = [Mar, Apr, Mag, Giu, Lug, Ago, Set]
 // Settembre parte da 0 per tutti
 const SOCI_DEFAULT = [
@@ -325,7 +230,7 @@ const SOCI_DEFAULT = [
   {id:4, nome:"Giorgia",          avatar:"GG", m:[345,65,100,  0,0,0, 0], extra:0},
   {id:3, nome:"Giovanni",         avatar:"GI", m:[300,40,50,   0,0,0, 0], extra:0},
 ];
- 
+
 // Config mese — può essere sovrascritta da Firebase (admin può avanzare mese)
 let MESE_LABELS = [...MESE_LABELS_DEFAULT];
 let CONFIG_MESE = {
@@ -333,7 +238,7 @@ let CONFIG_MESE = {
   meseAttivoOverride: null,                  // null = automatico da calendario
   meseLabels: null,                          // null = usa default
 };
- 
+
 const BONUS_DEFAULT = [
   {id:"b1", label:"Presenza in sede / evento / riunione",                 pts:50,  emoji:"🏠"},
   {id:"b2", label:"Delegato per un giorno",                               pts:30,  emoji:"🎖️"},
@@ -364,10 +269,10 @@ const MALUS_DEFAULT = [
   {id:"m9", label:"Parolacce offensive",                                 pts:-15, emoji:"🤬"},
   {id:"m10",label:"Bestemmie",                                            pts:-25, emoji:"⛪"},
 ];
- 
+
 let BONUS = cloneAzioni(BONUS_DEFAULT,"bonus");
 let MALUS = cloneAzioni(MALUS_DEFAULT,"malus");
- 
+
 const TROFEI = [
   {id:"t1", emoji:"👑",nome:"Leggenda",    desc:"Supera 800 punti totali",         check:s=>ptTotali(s)>=800},
   {id:"t2", emoji:"🏆",nome:"Campione",    desc:"Supera 500 punti totali",         check:s=>ptTotali(s)>=500},
@@ -379,9 +284,9 @@ const TROFEI = [
   {id:"t8", emoji:"💎",nome:"Diamante",    desc:"Mese da oltre 300 punti",         check:s=>s.m.some(v=>v>=300)},
   {id:"t9", emoji:"🚀",nome:"Lancio",      desc:"Primo mese con punti positivi",   check:s=>s.m[0]>0},
 ];
- 
+
 const MEDAGLIE = ["🥇","🥈","🥉"];
- 
+
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
@@ -399,7 +304,7 @@ let DB_SOCI=null;
 let SOCIO_EDIT_ID=null;
 let LOG_FILTER={query:"",mese:"all",tipo:"all"};
 let AZIONE_EDIT=null;
- 
+
 // ═══════════════════════════════════════════════════════════
 //  HELPERS MESE
 // ═══════════════════════════════════════════════════════════
@@ -408,7 +313,7 @@ function firstMondayOfMonth(year,month){
   const diff=(8-d.getDay())%7;
   d.setDate(1+diff); d.setHours(0,0,0,0); return d;
 }
- 
+
 function getActiveMonthIndex(date=new Date()){
   // Se admin ha impostato override, usa quello
   if(CONFIG_MESE.meseAttivoOverride!==null&&Number.isInteger(CONFIG_MESE.meseAttivoOverride)){
@@ -422,7 +327,7 @@ function getActiveMonthIndex(date=new Date()){
   }
   return Math.max(0,Math.min(MESE_LABELS.length-1,idx));
 }
- 
+
 function getNextResetDate(date=new Date()){
   const now=new Date(date);
   for(let i=0;i<MESE_LABELS.length;i++){
@@ -431,24 +336,24 @@ function getNextResetDate(date=new Date()){
   }
   return firstMondayOfMonth(GAME_YEAR+1,GAME_START_MONTH);
 }
- 
+
 function activeMonthIdx(){ return getActiveMonthIndex(); }
 function activeMonthLabel(upper=false){
   const label=`${MESE_LABELS[activeMonthIdx()]} ${GAME_YEAR}`;
   return upper?label.toUpperCase():label;
 }
- 
+
 function renderActiveMonthLabels(){
   document.querySelectorAll("[data-active-month]").forEach(el=>{
     el.textContent=activeMonthLabel(el.dataset.activeMonth==="upper");
   });
 }
- 
+
 // ═══════════════════════════════════════════════════════════
 //  HELPERS GENERALI
 // ═══════════════════════════════════════════════════════════
 function ptTotali(s){return(s.m||[]).reduce((a,b)=>a+(b||0),0)+(s.extra||0);}
- 
+
 function normalizeAzione(raw={},tipo="bonus",fallbackId=""){
   const isBonus=tipo==="bonus";
   const absPts=Math.max(1,Math.abs(Number(raw.pts)||1));
@@ -459,7 +364,7 @@ function cloneAzioni(list,tipo){return(list||[]).map((a,i)=>normalizeAzione({...
 function azioniFromDb(raw,tipo,defaults){const source=raw?(Array.isArray(raw)?raw:Object.values(raw)):defaults;const list=cloneAzioni(source,tipo).sort((a,b)=>(a.order||0)-(b.order||0));return list.length?list:cloneAzioni(defaults,tipo);}
 function cleanAzioneForDb(a,tipo,index=0){const clean=normalizeAzione({...a,order:index},tipo,a.id);return{id:clean.id,label:clean.label,pts:clean.pts,emoji:clean.emoji,custom:clean.custom,customLabel:clean.customLabel,disabilitata:clean.disabilitata,order:index};}
 function azioniAttive(tipo){return(tipo==="bonus"?BONUS:MALUS).filter(a=>!a.disabilitata);}
- 
+
 function normalizeMesi(m=[]){
   const out=[];
   for(let i=0;i<MESE_LABELS.length;i++){
@@ -487,7 +392,7 @@ function parseSociDb(raw){
 function cleanSocioForDb(s){const clean=normalizeSocio(s,s.id);return{id:clean.id,nome:clean.nome,avatar:clean.avatar,m:clean.m,extra:clean.extra,uscito:clean.uscito,nascosto:clean.nascosto};}
 function baseSoci(){return(DB_SOCI&&DB_SOCI.length?DB_SOCI:SOCI_DEFAULT).map(s=>cleanSocioForDb(s));}
 function sociPerClassifiche(){return STATE.isAdmin?STATE.soci:STATE.soci.filter(s=>!s.nascosto);}
- 
+
 function rebuildSociFromDb(){
   const ext=DB_PUNTEGGI_MENSILI||{};
   STATE.soci=baseSoci().map(s=>{
@@ -510,11 +415,11 @@ function rebuildSociFromDb(){
   document.getElementById("appRoot").style.display="block";
   render();
 }
- 
+
 function esc(v){return String(v??"").replace(/[&<>"']/g,ch=>({
   "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
 }[ch]));}
- 
+
 function titolo(pts){
   if(pts>=800)return{label:"Leggenda",emoji:"👑",color:"#fbbf24"};
   if(pts>=500)return{label:"Campione",emoji:"🏆",color:"#f59e0b"};
@@ -523,7 +428,7 @@ function titolo(pts){
   if(pts>0)   return{label:"In gioco",emoji:"🌱",color:"#94a3b8"};
   return            {label:"Zero",    emoji:"😶",color:"#64748b"};
 }
- 
+
 function sortedSoci(){
   return[...sociPerClassifiche()].map(s=>({...s,punti:ptTotali(s)})).sort((a,b)=>{
     if(a.uscito&&!b.uscito)return 1;
@@ -531,7 +436,7 @@ function sortedSoci(){
     return b.punti-a.punti;
   });
 }
- 
+
 function classificaMese(mi){
   const ami=activeMonthIdx();
   return[...sociPerClassifiche()]
@@ -540,40 +445,40 @@ function classificaMese(mi){
     .map(s=>({...s,punti:s.m[mi]??0}))
     .sort((a,b)=>b.punti-a.punti);
 }
- 
+
 function vincitoreMese(mi){
   const cl=classificaMese(mi);
   if(!cl.some(s=>s.punti!==0))return null;
   return cl.length?cl[0]:null;
 }
- 
+
 function statoMese(mi){
   const ami=activeMonthIdx();
   if(mi<ami)return"chiuso";
   if(mi===ami)return"attivo";
   return"futuro";
 }
- 
+
 function showToast(msg,err=false){
   const t=document.getElementById("toast");
   t.textContent=msg;t.style.background=err?"#dc2626":"#059669";t.style.display="block";
   setTimeout(()=>t.style.display="none",3000);
 }
- 
+
 function downloadJson(filename,data){
   const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const url=URL.createObjectURL(blob);
   const a=document.createElement("a");
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
 }
- 
+
 function setAdminMode(isAdmin){
   STATE.isAdmin=isAdmin;
   document.getElementById("adminBar").style.display=isAdmin?"flex":"none";
   if(!isAdmin&&STATE.tab>=getTabs().length) STATE.tab=0;
   render();
 }
- 
+
 // ═══════════════════════════════════════════════════════════
 //  FIREBASE WRITERS
 // ═══════════════════════════════════════════════════════════
@@ -582,13 +487,13 @@ function fbSaveLog(){
   const{db,ref,set}=window._fb;
   set(ref(db,"log"),{data:STATE.log});
 }
- 
+
 function fbSavePunteggioAndLog(socioId,meseIdx,val){
   if(!fbReady||!STATE.isAdmin)return;
   const{db,ref,update}=window._fb;
   update(ref(db),{["extra/m"+meseIdx+"/"+socioId]:val,log:{data:STATE.log}});
 }
- 
+
 async function fbSaveSociList(list){
   if(!fbReady||!STATE.isAdmin){showToast("Accesso admin richiesto.",true);return false;}
   const{db,ref,set}=window._fb;
@@ -597,7 +502,7 @@ async function fbSaveSociList(list){
   try{await set(ref(db,"soci"),data);return true;}
   catch(err){console.error(err);showToast("Errore salvataggio soci.",true);return false;}
 }
- 
+
 async function fbSaveAzioniConfig(bonusList=BONUS,malusList=MALUS){
   if(!fbReady||!STATE.isAdmin){showToast("Accesso admin richiesto.",true);return false;}
   const{db,ref,set}=window._fb;
@@ -609,14 +514,14 @@ async function fbSaveAzioniConfig(bonusList=BONUS,malusList=MALUS){
     return true;
   }catch(err){console.error(err);showToast("Errore salvataggio azioni.",true);return false;}
 }
- 
+
 async function fbSaveConfigMese(cfg){
   if(!fbReady||!STATE.isAdmin){showToast("Accesso admin richiesto.",true);return false;}
   const{db,ref,set}=window._fb;
   try{await set(ref(db,"configMese"),cfg);return true;}
   catch(err){console.error(err);showToast("Errore salvataggio config mese.",true);return false;}
 }
- 
+
 // ═══════════════════════════════════════════════════════════
 //  AUTH
 // ═══════════════════════════════════════════════════════════
@@ -635,13 +540,13 @@ async function checkPwd(){
     document.getElementById("pwdInput").value="";
   }
 }
- 
+
 function logout(){
   if(window._fb?.auth)window._fb.signOut(window._fb.auth);
   else{STATE.isAdmin=false;document.getElementById("adminBar").style.display="none";render();}
   showToast("Uscito 🔒");
 }
- 
+
 // ═══════════════════════════════════════════════════════════
 //  TABS
 // ═══════════════════════════════════════════════════════════
@@ -650,7 +555,7 @@ function getTabs(){
   if(STATE.isAdmin)t.push("➕ Assegna","⚙️ Azioni","📅 Avanza Mese","💾 Backup","👥 Soci");
   return t;
 }
- 
+
 // ═══════════════════════════════════════════════════════════
 //  RENDER
 // ═══════════════════════════════════════════════════════════
@@ -658,7 +563,7 @@ function render(){
   renderActiveMonthLabels();
   renderKPI();renderTabs();renderTab();
 }
- 
+
 function renderKPI(){
   const cl=sortedSoci();
   const media=Math.round(cl.filter(s=>!s.uscito).reduce((a,s)=>a+s.punti,0)/Math.max(cl.filter(s=>!s.uscito).length,1));
@@ -669,7 +574,7 @@ function renderKPI(){
     {icon:"📊",val:media,                                               label:"MEDIA PT"},
   ].map(k=>`<div class="kpi"><div style="font-size:18px">${k.icon}</div><div class="kpi-val" style="font-size:${k.label==="LEADER"?"18px":"26px"}">${k.val}</div><div class="kpi-lbl">${k.label}</div></div>`).join("");
 }
- 
+
 function renderTabs(){
   const tabs=getTabs();
   if(STATE.tab>=tabs.length)STATE.tab=0;
@@ -677,9 +582,9 @@ function renderTabs(){
     `<button class="tab-btn${STATE.tab===i?" on":""}" onclick="setTab(${i})">${t}</button>`
   ).join("");
 }
- 
+
 function setTab(i){STATE.tab=i;render();}
- 
+
 function renderTab(){
   const tabs=getTabs();const label=tabs[STATE.tab]||"";
   const el=document.getElementById("tabContent");
@@ -699,7 +604,7 @@ function renderTab(){
   else if(label.includes("Log"))el.innerHTML=renderLog();
   else if(label.includes("Cerca"))el.innerHTML=renderCerca();
 }
- 
+
 // ── CLASSIFICA ──────────────────────────────────────────────
 function renderClassifica(){
   const cl=sortedSoci();
@@ -732,7 +637,7 @@ function renderClassifica(){
     </div>`;
   }).join("")+`<div style="text-align:center;font-size:12px;opacity:.35;margin-top:8px">👆 Clicca su un socio per vedere il profilo</div>`;
 }
- 
+
 // ── PROFILO ──────────────────────────────────────────────────
 function apriProfilo(id){
   const s=STATE.soci.find(x=>x.id===id);
@@ -800,7 +705,7 @@ function apriProfilo(id){
   </div>`;
 }
 function chiudiProfilo(){document.getElementById("profiloOverlay").style.display="none";}
- 
+
 // ── MESI ─────────────────────────────────────────────────────
 function renderMesi(){
   const mi=STATE.meseView??activeMonthIdx();
@@ -831,7 +736,7 @@ function renderMesi(){
     </div>${rows}`;
 }
 function setMese(i){STATE.meseView=i;render();}
- 
+
 // ── GRAFICI ──────────────────────────────────────────────────
 function renderGrafici(){
   return`<div class="chart-container"><div class="chart-title">📊 TOP 5 ANDAMENTO MENSILE</div><canvas id="chartLinee" height="220"></canvas></div>
@@ -848,7 +753,7 @@ function initGrafici(){
     if(ctxS){chartInstances.top10=new Chart(ctxS,{type:"bar",data:{labels:top10.map(s=>s.nome.split(" ")[0]),datasets:[{label:"Punti",data:top10.map(s=>s.punti),backgroundColor:"#818cf8cc",borderRadius:8}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"rgba(255,255,255,.5)"}},y:{ticks:{color:"rgba(255,255,255,.4)"}}}}});}
   },100);
 }
- 
+
 // ── BACHECA ──────────────────────────────────────────────────
 let ALBO_PAGE=null;
 function renderBacheca(){
@@ -892,7 +797,7 @@ function renderBacheca(){
 }
 function alboNav(dir){ALBO_PAGE=Math.max(0,Math.min(MESE_LABELS.length-1,ALBO_PAGE+dir));renderTab();}
 function setAlboPage(i){ALBO_PAGE=Math.max(0,Math.min(MESE_LABELS.length-1,i));renderTab();}
- 
+
 // ── REGOLAMENTO ──────────────────────────────────────────────
 const REGOLAMENTO=[
   {cat:"🎮 Come funziona",testo:"La vita associativa diventa un gioco a punti: bonus e malus servono a rendere più visibile la partecipazione e a divertirsi facendo cose utili.",items:["Classifiche settimanali per l'andamento.","Classifiche mensili per nominare il socio del mese.","Classifiche annuali per eleggere il socio dell'anno.","La classifica mensile si apre ogni primo lunedì del mese.","Chi entra in associazione durante il mese inizia a giocare dal mese successivo.","Le regole possono essere cambiate o aggiunte tramite votazione a maggioranza."]},
@@ -908,14 +813,14 @@ function renderRegolamento(){
     ${r.items?.length?`<div style="display:flex;flex-direction:column;gap:7px">${r.items.map(item=>`<div style="display:flex;gap:8px;font-size:12px;line-height:1.45;opacity:.78"><span style="color:#818cf8;font-weight:900">•</span><span>${esc(item)}</span></div>`).join("")}</div>`:""}
   </div>`).join("");
 }
- 
+
 // ── TUTORIAL ─────────────────────────────────────────────────
 const TUTORIAL_VIDEO_URL="https://www.youtube.com/embed/SmFlxIyacb8";
 function renderTutorial(){
   return`<div class="form-box">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#818cf8;margin-bottom:14px">🎬 TUTORIAL</div>
-    ${TUTORIAL_VIDEO_URL?`<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:16px;margin-bottom:20px">
-      <iframe src="${TUTORIAL_VIDEO_URL}" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:16px" allowfullscreen></iframe>
+    ${TUTORIAL_VIDEO_URL?`<div class="tutorial-video">
+      <iframe src="${TUTORIAL_VIDEO_URL}" title="Tutorial Fanta Socio" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
     </div>`:""}
     <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#818cf8;margin-bottom:12px">📋 GUIDA RAPIDA</div>
     ${[{emoji:"🏆",titolo:"Classifica",desc:"Punteggi totali di tutti i soci. Clicca su un nome per il profilo personale."},{emoji:"📅",titolo:"Mesi",desc:"Classifica mese per mese con il leader provvisorio."},{emoji:"📊",titolo:"Grafici",desc:"Andamento nel tempo dei top 5 soci."},{emoji:"🏅",titolo:"Bacheca",desc:"Albo d'Oro con i vincitori mensili e trofei."},{emoji:"📜",titolo:"Regolamento",desc:"Tutte le regole: bonus, malus e premi."},{emoji:"🔍",titolo:"Cerca",desc:"Trova rapidamente un socio per nome."},{emoji:"➕",titolo:"Assegna (admin)",desc:"Seleziona socio, scegli azione e conferma. Puoi scegliere il mese."}].map(g=>`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start">
@@ -927,7 +832,7 @@ function renderTutorial(){
     </div>
   </div>`;
 }
- 
+
 // ── AVANZA MESE (SOLO ADMIN) ─────────────────────────────────
 function renderAvanzaMese(){
   if(!STATE.isAdmin)return`<div style="text-align:center;padding:40px;opacity:.5;">🔒 Riservato agli amministratori.</div>`;
@@ -937,7 +842,7 @@ function renderAvanzaMese(){
   const prossimo=MESE_LABELS[prossimoIdx]||null;
   const winner=vincitoreMese(ami);
   const cl=classificaMese(ami);
- 
+
   // Anteprima classifica mese corrente
   const topHtml=cl.slice(0,5).map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06)">
     <div style="font-size:18px;min-width:24px">${i<3?MEDAGLIE[i]:"#"+(i+1)}</div>
@@ -945,12 +850,12 @@ function renderAvanzaMese(){
     <div style="flex:1;font-weight:800;font-size:13px">${esc(s.nome)}</div>
     <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:${s.punti>=0?"#10b981":"#ef4444"}">${s.punti>0?"+":""}${s.punti}</div>
   </div>`).join("");
- 
+
   return`
     <div class="avanza-box">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fbbf24;margin-bottom:6px">📅 GESTIONE MESE</div>
       <div style="font-size:13px;opacity:.7;margin-bottom:16px">Chiudi il mese corrente e avanza al prossimo.</div>
- 
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div style="background:rgba(0,0,0,.2);border-radius:12px;padding:12px;text-align:center">
           <div style="font-size:10px;opacity:.55;letter-spacing:2px">MESE CORRENTE</div>
@@ -963,7 +868,7 @@ function renderAvanzaMese(){
           <div style="font-size:11px;opacity:.5;margin-top:2px">${prossimo?`Index: ${prossimoIdx}`:"Aggiungi mese nel codice"}</div>
         </div>
       </div>
- 
+
       ${winner?`<div style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.25);border-radius:12px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:12px">
         <div style="font-size:28px">🥇</div>
         <div>
@@ -971,16 +876,16 @@ function renderAvanzaMese(){
           <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fbbf24">${esc(winner.nome)} · ${winner.punti>0?"+":""}${winner.punti} pt</div>
         </div>
       </div>`:`<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin-bottom:14px;text-align:center;opacity:.6">⚠️ Nessun vincitore nel mese corrente.</div>`}
- 
+
       ${topHtml?`<div style="background:rgba(0,0,0,.15);border-radius:12px;padding:14px;margin-bottom:16px">
         <div style="font-size:10px;opacity:.5;letter-spacing:2px;margin-bottom:8px">📊 TOP 5 ${meseCorrente.toUpperCase()}</div>
         ${topHtml}
       </div>`:""}
- 
+
       ${prossimo?`<button class="btn-primary" onclick="confermaCambioMese(${prossimoIdx})" style="background:linear-gradient(135deg,#059669,#10b981);margin-bottom:10px">
         📅 Chiudi ${meseCorrente} → Avanza a ${prossimo}
       </button>`:`<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:12px;padding:12px;text-align:center;font-size:13px;margin-bottom:10px">Non ci sono altri mesi configurati. Aggiorna il codice per aggiungere nuovi mesi.</div>`}
- 
+
       <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#818cf8;margin:16px 0 10px">⚙️ OVERRIDE MANUALE</div>
       <div style="font-size:12px;opacity:.6;margin-bottom:10px">Imposta manualmente il mese attivo (sovrascrive il calendario).</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
@@ -989,7 +894,7 @@ function renderAvanzaMese(){
       ${CONFIG_MESE.meseAttivoOverride!==null?`<button onclick="resetOverrideMese()" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;width:100%">❌ Rimuovi override — torna al calendario automatico</button>`:""}
     </div>`;
 }
- 
+
 async function confermaCambioMese(prossimoIdx){
   if(!STATE.isAdmin)return showToast("Non autorizzato.",true);
   const prossimo=MESE_LABELS[prossimoIdx];
@@ -1007,7 +912,7 @@ async function confermaCambioMese(prossimoIdx){
     render();
   }
 }
- 
+
 async function impostaOverrideMese(idx){
   if(!STATE.isAdmin)return showToast("Non autorizzato.",true);
   const nuovaCfg={...CONFIG_MESE,meseAttivoOverride:idx};
@@ -1020,7 +925,7 @@ async function impostaOverrideMese(idx){
     render();
   }
 }
- 
+
 async function resetOverrideMese(){
   if(!STATE.isAdmin)return;
   const nuovaCfg={...CONFIG_MESE,meseAttivoOverride:null};
@@ -1034,7 +939,7 @@ async function resetOverrideMese(){
     render();
   }
 }
- 
+
 // ── LOG ──────────────────────────────────────────────────────
 function visibleLogEntries(){
   const hidden=new Set(STATE.soci.filter(s=>s.nascosto).map(s=>s.nome));
@@ -1098,7 +1003,7 @@ function renderLog(){
     <div id="logResults">${fil.length?fil.map(renderLogItem).join(""):`<div style="text-align:center;opacity:.35;margin-top:40px">Nessun risultato.</div>`}</div>`;
 }
 function resetLogFiltri(){LOG_FILTER={query:"",mese:"all",tipo:"all"};renderTab();}
- 
+
 function rimuoviDalLog(logId){
   if(!STATE.isAdmin){showToast("Non autorizzato.",true);return;}
   const entry=STATE.log.find(l=>Number(l.id)===Number(logId));
@@ -1120,7 +1025,7 @@ function rimuoviDalLog(logId){
   showToast("Punteggio stornato ✅");
   render();
 }
- 
+
 // ── ASSEGNA ──────────────────────────────────────────────────
 function renderAssegna(){
   if(!STATE.isAdmin)return`<div style="text-align:center;padding:40px;opacity:.5;">🔒 Riservato agli amministratori.</div>`;
@@ -1169,9 +1074,9 @@ function renderAssegna(){
     <button class="btn-primary" onclick="assegna()">🚀 Conferma Assegnazione</button>
   </div>`;
 }
- 
+
 function selAzione(id){STATE.selAzione=STATE.selAzione===id?null:id;render();}
- 
+
 function assegnaPersonalizzato(){
   if(!STATE.isAdmin)return showToast("Non autorizzato.",true);
   if(!STATE.selSocio)return showToast("Scegli un socio!",true);
@@ -1187,7 +1092,7 @@ function assegnaPersonalizzato(){
   fbSavePunteggioAndLog(socio.id,mi,agg.m[mi]);
   showToast(`${pts>0?"+":""}${pts} pt a ${socio.nome} 🎉`);render();
 }
- 
+
 function assegna(){
   if(!STATE.isAdmin)return showToast("Non autorizzato.",true);
   if(!STATE.selSocio||!STATE.selAzione)return showToast("Seleziona socio e azione!",true);
@@ -1203,7 +1108,7 @@ function assegna(){
   showToast(`${delta>0?"+":""}${delta} pt a ${socio.nome} ${delta>0?"🎉":"😬"}`);
   STATE.selAzione=null;STATE.nota="";STATE.customVal=1;render();
 }
- 
+
 // ── AZIONI ───────────────────────────────────────────────────
 function getAzioneEditing(){if(!AZIONE_EDIT)return null;const list=AZIONE_EDIT.tipo==="bonus"?BONUS:MALUS;const a=list.find(a=>a.id===AZIONE_EDIT.id);return a?{tipo:AZIONE_EDIT.tipo,azione:a}:null;}
 function renderAzioni(){
@@ -1290,7 +1195,7 @@ async function ripristinaAzioniDefault(){
   if(!ok){BONUS=ob;MALUS=om;renderTab();return;}
   AZIONE_EDIT=null;showToast("Ripristinati ✅");render();
 }
- 
+
 // ── BACKUP ───────────────────────────────────────────────────
 function renderBackup(){
   if(!STATE.isAdmin)return`<div style="text-align:center;padding:40px;opacity:.5;">🔒 Riservato agli amministratori.</div>`;
@@ -1312,7 +1217,7 @@ function scaricaBackup(){
   downloadJson(`fantasocio-backup-${stamp}.json`,{exportedAt:now.toISOString(),app:"FantaSocio",activeMonth:{index:ami,label:activeMonthLabel()},mesi:MESE_LABELS,bonus:BONUS,malus:MALUS,soci:STATE.soci,log:STATE.log,configMese:CONFIG_MESE});
   showToast("Backup scaricato ✅");
 }
- 
+
 // ── SOCI ─────────────────────────────────────────────────────
 function renderSoci(){
   if(!STATE.isAdmin)return`<div style="text-align:center;padding:40px;opacity:.5;">🔒 Riservato agli amministratori.</div>`;
@@ -1392,7 +1297,7 @@ async function toggleSocioFlag(id,field){
   DB_SOCI=updated.map(cleanSocioForDb);STATE.soci=updated.map(cleanSocioForDb);
   showToast("Aggiornato ✅");render();
 }
- 
+
 // ── CERCA ────────────────────────────────────────────────────
 let CERCA_QUERY="";
 function renderCerca(){
@@ -1407,7 +1312,7 @@ function renderCerca(){
     </div>
   </div>`;}).join(""):`<div style="text-align:center;opacity:.35;margin-top:40px"><div style="font-size:40px">🔍</div><p style="margin-top:10px">Nessun risultato.</p></div>`}`;
 }
- 
+
 // ── COUNTDOWN ────────────────────────────────────────────────
 function aggiornaCountdown(){
   const ora=new Date();const pross=getNextResetDate(ora);
@@ -1418,18 +1323,18 @@ function aggiornaCountdown(){
   if(dm)dm.textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,"0");
   if(dt)dt.textContent=`Reset mensile: ${pross.toLocaleDateString("it-IT",{weekday:"long",day:"2-digit",month:"long"})}`;
 }
- 
+
 // ── WELCOME ──────────────────────────────────────────────────
 function initWelcome(){if(!localStorage.getItem("fs_welcomed")){document.getElementById("welcomeOverlay").style.display="flex";}}
 function chiudiWelcome(){const o=document.getElementById("welcomeOverlay");if(o)o.style.display="none";localStorage.setItem("fs_welcomed","1");}
- 
+
 // ═══════════════════════════════════════════════════════════
 //  INIT FIREBASE
 // ═══════════════════════════════════════════════════════════
 window.addEventListener("firebase-ready",()=>{
   fbReady=true;
   const{db,ref,onValue,auth,onAuthStateChanged}=window._fb;
- 
+
   onAuthStateChanged(auth,user=>{
     if(adminRoleUnsub){adminRoleUnsub();adminRoleUnsub=null;}
     if(!user){setAdminMode(false);return;}
@@ -1440,7 +1345,7 @@ window.addEventListener("firebase-ready",()=>{
       else showToast("Account non autorizzato come Admin",true);
     });
   });
- 
+
   // Leggi config mese da Firebase
   onValue(ref(db,"configMese"),snap=>{
     const cfg=snap.val();
@@ -1453,36 +1358,36 @@ window.addEventListener("firebase-ready",()=>{
     }
     rebuildSociFromDb();
   });
- 
+
   onValue(ref(db,"extra"),snap=>{
     const ext=snap.val()||{};
     DB_PUNTEGGI_MENSILI=ext;
     rebuildSociFromDb();
   });
- 
+
   onValue(ref(db,"soci"),snap=>{
     DB_SOCI=parseSociDb(snap.val());
     rebuildSociFromDb();
   },err=>{console.warn(err);DB_SOCI=null;rebuildSociFromDb();});
- 
+
   onValue(ref(db,"azioni"),snap=>{
     const cfg=snap.val();
     BONUS=azioniFromDb(cfg?.bonus,"bonus",BONUS_DEFAULT);
     MALUS=azioniFromDb(cfg?.malus,"malus",MALUS_DEFAULT);
     render();
   },err=>{console.warn(err);BONUS=cloneAzioni(BONUS_DEFAULT,"bonus");MALUS=cloneAzioni(MALUS_DEFAULT,"malus");render();});
- 
+
   onValue(ref(db,"log"),snap=>{
     const d=snap.val();
     STATE.log=d?(d.data?(Array.isArray(d.data)?d.data:[]):(Array.isArray(d)?d:[])):[];
     render();
   });
- 
+
   aggiornaCountdown();
   setInterval(aggiornaCountdown,60000);
   initWelcome();
 });
- 
+
 function apriLocale(){
   document.getElementById("loadingScreen").style.display="none";
   document.getElementById("appRoot").style.display="block";
@@ -1492,7 +1397,7 @@ function apriLocale(){
   if(ALBO_PAGE===null)ALBO_PAGE=ami;
   render();
 }
- 
+
 let clickCount=0;
 document.addEventListener("click",e=>{
   if(e.target.closest("#logoClick")||e.target.closest(".logo")){
@@ -1501,7 +1406,7 @@ document.addEventListener("click",e=>{
     setTimeout(()=>clickCount=0,1200);
   }
 });
- 
+
 setTimeout(()=>{
   if(document.getElementById("loadingScreen")&&document.getElementById("loadingScreen").style.display!=="none"){
     document.getElementById("loadingScreen").innerHTML=`<div style="text-align:center;padding:30px">
@@ -1514,18 +1419,3 @@ setTimeout(()=>{
 </script>
 </body>
 </html>
- 
-
-
-
-
-
-
-
-
-
-
-
-Impostazioni cookie
-Utilizziamo i cookies per fornire e migliorare i nostri servizi, analizzare l'utilizzo del sito e, se acconsenti, personalizzare la tua esperienza e proporti i nostri servizi. Puoi leggere la nostra Cookie Policy qui.
-
